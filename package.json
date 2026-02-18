@@ -1,0 +1,18 @@
+{
+  "name": "nexus-web",
+  "version": "1.0.0",
+  "description": "මෙම ලේඛනය (Document) මගින් Nexus Institute වෙබ් අඩවිය Node.js භාවිතයෙන් සකස් කර GitHub Pages හරහා නොමිලේ (Free) පවත්වාගෙන යාම සඳහා අවශ්‍ය සියලුම තොරතුරු සහ පියවරෙන් පියවර උපදෙස් (Step-by-Step Guide) ලබා දෙයි.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "vite": "^7.3.1"
+  }
+}

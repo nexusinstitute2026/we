@@ -1,0 +1,59 @@
+/* Noto Serif Sinhala - Local Fonts */
+@font-face {
+  font-family: 'Noto Serif Sinhala';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./NotoSerifSinhala-400.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Noto Serif Sinhala';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./NotoSerifSinhala-600.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Noto Serif Sinhala';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('./NotoSerifSinhala-700.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Noto Serif Sinhala';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('./NotoSerifSinhala-800.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Noto Serif Sinhala';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url('./NotoSerifSinhala-900.ttf') format('truetype');
+}
+
+/* Outfit - Local Fonts */
+@font-face {
+  font-family: 'Outfit';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./Outfit-400.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Outfit';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('./Outfit-700.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Outfit';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('./Outfit-800.ttf') format('truetype');
+}

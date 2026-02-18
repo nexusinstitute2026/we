@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="si" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>උසස් පෙළ (A/L) | Nexus Institute</title>
+    <meta name="description" content="A/L බුද්ධ ධර්මය, පාලි, සංස්කෘත, සිංහල - Nexus Institute ඔන්ලයින් පන්ති.">
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="stylesheet" href="fonts/fonts.css">
+    <style>
+        :root {
+            --teal: #0d9488;
+            --teal2: #2dd4bf;
+            --gold: #f59e0b;
+            --gold2: #fcd34d;
+            --purple: #7c3aed;
+            --purple2: #a78bfa;
+            --rose: #f43f5e;
+            --rose2: #fb7185;
+            --blue: #3b82f6;
+            --blue2: #93c5fd;
+            --dark: #0f172a;
+            --dark2: #1e293b;
+            --g-teal: linear-gradient(135deg, #0d9488, #2dd4bf);
+            --g-gold: linear-gradient(135deg, #d97706, #fcd34d);
+            --g-purple: linear-gradient(135deg, #7c3aed, #a78bfa);
+            --g-rose: linear-gradient(135deg, #f43f5e, #fb923c);
+            --g-blue: linear-gradient(135deg, #3b82f6, #93c5fd);
+            --g-rainbow: linear-gradient(90deg, #0d9488, #3b82f6, #7c3aed, #f43f5e, #f59e0b);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: 'Noto Serif Sinhala', serif;
+            background: #f8fafc;
+            color: #1e293b;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased
+        }
+
+        .eng {
+            font-family: 'Outfit', sans-serif
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1.5rem
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--g-rainbow);
+            border-radius: 99px;
+            border: 2px solid #f1f5f9
+        }
+
+        /* ── BLOBS ── */
+        .blobs {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+            background: linear-gradient(160deg, #f0fdfa 0%, #f0f9ff 60%, #fdf4ff 100%)
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: .5;
+            mix-blend-mode: multiply;
+            animation: blobDrift 22s ease-in-out infinite alternate
+        }
+
+        .b1 {
+            width: 600px;
+            height: 600px;
+            background: #99f6e4;
+            top: -15%;
+            left: -10%;
+            animation-duration: 22s
+        }
+
+        .b2 {
+            width: 500px;
+            height: 500px;
+            background: #fde68a;
+            bottom: -15%;
+            right: -10%;
+            animation-duration: 28s;
+            animation-direction: alternate-reverse
+        }
+
+        .b3 {
+            width: 400px;
+            height: 400px;
+            background: #ddd6fe;
+            top: 35%;
+            left: 35%;
+            animation-duration: 25s
+        }
+
+        @keyframes blobDrift {
+            0% {
+                transform: translate(0, 0) scale(1)
+            }
+
+            100% {
+                transform: translate(50px, -40px) scale(1.08)
+            }
+        }
+
+        /* ── NAVBAR ── */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 200;
+            height: 5rem;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, .82);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, .4);
+            transition: all .4s;
+        }
+
+        .navbar.scrolled {
+            box-shadow: 0 4px 30px rgba(0, 0, 0, .07);
+            height: 4.5rem
+        }
+
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            text-decoration: none
+        }
+
+        .nav-logo img {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            border: 2px solid rgba(255, 255, 255, .5);
+            box-shadow: 0 6px 18px rgba(13, 148, 136, .2);
+            transition: transform .35s
+        }
+
+        .nav-logo:hover img {
+            transform: scale(1.1) rotate(-4deg)
+        }
+
+        .brand-wrap {
+            display: flex;
+            flex-direction: column
+        }
+
+        .brand-name {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.4rem;
+            line-height: 1;
+            background: linear-gradient(90deg, var(--dark), var(--teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
+        .brand-sub {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: .58rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: .25em
+        }
+
+        .nav-links {
+            display: none;
+            align-items: center;
+            gap: .4rem
+        }
+
+        @media(min-width:768px) {
+            .nav-links {
+                display: flex
+            }
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #475569;
+            font-weight: 600;
+            font-size: .88rem;
+            padding: .55rem 1.1rem;
+            border-radius: 99px;
+            transition: all .3s
+        }
+
+        .nav-link:hover {
+            color: var(--teal);
+            background: rgba(13, 148, 136, .08)
+        }
+
+        .nav-link.active {
+            color: var(--teal);
+            background: rgba(13, 148, 136, .1);
+            font-weight: 700
+        }
+
+        .nav-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .65rem 1.6rem;
+            border-radius: 99px;
+            background: var(--g-teal);
+            color: #fff;
+            font-weight: 700;
+            font-size: .88rem;
+            text-decoration: none;
+            box-shadow: 0 8px 20px -4px rgba(13, 148, 136, .45);
+            transition: all .3s;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 30px -4px rgba(13, 148, 136, .55)
+        }
+
+        .mob-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border: none;
+            background: transparent;
+            color: var(--dark);
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all .2s
+        }
+
+        .mob-btn:hover {
+            background: rgba(13, 148, 136, .1);
+            color: var(--teal)
+        }
+
+        @media(min-width:768px) {
+            .mob-btn {
+                display: none
+            }
+        }
+
+        .mob-menu {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 300;
+            background: rgba(15, 23, 42, .97);
+            backdrop-filter: blur(24px);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.25rem
+        }
+
+        .mob-menu.open {
+            display: flex;
+            animation: fadeScale .35s ease
+        }
+
+        @keyframes fadeScale {
+            from {
+                opacity: 0;
+                transform: scale(.96)
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1)
+            }
+        }
+
+        .mob-menu a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.4rem;
+            font-weight: 700;
+            padding: 1rem 2.5rem;
+            border-radius: 1.5rem;
+            transition: all .3s;
+            width: 82%;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, .08)
+        }
+
+        .mob-menu a:hover {
+            background: rgba(255, 255, 255, .12);
+            border-color: rgba(255, 255, 255, .25);
+            transform: scale(1.03)
+        }
+
+        .mob-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 48px;
+            height: 48px;
+            border: none;
+            background: rgba(255, 255, 255, .08);
+            color: #fff;
+            font-size: 1.4rem;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all .3s
+        }
+
+        .mob-close:hover {
+            background: var(--rose);
+            transform: rotate(90deg)
+        }
+
+        /* ── HERO ── */
+        .hero {
+            padding: 9rem 0 8rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(160deg, var(--dark) 0%, #0f2d3a 40%, #1a0a2e 100%);
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: #f8fafc;
+            clip-path: ellipse(55% 100% at 50% 100%);
+        }
+
+        .hero-radials {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse at 80% 10%, rgba(245, 158, 11, .3) 0%, transparent 45%),
+                radial-gradient(ellipse at 15% 85%, rgba(124, 58, 237, .25) 0%, transparent 45%),
+                radial-gradient(ellipse at 50% 50%, rgba(13, 148, 136, .15) 0%, transparent 60%);
+        }
+
+        .hero-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none
+        }
+
+        .ho1 {
+            width: 350px;
+            height: 350px;
+            background: rgba(13, 148, 136, .4);
+            top: -80px;
+            left: -80px;
+            animation: orbFloat 12s ease-in-out infinite alternate
+        }
+
+        .ho2 {
+            width: 300px;
+            height: 300px;
+            background: rgba(124, 58, 237, .3);
+            bottom: -60px;
+            right: -60px;
+            animation: orbFloat 15s ease-in-out infinite alternate-reverse
+        }
+
+        @keyframes orbFloat {
+            0% {
+                transform: translate(0, 0)
+            }
+
+            100% {
+                transform: translate(40px, -40px)
+            }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 5;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 1.5rem
+        }
+
+        .hero-back {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .55rem 1.4rem;
+            border-radius: 99px;
+            background: rgba(255, 255, 255, .1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, .2);
+            color: rgba(255, 255, 255, .8);
+            text-decoration: none;
+            font-size: .9rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            transition: all .3s;
+        }
+
+        .hero-back:hover {
+            background: rgba(255, 255, 255, .18);
+            color: #fff;
+            transform: translateX(-4px)
+        }
+
+        .hero-back svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 1.25rem;
+            text-shadow: 0 8px 30px rgba(0, 0, 0, .35);
+            animation: slideUp .7s ease-out;
+        }
+
+        .h1-light {
+            background: linear-gradient(to right, var(--teal2), var(--blue2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            color: #cbd5e1;
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            max-width: 620px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.85;
+            animation: slideUp .7s ease-out .2s both;
+        }
+
+        .hero p .gold {
+            color: var(--gold2);
+            font-weight: 700
+        }
+
+        /* ── SUBJECT TABS ── */
+        .tabs-wrapper {
+            position: relative;
+            z-index: 20;
+            margin-top: -3.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .tabs-scroll {
+            background: #fff;
+            border-radius: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, .08);
+            border: 1px solid rgba(255, 255, 255, .8);
+            display: flex;
+            overflow-x: auto;
+            padding: .4rem;
+            gap: .3rem;
+        }
+
+        .tabs-scroll::-webkit-scrollbar {
+            display: none
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 90px;
+            padding: .9rem .5rem;
+            border-radius: 1.5rem;
+            border: none;
+            background: transparent;
+            font-family: 'Noto Serif Sinhala', serif;
+            font-weight: 800;
+            font-size: .9rem;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all .35s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: #475569;
+            background: #f8fafc
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--dark), var(--dark2));
+            color: #fff;
+            box-shadow: 0 6px 20px rgba(15, 23, 42, .3);
+        }
+
+        /* Coloured active states per subject */
+        .tab-btn.active.t-buddhism {
+            background: var(--g-teal)
+        }
+
+        .tab-btn.active.t-pali {
+            background: var(--g-purple)
+        }
+
+        .tab-btn.active.t-sanskrit {
+            background: var(--g-gold)
+        }
+
+        .tab-btn.active.t-sinhala {
+            background: var(--g-rose)
+        }
+
+        /* ── SUBJECT HEADER ── */
+        .subj-header {
+            margin-bottom: 2rem
+        }
+
+        .subj-header h2 {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--dark);
+            margin-bottom: .25rem
+        }
+
+        .subj-header p {
+            color: #94a3b8;
+            font-size: .95rem
+        }
+
+        /* ── CARDS GRID ── */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.75rem;
+            margin-bottom: 4rem
+        }
+
+        @media(min-width:640px) {
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr)
+            }
+        }
+
+        @media(min-width:1024px) {
+            .cards-grid {
+                grid-template-columns: repeat(3, 1fr)
+            }
+        }
+
+        .class-card {
+            background: #fff;
+            border-radius: 2rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, .05);
+            border: 1px solid rgba(0, 0, 0, .04);
+            transition: all .45s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        .class-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, .1)
+        }
+
+        .card-img {
+            position: relative;
+            height: 190px;
+            overflow: hidden;
+            background: #f1f5f9
+        }
+
+        .card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .5s
+        }
+
+        .class-card:hover .card-img img {
+            transform: scale(1.1)
+        }
+
+        .card-img .img-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, .3))
+        }
+
+        .card-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: .3rem 1rem;
+            border-radius: 99px;
+            font-size: .65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: .06em;
+        }
+
+        .b-theory {
+            background: rgba(13, 148, 136, .15);
+            color: #0d9488;
+            border: 1px solid rgba(13, 148, 136, .3)
+        }
+
+        .b-revision {
+            background: rgba(245, 158, 11, .15);
+            color: #d97706;
+            border: 1px solid rgba(245, 158, 11, .3)
+        }
+
+        .b-paper {
+            background: rgba(244, 63, 94, .15);
+            color: #f43f5e;
+            border: 1px solid rgba(244, 63, 94, .3)
+        }
+
+        /* Coloured top stripe per subject */
+        .stripe {
+            height: 5px;
+            width: 100%
+        }
+
+        .s-buddhism {
+            background: var(--g-teal)
+        }
+
+        .s-pali {
+            background: var(--g-purple)
+        }
+
+        .s-sanskrit {
+            background: var(--g-gold)
+        }
+
+        .s-sinhala {
+            background: var(--g-rose)
+        }
+
+        .card-body {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1
+        }
+
+        .card-body h3 {
+            font-size: 1.15rem;
+            font-weight: 900;
+            color: var(--dark);
+            margin-bottom: 1rem
+        }
+
+        .card-meta {
+            display: flex;
+            flex-direction: column;
+            gap: .6rem;
+            margin-bottom: 1.5rem;
+            flex-grow: 1
+        }
+
+        .meta-row {
+            display: flex;
+            align-items: center;
+            gap: .5rem
+        }
+
+        .meta-row svg {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke-width: 2;
+            flex-shrink: 0
+        }
+
+        .meta-row span {
+            font-size: .85rem;
+            font-weight: 700;
+            color: #64748b
+        }
+
+        .meta-row span.upcoming {
+            color: var(--gold)
+        }
+
+        .card-action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            padding: .9rem;
+            border-radius: 1.25rem;
+            border: none;
+            font-family: 'Noto Serif Sinhala', serif;
+            font-weight: 700;
+            font-size: .9rem;
+            text-decoration: none;
+            text-align: center;
+            transition: all .35s;
+            cursor: pointer;
+        }
+
+        .ca-active {
+            background: var(--dark);
+            color: #fff
+        }
+
+        .ca-active:hover {
+            transform: scale(.97);
+            opacity: .9
+        }
+
+        .ca-inactive {
+            background: #f1f5f9;
+            color: #94a3b8;
+            cursor: default
+        }
+
+        /* Subject-coloured active buttons */
+        .ca-buddhism {
+            background: var(--g-teal) !important;
+            color: #fff
+        }
+
+        .ca-pali {
+            background: var(--g-purple) !important;
+            color: #fff
+        }
+
+        .ca-sanskrit {
+            background: var(--g-gold) !important;
+            color: #fff
+        }
+
+        .ca-sinhala {
+            background: var(--g-rose) !important;
+            color: #fff
+        }
+
+        /* ── FEATURES ── */
+        .features {
+            padding: 7rem 0;
+            background: linear-gradient(160deg, var(--dark) 0%, #0f2d3a 50%, #1a0a2e 100%);
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .features::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--g-rainbow)
+        }
+
+        .feat-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            pointer-events: none
+        }
+
+        .fo1 {
+            width: 400px;
+            height: 400px;
+            background: rgba(13, 148, 136, .35);
+            top: -100px;
+            left: -100px
+        }
+
+        .fo2 {
+            width: 500px;
+            height: 500px;
+            background: rgba(124, 58, 237, .25);
+            bottom: -150px;
+            right: -150px
+        }
+
+        .section-head {
+            text-align: center;
+            margin-bottom: 4rem
+        }
+
+        .section-tag {
+            display: inline-block;
+            padding: .4rem 1.2rem;
+            border-radius: 99px;
+            font-family: 'Outfit', sans-serif;
+            font-size: .7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .18em;
+            margin-bottom: 1rem
+        }
+
+        .section-head h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 900;
+            margin-bottom: .75rem
+        }
+
+        .rainbow-bar {
+            width: 100px;
+            height: 6px;
+            border-radius: 99px;
+            margin: .75rem auto 1.25rem;
+            background: var(--g-rainbow);
+            box-shadow: 0 4px 12px rgba(13, 148, 136, .3)
+        }
+
+        .section-head p {
+            font-size: 1.1rem;
+            max-width: 520px;
+            margin: 0 auto
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            position: relative;
+            z-index: 5
+        }
+
+        @media(min-width:768px) {
+            .features-grid {
+                grid-template-columns: repeat(3, 1fr)
+            }
+        }
+
+        .feat-card {
+            padding: 2.5rem;
+            border-radius: 2rem;
+            background: rgba(255, 255, 255, .04);
+            border: 1px solid rgba(255, 255, 255, .07);
+            text-align: center;
+            transition: all .4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feat-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            width: 0;
+            transition: width .4s
+        }
+
+        .feat-card.fc-teal::after {
+            background: var(--g-teal)
+        }
+
+        .feat-card.fc-gold::after {
+            background: var(--g-gold)
+        }
+
+        .feat-card.fc-purple::after {
+            background: var(--g-purple)
+        }
+
+        .feat-card:hover {
+            background: rgba(255, 255, 255, .09);
+            transform: translateY(-10px);
+            border-color: rgba(255, 255, 255, .18);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, .25)
+        }
+
+        .feat-card:hover::after {
+            width: 100%
+        }
+
+        .feat-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .25);
+            transition: transform .4s
+        }
+
+        .feat-card:hover .feat-icon {
+            transform: scale(1.12) rotate(-5deg)
+        }
+
+        .fi-teal {
+            background: var(--g-teal)
+        }
+
+        .fi-gold {
+            background: var(--g-gold)
+        }
+
+        .fi-purple {
+            background: var(--g-purple)
+        }
+
+        .feat-icon svg {
+            width: 32px;
+            height: 32px;
+            stroke: #fff;
+            fill: none;
+            stroke-width: 1.8
+        }
+
+        .feat-card h4 {
+            font-weight: 800;
+            font-size: 1.2rem;
+            margin-bottom: .75rem;
+            color: #f1f5f9
+        }
+
+        .feat-card p {
+            color: #94a3b8;
+            font-size: .95rem;
+            line-height: 1.75
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            background: #020617;
+            color: #fff;
+            padding: 6rem 0 2rem;
+            position: relative;
+            overflow: hidden
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--g-rainbow)
+        }
+
+        .footer-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: .15;
+            pointer-events: none
+        }
+
+        .fob1 {
+            width: 400px;
+            height: 400px;
+            background: var(--teal);
+            top: -100px;
+            left: -100px
+        }
+
+        .fob2 {
+            width: 300px;
+            height: 300px;
+            background: var(--purple);
+            bottom: -80px;
+            right: -80px
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3rem;
+            margin-bottom: 4rem
+        }
+
+        @media(min-width:640px) {
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr)
+            }
+        }
+
+        @media(min-width:1024px) {
+            .footer-grid {
+                grid-template-columns: repeat(4, 1fr)
+            }
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: .9rem;
+            margin-bottom: 1.25rem
+        }
+
+        .footer-brand img {
+            width: 48px;
+            height: 48px;
+            border-radius: 13px;
+            border: 2px solid rgba(255, 255, 255, .1)
+        }
+
+        .footer-brand span {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.35rem
+        }
+
+        footer h4 {
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            background: var(--g-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
+        footer p,
+        footer a {
+            color: #94a3b8;
+            font-size: .92rem;
+            line-height: 1.75
+        }
+
+        footer a {
+            text-decoration: none;
+            transition: all .3s;
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            margin-bottom: .85rem
+        }
+
+        footer a:hover {
+            color: var(--teal2);
+            transform: translateX(6px)
+        }
+
+        .social-row {
+            display: flex;
+            gap: .85rem
+        }
+
+        .soc-btn {
+            width: 46px;
+            height: 46px;
+            border-radius: 13px;
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid rgba(255, 255, 255, .06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .35s;
+            margin-bottom: 0
+        }
+
+        .soc-btn:hover {
+            transform: translateY(-6px) rotate(8deg);
+            border-color: rgba(255, 255, 255, .2)
+        }
+
+        .soc-btn.fb:hover {
+            background: #1877F2;
+            box-shadow: 0 8px 20px rgba(24, 119, 242, .35)
+        }
+
+        .soc-btn.yt:hover {
+            background: #FF0000;
+            box-shadow: 0 8px 20px rgba(255, 0, 0, .35)
+        }
+
+        .soc-btn svg {
+            width: 20px;
+            height: 20px;
+            stroke: #fff;
+            fill: none;
+            stroke-width: 2
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, .05);
+            padding-top: 2rem;
+            text-align: center;
+            color: #475569;
+            font-size: .82rem;
+            font-family: 'Outfit', sans-serif
+        }
+
+        .footer-vision {
+            font-style: italic;
+            font-size: .88rem;
+            color: #64748b;
+            border-left: 3px solid var(--gold);
+            padding-left: 1rem;
+            line-height: 1.8
+        }
+
+        /* ── REVEAL ── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(35px);
+            transition: all .75s cubic-bezier(.16, 1, .3, 1)
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0)
+        }
+
+        .d1 {
+            transition-delay: .1s
+        }
+
+        .d2 {
+            transition-delay: .2s
+        }
+
+        .d3 {
+            transition-delay: .3s
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        @media(max-width:640px) {
+            .hero h1 {
+                font-size: 2.2rem
+            }
+
+            .tab-btn {
+                font-size: .78rem;
+                padding: .75rem .4rem
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="blobs">
+        <div class="blob b1"></div>
+        <div class="blob b2"></div>
+        <div class="blob b3"></div>
+    </div>
+
+    <!-- Navbar -->
+    <header class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-inner">
+                <a href="index.html" class="nav-logo">
+                    <img src="images/logo.png" alt="Nexus Institute">
+                    <div class="brand-wrap">
+                        <span class="brand-name">NEXUS</span>
+                        <span class="brand-sub">Institute</span>
+                    </div>
+                </a>
+                <nav class="nav-links">
+                    <a href="index.html" class="nav-link">මුල් පිටුව</a>
+                    <a href="al.html" class="nav-link active">A/L අංශය</a>
+                    <a href="prachina.html" class="nav-link">ප්‍රාචීන අංශය</a>
+                    <a href="#contact" class="nav-cta">සම්බන්ධ වන්න</a>
+                </nav>
+                <button class="mob-btn" onclick="openMenu()" aria-label="Menu">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mob-menu" id="mobMenu">
+        <button class="mob-close" onclick="closeMenu()">✕</button>
+        <img src="images/logo.png" alt="Nexus"
+            style="width:68px;height:68px;border-radius:20px;margin-bottom:1.5rem;box-shadow:0 10px 30px rgba(0,0,0,.4)">
+        <a href="index.html" onclick="closeMenu()">මුල් පිටුව</a>
+        <a href="al.html" onclick="closeMenu()"
+            style="background:rgba(13,148,136,.2);border-color:rgba(13,148,136,.4)">A/L අංශය</a>
+        <a href="prachina.html" onclick="closeMenu()">ප්‍රාචීන අංශය</a>
+        <a href="#contact" onclick="closeMenu()"
+            style="background:linear-gradient(135deg,#0d9488,#2dd4bf);border:none">සම්බන්ධ වන්න</a>
+    </div>
+
+    <main>
+        <!-- Hero -->
+        <section class="hero">
+            <div class="hero-radials"></div>
+            <div class="hero-orb ho1"></div>
+            <div class="hero-orb ho2"></div>
+            <div class="hero-content">
+                <a href="index.html" class="hero-back">
+                    <svg viewBox="0 0 24 24" stroke-width="2.5">
+                        <line x1="19" y1="12" x2="5" y2="12" />
+                        <polyline points="12 19 5 12 12 5" />
+                    </svg>
+                    ආපසු
+                </a>
+                <h1>උසස් පෙළ <span class="h1-light">(A/L)</span></h1>
+                <p>ඔබගේ විශ්වවිද්‍යාල සිහිනය සැබෑ කරගැනීම සඳහා <span class="gold">Nexus Institute</span> වෙතින් දිවයිනේ
+                    විශිෂ්ටතම ඔන්ලයින් මගපෙන්වීම.</p>
+            </div>
+        </section>
+
+        <!-- Tabs + Cards -->
+        <div class="container" id="subjects">
+            <div class="tabs-wrapper reveal">
+                <div class="tabs-scroll" id="tabsEl"></div>
+            </div>
+            <div class="subj-header">
+                <h2 id="subjTitle"></h2>
+                <p id="subjSub"></p>
+            </div>
+            <div class="cards-grid" id="cardsGrid"></div>
+        </div>
+
+        <!-- Features -->
+        <section class="features">
+            <div class="feat-orb fo1"></div>
+            <div class="feat-orb fo2"></div>
+            <div class="container" style="position:relative;z-index:5">
+                <div class="section-head reveal">
+                    <span class="section-tag" style="background:rgba(255,255,255,.08);color:#5eead4">Our
+                        Strengths</span>
+                    <h2 style="color:#fff">අපගේ සුවිශේෂීත්වය</h2>
+                    <div class="rainbow-bar"></div>
+                    <p style="color:#94a3b8">Nexus Institute සමඟින් ඔබේ අධ්‍යාපන ගමන සුවිශේෂී කරගන්න</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feat-card fc-teal reveal d1">
+                        <div class="feat-icon fi-teal"><svg viewBox="0 0 24 24">
+                                <rect x="2" y="3" width="20" height="14" rx="2" />
+                                <line x1="8" y1="21" x2="16" y2="21" />
+                                <line x1="12" y1="17" x2="12" y2="21" />
+                            </svg></div>
+                        <h4>100% ඔන්ලයින්</h4>
+                        <p>දිවයිනේ ඕනෑම තැනක සිට සම්බන්ධ වීමේ පහසුව</p>
+                    </div>
+                    <div class="feat-card fc-gold reveal d2">
+                        <div class="feat-icon fi-gold"><svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="8" r="7" />
+                                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+                            </svg></div>
+                        <h4>විශිෂ්ට ප්‍රතිඵල</h4>
+                        <p>වසර ගණනාවක අඛණ්ඩ විශිෂ්ට ප්‍රතිඵල</p>
+                    </div>
+                    <div class="feat-card fc-purple reveal d3">
+                        <div class="feat-icon fi-purple"><svg viewBox="0 0 24 24">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            </svg></div>
+                        <h4>සුහද මගපෙන්වීම</h4>
+                        <p>සිසුවාගේ මට්ටම හඳුනාගෙන සිදුකරන ඉගැන්වීම</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="footer-orb fob1"></div>
+        <div class="footer-orb fob2"></div>
+        <div class="container" style="position:relative;z-index:5">
+            <div class="footer-grid">
+                <div class="reveal">
+                    <div class="footer-brand"><img src="images/logo.png" alt="Nexus"><span class="eng">Nexus
+                            Institute</span></div>
+                    <p>මධුභාෂිණී චන්ද්‍රපාල මෙනවියගේ මෙහෙයවීමෙන් විශිෂ්ට ප්‍රතිඵල සොයා යන සොඳුරුතම නෞකාව.</p>
+                </div>
+                <div class="reveal d1">
+                    <h4>සම්බන්ධ වන්න</h4>
+                    <a href="tel:0788345643"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path
+                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+                        </svg><span class="eng" style="letter-spacing:.1em;font-weight:600">0788 345 643</span></a>
+                    <a href="mailto:madhubhashinichandrapala18@gmail.com"><svg width="18" height="18"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                            <polyline points="22,6 12,13 2,6" />
+                        </svg>madhubhashinichandrapala18@gmail.com</a>
+                </div>
+                <div class="reveal d2">
+                    <h4>සමාජ ජාල</h4>
+                    <div class="social-row">
+                        <a href="https://www.facebook.com/profile.php?id=100075692104528" target="_blank"
+                            class="soc-btn fb"><svg viewBox="0 0 24 24">
+                                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                            </svg></a>
+                        <a href="http://www.youtube.com/@madhubhashinichandrapala4816" target="_blank"
+                            class="soc-btn yt"><svg viewBox="0 0 24 24">
+                                <path
+                                    d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.08c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.41z" />
+                                <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
+                            </svg></a>
+                    </div>
+                </div>
+                <div class="reveal d3">
+                    <h4>අපගේ දැක්ම</h4>
+                    <p class="footer-vision">"දැනුමෙන් සන්නද්ධ දියුණු සමාජයක් බිහිකිරීම උදෙසා නිරන්තරයෙන් කැපවීම."</p>
+                </div>
+            </div>
+            <div class="footer-bottom">&copy; 2026 Nexus Institute. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <script>
+        const SUBJECTS = [
+            {
+                id: 'buddhism', cls: 't-buddhism', title: 'බුද්ධ ධර්මය', sub: 'ජීවිතය දකින දහම් ඇස',
+                classes: [
+                    { type: 'Theory', badge: 'b-theory', title: '2027 සිද්ධාන්ත', time: 'බදාදා ප.ව. 7.30', tutor: 'මධුභාෂිණී චන්ද්‍රපාල', img: 'images/hero-bg.jpg', link: 'https://sites.google.com/view/madubhashinichandrapala/bu-27' },
+                    { type: 'Revision', badge: 'b-revision', title: '2026 පුනරීක්ෂණ', time: 'සඳුදා ප.ව. 7.30', tutor: 'මධුභාෂිණී චන්ද්‍රපාල', img: 'images/class-buddhism.jpg', link: 'https://sites.google.com/view/madubhashinichandrapala/%E0%B6%B6%E0%B6%AF%E0%B6%B0-%E0%B6%B0%E0%B6%BB%E0%B6%B8%E0%B6%BA-2026' },
+                    { type: 'Paper', badge: 'b-paper', title: 'ප්‍රශ්න පත්‍ර', time: 'සඳුදා ප.ව. 7.30', tutor: 'මධුභාෂිණී චන්ද්‍රපාල', img: 'images/class-study.jpg', link: 'https://sites.google.com/view/nexus-bu-paper' }
+                ]
+            },
+            {
+                id: 'pali', cls: 't-pali', title: 'පාලි', sub: 'මුල සිට සරලව',
+                classes: [
+                    { type: 'Theory', badge: 'b-theory', title: '2027 සිද්ධාන්ත', time: 'ළඟදීම ආරම්භ', tutor: 'ප්‍රදීප් එස් දසනායක', img: 'images/class-pali.jpg', link: null },
+                    { type: 'Revision', badge: 'b-revision', title: '2026 පුනරීක්ෂණ', time: 'බදාදා ප.ව. 7.30', tutor: 'ප්‍රදීප් එස් දසනායක', img: 'images/class-digital.jpg', link: 'https://sites.google.com/view/nexus-pali-26' },
+                    { type: 'Paper', badge: 'b-paper', title: 'ප්‍රශ්න පත්‍ර', time: 'ළඟදීම ආරම්භ', tutor: 'ප්‍රදීප් එස් දසනායක', img: 'images/class-writing.jpg', link: 'https://sites.google.com/view/nexus-pali-paper' }
+                ]
+            },
+            {
+                id: 'sanskrit', cls: 't-sanskrit', title: 'සංස්කෘත', sub: 'භාෂාවන්ගේ මූලය',
+                classes: [
+                    { type: 'Theory', badge: 'b-theory', title: '2027 සිද්ධාන්ත', time: 'ළඟදීම ආරම්භ', tutor: 'ප්‍රදීප් එස් දසනායක', img: 'images/class-sanskrit.jpg', link: 'https://sites.google.com/view/nexus-san-27' },
+                    { type: 'Revision', badge: 'b-revision', title: '2026 පුනරීක්ෂණ', time: 'සිකුරාදා ප.ව. 7.30', tutor: 'ප්‍රදීප් එස් දසනායක', img: 'images/about-bg.jpg', link: 'https://sites.google.com/view/nexus-san-26' },
+                    { type: 'Paper', badge: 'b-paper', title: 'ප්‍රශ්න පත්‍ර', time: 'ළඟදීම ආරම්භ', tutor: 'ප්‍රදීප් එස් දසනායක', img: 'images/class-education.jpg', link: 'https://sites.google.com/view/nexus-san-paper' }
+                ]
+            },
+            {
+                id: 'sinhala', cls: 't-sinhala', title: 'සිංහල', sub: 'උරුමයක අභිමානය',
+                classes: [
+                    { type: 'Theory', badge: 'b-theory', title: '2027 සිද්ධාන්ත', time: 'ළඟදීම ආරම්භ', tutor: 'සමීර රත්නායක', img: 'images/class-sinhala.jpg', link: 'https://sites.google.com/view/nexus-sin-27' },
+                    { type: 'Revision', badge: 'b-revision', title: '2026 පුනරීක්ෂණ', time: 'ළඟදීම ආරම්භ', tutor: 'සමීර රත්නායක', img: 'images/class-books.jpg', link: 'https://sites.google.com/view/nexus-sin-26' },
+                    { type: 'Paper', badge: 'b-paper', title: 'ප්‍රශ්න පත්‍ර', time: 'ළඟදීම ආරම්භ', tutor: 'සමීර රත්නායක', img: 'images/class-notes.jpg', link: 'https://sites.google.com/view/nexus-sin-paper' }
+                ]
+            }
+        ];
+
+        let active = SUBJECTS[0];
+
+        function renderTabs() {
+            document.getElementById('tabsEl').innerHTML = SUBJECTS.map(s =>
+                `<button class="tab-btn ${s.cls} ${s.id === active.id ? 'active' : ''}" onclick="setSubj('${s.id}')">${s.title}</button>`
+            ).join('');
+        }
+
+        function renderCards() {
+            document.getElementById('subjTitle').textContent = active.title;
+            document.getElementById('subjSub').textContent = active.sub;
+            const grid = document.getElementById('cardsGrid');
+            grid.innerHTML = active.classes.map(c => {
+                const upcoming = c.time.includes('ළඟදීම');
+                const href = c.link || (upcoming ? `https://wa.me/94788345643?text=${c.title}` : '#');
+                const btnCls = upcoming && !c.link ? 'ca-inactive' : `ca-active ca-${active.id}`;
+                const btnTxt = upcoming && !c.link ? 'ළඟදීම ආරම්භ වේ' : 'පන්තියට එක්වන්න';
+                return `
+    <div class="class-card reveal">
+      <div class="card-img">
+        <img src="${c.img}" alt="${c.title}" loading="lazy">
+        <div class="img-overlay"></div>
+        <span class="card-badge ${c.badge}">${c.type}</span>
+      </div>
+      <div class="stripe s-${active.id}"></div>
+      <div class="card-body">
+        <h3>${c.title}</h3>
+        <div class="card-meta">
+          <div class="meta-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span class="${upcoming ? 'upcoming' : ''}">${c.time}</span>
+          </div>
+          <div class="meta-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>${c.tutor}</span>
+          </div>
+        </div>
+        <a href="${href}" target="_blank" class="card-action ${btnCls}">${btnTxt}</a>
+      </div>
+    </div>`;
+            }).join('');
+            grid.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+        }
+
+        function setSubj(id) { active = SUBJECTS.find(s => s.id === id); renderTabs(); renderCards() }
+
+        // Navbar
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.pageYOffset > 20), { passive: true });
+
+        // Mobile menu
+        function openMenu() { document.getElementById('mobMenu').classList.add('open'); document.body.style.overflow = 'hidden' }
+        function closeMenu() { document.getElementById('mobMenu').classList.remove('open'); document.body.style.overflow = '' }
+
+        // Reveal
+        const ro = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible') });
+        }, { threshold: .08 });
+        document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+
+        renderTabs(); renderCards();
+    </script>
+</body>
+
+</html>
