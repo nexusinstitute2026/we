@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="si" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Institute | Madhubhashini Chandrapala</title>
+    <meta name="description" content="Nexus ආයතනය - උසස් පෙළ සහ ප්‍රාචීන විභාග සඳහා ඔන්ලයින් අධ්‍යාපන වේදිකාව.">
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="stylesheet" href="fonts/fonts.css">
+    <style>
+        :root {
+            --teal: #0d9488;
+            --teal2: #2dd4bf;
+            --gold: #f59e0b;
+            --gold2: #fcd34d;
+            --purple: #7c3aed;
+            --purple2: #a78bfa;
+            --rose: #f43f5e;
+            --rose2: #fb7185;
+            --blue: #3b82f6;
+            --blue2: #93c5fd;
+            --dark: #0f172a;
+            --dark2: #1e293b;
+            --g-teal: linear-gradient(135deg, #0d9488, #2dd4bf);
+            --g-gold: linear-gradient(135deg, #d97706, #fcd34d);
+            --g-purple: linear-gradient(135deg, #7c3aed, #a78bfa);
+            --g-rose: linear-gradient(135deg, #f43f5e, #fb923c);
+            --g-blue: linear-gradient(135deg, #3b82f6, #93c5fd);
+            --g-rainbow: linear-gradient(90deg, #0d9488, #3b82f6, #7c3aed, #f43f5e, #f59e0b);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: 'Noto Serif Sinhala', serif;
+            background: #f0fdfa;
+            color: #1e293b;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .eng {
+            font-family: 'Outfit', sans-serif
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1.5rem
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--g-rainbow);
+            border-radius: 99px;
+            border: 2px solid #f1f5f9
+        }
+
+        /* ── ANIMATED BG BLOBS ── */
+        .blobs {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+            background: linear-gradient(160deg, #ecfdf5 0%, #f0f9ff 50%, #fdf4ff 100%)
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: .55;
+            mix-blend-mode: multiply;
+            animation: blobDrift 20s ease-in-out infinite alternate
+        }
+
+        .b1 {
+            width: 700px;
+            height: 700px;
+            background: #99f6e4;
+            top: -15%;
+            left: -10%;
+            animation-duration: 22s
+        }
+
+        .b2 {
+            width: 600px;
+            height: 600px;
+            background: #fde68a;
+            bottom: -15%;
+            right: -10%;
+            animation-duration: 28s;
+            animation-direction: alternate-reverse
+        }
+
+        .b3 {
+            width: 500px;
+            height: 500px;
+            background: #ddd6fe;
+            top: 35%;
+            left: 35%;
+            animation-duration: 25s
+        }
+
+        .b4 {
+            width: 350px;
+            height: 350px;
+            background: #fecdd3;
+            top: 10%;
+            right: 15%;
+            animation-duration: 18s;
+            animation-direction: alternate-reverse
+        }
+
+        @keyframes blobDrift {
+            0% {
+                transform: translate(0, 0) scale(1) rotate(0deg)
+            }
+
+            33% {
+                transform: translate(60px, -40px) scale(1.08) rotate(5deg)
+            }
+
+            66% {
+                transform: translate(-40px, 50px) scale(.94) rotate(-3deg)
+            }
+
+            100% {
+                transform: translate(30px, -20px) scale(1.04) rotate(2deg)
+            }
+        }
+
+        /* ── NAVBAR ── */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 200;
+            height: 5rem;
+            display: flex;
+            align-items: center;
+            transition: all .4s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .navbar.scrolled {
+            background: rgba(255, 255, 255, .88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, .07);
+            border-bottom: 1px solid rgba(255, 255, 255, .4);
+            height: 4.5rem;
+        }
+
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            text-decoration: none
+        }
+
+        .nav-logo img {
+            width: 50px;
+            height: 50px;
+            border-radius: 16px;
+            border: 2px solid rgba(255, 255, 255, .5);
+            box-shadow: 0 8px 20px rgba(13, 148, 136, .25);
+            transition: transform .35s, box-shadow .35s;
+        }
+
+        .nav-logo:hover img {
+            transform: scale(1.1) rotate(-4deg);
+            box-shadow: 0 12px 30px rgba(245, 158, 11, .35)
+        }
+
+        .brand-wrap {
+            display: flex;
+            flex-direction: column
+        }
+
+        .brand-name {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            line-height: 1;
+            background: linear-gradient(90deg, var(--dark), var(--teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .brand-sub {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: .58rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: .25em
+        }
+
+        .nav-links {
+            display: none;
+            align-items: center;
+            gap: .4rem
+        }
+
+        @media(min-width:768px) {
+            .nav-links {
+                display: flex
+            }
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #475569;
+            font-weight: 600;
+            font-size: .88rem;
+            padding: .55rem 1.1rem;
+            border-radius: 99px;
+            transition: all .3s;
+        }
+
+        .nav-link:hover {
+            color: var(--teal);
+            background: rgba(13, 148, 136, .08)
+        }
+
+        .nav-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .65rem 1.6rem;
+            border-radius: 99px;
+            background: var(--g-gold);
+            color: #fff;
+            font-weight: 700;
+            font-size: .88rem;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-family: 'Noto Serif Sinhala', serif;
+            box-shadow: 0 8px 20px -4px rgba(245, 158, 11, .45);
+            transition: all .3s;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 30px -4px rgba(245, 158, 11, .55)
+        }
+
+        .mob-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border: none;
+            background: transparent;
+            color: var(--dark);
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all .2s;
+        }
+
+        .mob-btn:hover {
+            background: rgba(13, 148, 136, .1);
+            color: var(--teal)
+        }
+
+        @media(min-width:768px) {
+            .mob-btn {
+                display: none
+            }
+        }
+
+        /* Mobile overlay */
+        .mob-menu {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 300;
+            background: rgba(15, 23, 42, .97);
+            backdrop-filter: blur(24px);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.25rem;
+        }
+
+        .mob-menu.open {
+            display: flex;
+            animation: fadeScale .35s ease
+        }
+
+        @keyframes fadeScale {
+            from {
+                opacity: 0;
+                transform: scale(.96)
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1)
+            }
+        }
+
+        .mob-menu a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.4rem;
+            font-weight: 700;
+            padding: 1rem 2.5rem;
+            border-radius: 1.5rem;
+            transition: all .3s;
+            width: 82%;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, .08);
+        }
+
+        .mob-menu a:hover {
+            background: rgba(255, 255, 255, .12);
+            border-color: rgba(255, 255, 255, .25);
+            transform: scale(1.03)
+        }
+
+        .mob-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 48px;
+            height: 48px;
+            border: none;
+            background: rgba(255, 255, 255, .08);
+            color: #fff;
+            font-size: 1.4rem;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all .3s;
+        }
+
+        .mob-close:hover {
+            background: var(--rose);
+            transform: rotate(90deg)
+        }
+
+        /* ── HERO ── */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding-top: 5rem;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: url('images/hero-bg.jpg') center/cover no-repeat;
+            transform: scale(1.12);
+            transition: transform .1s linear;
+            filter: saturate(1.15) brightness(.9);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg,
+                    rgba(15, 23, 42, .88) 0%,
+                    rgba(13, 148, 136, .55) 45%,
+                    rgba(240, 253, 244, .97) 100%);
+        }
+
+        /* colourful radial accents on hero */
+        .hero-radials {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse at 80% 10%, rgba(245, 158, 11, .25) 0%, transparent 45%),
+                radial-gradient(ellipse at 15% 85%, rgba(124, 58, 237, .2) 0%, transparent 45%),
+                radial-gradient(ellipse at 50% 50%, rgba(13, 148, 136, .1) 0%, transparent 60%);
+        }
+
+        .hero-particles {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleRise linear infinite;
+        }
+
+        @keyframes particleRise {
+            0% {
+                opacity: 0;
+                transform: translateY(60px) scale(.5)
+            }
+
+            20% {
+                opacity: .9
+            }
+
+            80% {
+                opacity: .6
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-80px) scale(1.2)
+            }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 920px;
+            padding: 2rem 1.5rem
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: .65rem;
+            padding: .65rem 1.6rem;
+            border-radius: 99px;
+            background: rgba(255, 255, 255, .13);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, .28);
+            color: #fff;
+            font-size: .9rem;
+            font-weight: 600;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 0 30px rgba(13, 148, 136, .3);
+            animation: slideDown .8s ease-out, badgeGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes badgeGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(13, 148, 136, .3)
+            }
+
+            50% {
+                box-shadow: 0 0 40px rgba(13, 148, 136, .6), 0 0 60px rgba(245, 158, 11, .2)
+            }
+        }
+
+        .badge-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 10px #4ade80;
+            animation: dotPulse 1.5s ease infinite
+        }
+
+        @keyframes dotPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1
+            }
+
+            50% {
+                transform: scale(1.6);
+                opacity: .5
+            }
+        }
+
+        .hero-logo {
+            width: 115px;
+            height: 115px;
+            border-radius: 32px;
+            margin: 0 auto 1.75rem;
+            border: 4px solid rgba(255, 255, 255, .22);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .4), 0 0 0 8px rgba(255, 255, 255, .06);
+            animation: logoFloat 5s ease-in-out infinite;
+        }
+
+        @keyframes logoFloat {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg)
+            }
+
+            50% {
+                transform: translateY(-14px) rotate(1.5deg)
+            }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.8rem, 9vw, 5.5rem);
+            font-weight: 900;
+            color: #fff;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 8px 30px rgba(0, 0, 0, .35);
+            animation: slideUp .8s ease-out .2s both;
+        }
+
+        .hero-gradient-word {
+            background: linear-gradient(to right, #fcd34d, #f59e0b, #fb923c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 18px rgba(245, 158, 11, .45));
+        }
+
+        .hero p {
+            font-size: clamp(1.05rem, 2.8vw, 1.35rem);
+            color: #e2e8f0;
+            max-width: 680px;
+            margin: 0 auto 3rem;
+            line-height: 1.85;
+            font-weight: 500;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, .2);
+            animation: slideUp .8s ease-out .4s both;
+        }
+
+        .hero-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            align-items: center;
+            animation: slideUp .8s ease-out .6s both;
+        }
+
+        @media(min-width:580px) {
+            .hero-btns {
+                flex-direction: row;
+                justify-content: center
+            }
+        }
+
+        .btn-gold {
+            display: inline-flex;
+            align-items: center;
+            gap: .75rem;
+            padding: 1.1rem 2.8rem;
+            border-radius: 99px;
+            background: var(--g-gold);
+            color: #fff;
+            font-weight: 800;
+            font-size: 1.1rem;
+            font-family: 'Noto Serif Sinhala', serif;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 12px 30px -5px rgba(245, 158, 11, .55);
+            transition: all .35s cubic-bezier(.175, .885, .32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-gold::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(rgba(255, 255, 255, .25), transparent);
+            transform: translateY(-100%);
+            transition: transform .35s;
+        }
+
+        .btn-gold:hover::before {
+            transform: translateY(0)
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-6px) scale(1.03);
+            box-shadow: 0 20px 45px -5px rgba(245, 158, 11, .65)
+        }
+
+        .btn-ghost {
+            display: inline-flex;
+            align-items: center;
+            gap: .75rem;
+            padding: 1.1rem 2.8rem;
+            border-radius: 99px;
+            background: rgba(255, 255, 255, .1);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, .3);
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.1rem;
+            font-family: 'Noto Serif Sinhala', serif;
+            text-decoration: none;
+            transition: all .35s;
+        }
+
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, .2);
+            border-color: #fff;
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, .15)
+        }
+
+        /* ── STATS STRIP ── */
+        .stats-strip {
+            background: #fff;
+            padding: 2.5rem 0;
+            box-shadow: 0 -4px 0 0 transparent, 0 4px 30px rgba(0, 0, 0, .05);
+            border-top: 4px solid transparent;
+            border-image: var(--g-rainbow) 1;
+            position: relative;
+            z-index: 10;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem
+        }
+
+        @media(min-width:640px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr)
+            }
+        }
+
+        .stat-item {
+            text-align: center
+        }
+
+        .stat-num {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: 2.5rem;
+            background: var(--g-rainbow);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: .35rem;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: .9rem;
+            font-weight: 600
+        }
+
+        /* ── COURSES SECTION ── */
+        .courses {
+            padding: 8rem 0;
+            position: relative
+        }
+
+        .section-tag {
+            display: inline-block;
+            padding: .4rem 1.2rem;
+            border-radius: 99px;
+            font-family: 'Outfit', sans-serif;
+            font-size: .7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .18em;
+            margin-bottom: 1rem;
+        }
+
+        .tag-teal {
+            background: rgba(13, 148, 136, .1);
+            color: var(--teal)
+        }
+
+        .tag-gold {
+            background: rgba(245, 158, 11, .1);
+            color: var(--gold)
+        }
+
+        .tag-purple {
+            background: rgba(124, 58, 237, .1);
+            color: var(--purple)
+        }
+
+        .tag-rose {
+            background: rgba(244, 63, 94, .1);
+            color: var(--rose)
+        }
+
+        .section-head {
+            text-align: center;
+            margin-bottom: 5rem
+        }
+
+        .section-head h2 {
+            font-size: clamp(2.2rem, 5.5vw, 3.5rem);
+            font-weight: 900;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            letter-spacing: -.02em;
+        }
+
+        .rainbow-bar {
+            width: 120px;
+            height: 6px;
+            border-radius: 99px;
+            margin: .75rem auto 1.25rem;
+            background: var(--g-rainbow);
+            box-shadow: 0 4px 12px rgba(13, 148, 136, .3);
+        }
+
+        .section-head p {
+            color: #64748b;
+            font-size: 1.15rem;
+            max-width: 550px;
+            margin: 0 auto
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2.5rem
+        }
+
+        @media(min-width:768px) {
+            .courses-grid {
+                grid-template-columns: repeat(2, 1fr)
+            }
+        }
+
+        .course-card {
+            position: relative;
+            border-radius: 2.5rem;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            transition: all .5s cubic-bezier(.34, 1.56, .64, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Teal card */
+        .card-teal {
+            background: linear-gradient(145deg, #f0fdfa, #ccfbf1);
+            border: 2px solid #99f6e4
+        }
+
+        .card-teal:hover {
+            transform: translateY(-14px) scale(1.02);
+            box-shadow: 0 30px 70px -15px rgba(13, 148, 136, .3)
+        }
+
+        /* Gold card */
+        .card-gold {
+            background: linear-gradient(145deg, #fffbeb, #fef3c7);
+            border: 2px solid #fde68a
+        }
+
+        .card-gold:hover {
+            transform: translateY(-14px) scale(1.02);
+            box-shadow: 0 30px 70px -15px rgba(245, 158, 11, .3)
+        }
+
+        .card-top-bar {
+            height: 8px;
+            width: 100%
+        }
+
+        .card-teal .card-top-bar {
+            background: var(--g-teal)
+        }
+
+        .card-gold .card-top-bar {
+            background: var(--g-gold)
+        }
+
+        .card-body {
+            padding: 3rem 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            flex-grow: 1
+        }
+
+        .card-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            transition: all .5s;
+            position: relative;
+        }
+
+        .card-icon::after {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 2.4rem;
+            opacity: 0;
+            transition: opacity .4s;
+        }
+
+        .card-teal .card-icon {
+            background: var(--g-teal);
+            box-shadow: 0 12px 30px -5px rgba(13, 148, 136, .45)
+        }
+
+        .card-teal .card-icon::after {
+            background: var(--g-teal);
+            filter: blur(12px)
+        }
+
+        .card-gold .card-icon {
+            background: var(--g-gold);
+            box-shadow: 0 12px 30px -5px rgba(245, 158, 11, .45)
+        }
+
+        .card-gold .card-icon::after {
+            background: var(--g-gold);
+            filter: blur(12px)
+        }
+
+        .course-card:hover .card-icon {
+            transform: scale(1.12) rotate(6deg)
+        }
+
+        .course-card:hover .card-icon::after {
+            opacity: .5
+        }
+
+        .card-icon svg {
+            width: 48px;
+            height: 48px;
+            stroke: #fff;
+            fill: none;
+            stroke-width: 1.5
+        }
+
+        .course-card h3 {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--dark);
+            margin-bottom: 1rem
+        }
+
+        .course-card p {
+            color: #475569;
+            line-height: 1.85;
+            margin-bottom: 2rem;
+            flex-grow: 1;
+            font-size: 1.05rem
+        }
+
+        .card-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: .65rem;
+            padding: .9rem 2rem;
+            border-radius: 99px;
+            font-weight: 700;
+            font-size: .95rem;
+            transition: all .35s;
+        }
+
+        .card-teal .card-cta {
+            background: rgba(13, 148, 136, .1);
+            color: var(--teal)
+        }
+
+        .card-teal:hover .card-cta {
+            background: var(--g-teal);
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(13, 148, 136, .35)
+        }
+
+        .card-gold .card-cta {
+            background: rgba(245, 158, 11, .1);
+            color: var(--gold)
+        }
+
+        .card-gold:hover .card-cta {
+            background: var(--g-gold);
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(245, 158, 11, .35)
+        }
+
+        /* ── FEATURES SECTION ── */
+        .features {
+            padding: 8rem 0;
+            background: linear-gradient(160deg, var(--dark) 0%, #0f2d3a 50%, #1a0a2e 100%);
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .features::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--g-rainbow);
+        }
+
+        .feat-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            pointer-events: none
+        }
+
+        .fo1 {
+            width: 400px;
+            height: 400px;
+            background: rgba(13, 148, 136, .35);
+            top: -100px;
+            left: -100px
+        }
+
+        .fo2 {
+            width: 500px;
+            height: 500px;
+            background: rgba(124, 58, 237, .25);
+            bottom: -150px;
+            right: -150px
+        }
+
+        .fo3 {
+            width: 300px;
+            height: 300px;
+            background: rgba(245, 158, 11, .2);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%)
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            position: relative;
+            z-index: 5
+        }
+
+        @media(min-width:768px) {
+            .features-grid {
+                grid-template-columns: repeat(3, 1fr)
+            }
+        }
+
+        .feat-card {
+            padding: 2.5rem;
+            border-radius: 2rem;
+            background: rgba(255, 255, 255, .04);
+            border: 1px solid rgba(255, 255, 255, .07);
+            text-align: center;
+            transition: all .4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feat-card::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            width: 0;
+            transition: width .4s;
+        }
+
+        .feat-card.fc-teal::before {
+            background: var(--g-teal)
+        }
+
+        .feat-card.fc-gold::before {
+            background: var(--g-gold)
+        }
+
+        .feat-card.fc-purple::before {
+            background: var(--g-purple)
+        }
+
+        .feat-card:hover {
+            background: rgba(255, 255, 255, .09);
+            transform: translateY(-10px);
+            border-color: rgba(255, 255, 255, .18);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, .25)
+        }
+
+        .feat-card:hover::before {
+            width: 100%
+        }
+
+        .feat-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .25);
+            transition: transform .4s;
+        }
+
+        .feat-card:hover .feat-icon {
+            transform: scale(1.12) rotate(-5deg)
+        }
+
+        .fi-teal {
+            background: var(--g-teal)
+        }
+
+        .fi-gold {
+            background: var(--g-gold)
+        }
+
+        .fi-purple {
+            background: var(--g-purple)
+        }
+
+        .feat-icon svg {
+            width: 34px;
+            height: 34px;
+            stroke: #fff;
+            fill: none;
+            stroke-width: 1.8
+        }
+
+        .feat-card h4 {
+            font-weight: 800;
+            font-size: 1.25rem;
+            margin-bottom: .75rem;
+            color: #f1f5f9
+        }
+
+        .feat-card p {
+            color: #94a3b8;
+            font-size: .95rem;
+            line-height: 1.75
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            background: #020617;
+            color: #fff;
+            padding: 6rem 0 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--g-rainbow)
+        }
+
+        .footer-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: .15;
+            pointer-events: none
+        }
+
+        .fob1 {
+            width: 400px;
+            height: 400px;
+            background: var(--teal);
+            top: -100px;
+            left: -100px
+        }
+
+        .fob2 {
+            width: 300px;
+            height: 300px;
+            background: var(--purple);
+            bottom: -80px;
+            right: -80px
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3rem;
+            margin-bottom: 4rem
+        }
+
+        @media(min-width:768px) {
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr)
+            }
+        }
+
+        @media(min-width:1024px) {
+            .footer-grid {
+                grid-template-columns: repeat(4, 1fr)
+            }
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: .9rem;
+            margin-bottom: 1.25rem
+        }
+
+        .footer-brand img {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            border: 2px solid rgba(255, 255, 255, .1)
+        }
+
+        .footer-brand span {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.4rem
+        }
+
+        footer h4 {
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            background: var(--g-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        footer p,
+        footer a {
+            color: #94a3b8;
+            font-size: .92rem;
+            line-height: 1.75
+        }
+
+        footer a {
+            text-decoration: none;
+            transition: all .3s;
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            margin-bottom: .85rem
+        }
+
+        footer a:hover {
+            color: var(--teal2);
+            transform: translateX(6px)
+        }
+
+        .social-row {
+            display: flex;
+            gap: .85rem
+        }
+
+        .soc-btn {
+            width: 46px;
+            height: 46px;
+            border-radius: 13px;
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid rgba(255, 255, 255, .06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .35s;
+            margin-bottom: 0;
+        }
+
+        .soc-btn:hover {
+            transform: translateY(-6px) rotate(8deg);
+            border-color: rgba(255, 255, 255, .2)
+        }
+
+        .soc-btn.fb:hover {
+            background: #1877F2;
+            box-shadow: 0 8px 20px rgba(24, 119, 242, .35)
+        }
+
+        .soc-btn.yt:hover {
+            background: #FF0000;
+            box-shadow: 0 8px 20px rgba(255, 0, 0, .35)
+        }
+
+        .soc-btn.tk:hover {
+            background: linear-gradient(45deg, #00f2ea, #ff0050);
+            box-shadow: 0 8px 20px rgba(255, 0, 80, .35)
+        }
+
+        .soc-btn svg {
+            width: 20px;
+            height: 20px;
+            stroke: #fff;
+            fill: none;
+            stroke-width: 2
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, .05);
+            padding-top: 2rem;
+            text-align: center;
+            color: #475569;
+            font-size: .82rem;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .footer-vision {
+            font-style: italic;
+            font-size: .88rem;
+            color: #64748b;
+            border-left: 3px solid var(--gold);
+            padding-left: 1rem;
+            line-height: 1.8;
+        }
+
+        /* ── REVEAL ANIMATIONS ── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all .8s cubic-bezier(.16, 1, .3, 1)
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0)
+        }
+
+        .d1 {
+            transition-delay: .1s
+        }
+
+        .d2 {
+            transition-delay: .2s
+        }
+
+        .d3 {
+            transition-delay: .3s
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        @media(max-width:640px) {
+            .hero h1 {
+                font-size: 2.4rem
+            }
+
+            .hero p {
+                font-size: 1rem
+            }
+
+            .hero-logo {
+                width: 80px;
+                height: 80px;
+                border-radius: 22px
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Animated Background -->
+    <div class="blobs">
+        <div class="blob b1"></div>
+        <div class="blob b2"></div>
+        <div class="blob b3"></div>
+        <div class="blob b4"></div>
+    </div>
+
+    <!-- Navbar -->
+    <header class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-inner">
+                <a href="#home" class="nav-logo" onclick="ss(event,'home')">
+                    <img src="images/logo.png" alt="Nexus Institute">
+                    <div class="brand-wrap">
+                        <span class="brand-name">NEXUS</span>
+                        <span class="brand-sub">Institute</span>
+                    </div>
+                </a>
+                <nav class="nav-links">
+                    <a href="#home" class="nav-link" onclick="ss(event,'home')">මුල් පිටුව</a>
+                    <a href="#courses" class="nav-link" onclick="ss(event,'courses')">පාඨමාලා</a>
+                    <a href="#about" class="nav-link" onclick="ss(event,'about')">අප ගැන</a>
+                    <a href="#contact" class="nav-cta" onclick="ss(event,'contact')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <path
+                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+                        </svg>
+                        සම්බන්ධ වන්න
+                    </a>
+                </nav>
+                <button class="mob-btn" onclick="openMenu()" aria-label="Menu">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mob-menu" id="mobMenu">
+        <button class="mob-close" onclick="closeMenu()">✕</button>
+        <img src="images/logo.png" alt="Nexus"
+            style="width:72px;height:72px;border-radius:22px;margin-bottom:1.5rem;box-shadow:0 10px 30px rgba(0,0,0,.4)">
+        <a href="#home" onclick="ss(event,'home');closeMenu()">මුල් පිටුව</a>
+        <a href="#courses" onclick="ss(event,'courses');closeMenu()">පාඨමාලා</a>
+        <a href="#about" onclick="ss(event,'about');closeMenu()">අප ගැන</a>
+        <a href="#contact" onclick="ss(event,'contact');closeMenu()"
+            style="background:linear-gradient(135deg,#d97706,#fcd34d);border:none">සම්බන්ධ වන්න</a>
+    </div>
+
+    <main>
+        <!-- ── HERO ── -->
+        <section class="hero" id="home">
+            <div class="hero-bg" id="heroBg"></div>
+            <div class="hero-overlay"></div>
+            <div class="hero-radials"></div>
+            <div class="hero-particles" id="heroParticles"></div>
+
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="badge-dot"></span>
+                    2026/2027 නව පන්ති ආරම්භය
+                </div>
+
+                <img src="images/logo.png" alt="Nexus Institute" class="hero-logo">
+
+                <h1>
+                    දැනුමෙන් පිරි<br>
+                    <span class="hero-gradient-word">හෙට ලොවක්</span>
+                </h1>
+
+                <p>උසස් පෙළ සහ ප්‍රාචීන විභාග සඳහා දිවයිනේ විශිෂ්ටතම ඔන්ලයින් අධ්‍යාපන තෝතැන්න.</p>
+
+                <div class="hero-btns">
+                    <a href="#courses" class="btn-gold" onclick="ss(event,'courses')">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                        </svg>
+                        පන්ති වෙත පිවිසෙන්න
+                    </a>
+                    <a href="#contact" class="btn-ghost" onclick="ss(event,'contact')">
+                        වැඩි විස්තර
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── STATS STRIP ── -->
+        <div class="stats-strip">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-item reveal">
+                        <div class="stat-num">500+</div>
+                        <div class="stat-label">සිසුන්</div>
+                    </div>
+                    <div class="stat-item reveal d1">
+                        <div class="stat-num">4</div>
+                        <div class="stat-label">විෂයන්</div>
+                    </div>
+                    <div class="stat-item reveal d2">
+                        <div class="stat-num">3</div>
+                        <div class="stat-label">ප්‍රාචීන මට්ටම්</div>
+                    </div>
+                    <div class="stat-item reveal d3">
+                        <div class="stat-num">100%</div>
+                        <div class="stat-label">ඔන්ලයින්</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── COURSES ── -->
+        <section class="courses" id="courses">
+            <div class="container">
+                <div class="section-head reveal">
+                    <span class="section-tag tag-teal">Our Programmes</span>
+                    <h2>අපගේ පාඨමාලා</h2>
+                    <div class="rainbow-bar"></div>
+                    <p>ඔබේ ජයග්‍රහණය වෙනුවෙන් කැපවූ විශිෂ්ටතම මගපෙන්වීම</p>
+                </div>
+
+                <div class="courses-grid">
+                    <!-- A/L -->
+                    <a href="al.html" class="course-card card-teal reveal d1">
+                        <div class="card-top-bar"></div>
+                        <div class="card-body">
+                            <div class="card-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                                    <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                                </svg>
+                            </div>
+                            <h3>උසස් පෙළ (A/L)</h3>
+                            <p>බුද්ධ ධර්මය, පාලි, සංස්කෘත සහ සිංහල විෂයන් සඳහා විෂය නිර්දේශයට අනුකූලව ගැඹුරු න්‍යායික
+                                දැනුම සහ ප්‍රායෝගික පුහුණුව.</p>
+                            <span class="card-cta">
+                                පාඨමාලාව බලන්න
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <line x1="5" y1="12" x2="19" y2="12" />
+                                    <polyline points="12 5 19 12 12 19" />
+                                </svg>
+                            </span>
+                        </div>
+                    </a>
+
+                    <!-- Pracheena -->
+                    <a href="prachina.html" class="course-card card-gold reveal d2">
+                        <div class="card-top-bar"></div>
+                        <div class="card-body">
+                            <div class="card-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v3h4" />
+                                    <path d="M19 17V5a2 2 0 0 0-2-2H4" />
+                                </svg>
+                            </div>
+                            <h3>ප්‍රාචීන විභාග</h3>
+                            <p>ප්‍රාරම්භ, මධ්‍ය සහ අවසාන මට්ටම් සඳහා විධිමත් මගපෙන්වීම. පෞරාණික භාෂා ඥානය සහ ධර්ම
+                                ශාස්ත්‍රීය දැනුම වර්ධනය කරගන්න.</p>
+                            <span class="card-cta">
+                                පාඨමාලාව බලන්න
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <line x1="5" y1="12" x2="19" y2="12" />
+                                    <polyline points="12 5 19 12 12 19" />
+                                </svg>
+                            </span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── FEATURES ── -->
+        <section class="features" id="about">
+            <div class="feat-orb fo1"></div>
+            <div class="feat-orb fo2"></div>
+            <div class="feat-orb fo3"></div>
+
+            <div class="container" style="position:relative;z-index:5">
+                <div class="section-head reveal" style="color:#fff">
+                    <span class="section-tag" style="background:rgba(255,255,255,.08);color:#5eead4">Our
+                        Strengths</span>
+                    <h2 style="color:#fff">අපගේ සුවිශේෂීත්වය</h2>
+                    <div class="rainbow-bar"></div>
+                    <p style="color:#94a3b8">Nexus Institute සමඟින් ඔබේ අධ්‍යාපන ගමන සුවිශේෂී කරගන්න</p>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feat-card fc-teal reveal d1">
+                        <div class="feat-icon fi-teal">
+                            <svg viewBox="0 0 24 24">
+                                <rect x="2" y="3" width="20" height="14" rx="2" />
+                                <line x1="8" y1="21" x2="16" y2="21" />
+                                <line x1="12" y1="17" x2="12" y2="21" />
+                            </svg>
+                        </div>
+                        <h4>100% ඔන්ලයින්</h4>
+                        <p>දිවයිනේ ඕනෑම තැනක සිට සම්බන්ධ වීමේ පහසුව</p>
+                    </div>
+                    <div class="feat-card fc-gold reveal d2">
+                        <div class="feat-icon fi-gold">
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="8" r="7" />
+                                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+                            </svg>
+                        </div>
+                        <h4>විශිෂ්ට ප්‍රතිඵල</h4>
+                        <p>වසර ගණනාවක විශිෂ්ට ප්‍රතිඵල වාර්තා තබා ඇත</p>
+                    </div>
+                    <div class="feat-card fc-purple reveal d3">
+                        <div class="feat-icon fi-purple">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            </svg>
+                        </div>
+                        <h4>සුහද මගපෙන්වීම</h4>
+                        <p>සිසුවාගේ මට්ටම හඳුනාගෙන සිදුකරන ඉගැන්වීම</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ── FOOTER ── -->
+    <footer id="contact">
+        <div class="footer-orb fob1"></div>
+        <div class="footer-orb fob2"></div>
+        <div class="container" style="position:relative;z-index:5">
+            <div class="footer-grid">
+                <div class="reveal">
+                    <div class="footer-brand">
+                        <img src="images/logo.png" alt="Nexus Institute">
+                        <span class="eng">Nexus Institute</span>
+                    </div>
+                    <p>අසීමාන්තික කැපවීම මගින් විශිෂ්ට ප්‍රතිඵල සොයා යන සොඳුරුතම නෞකාව. Madhubhashini Chandrapala
+                        මෙනවියගේ මෙහෙයවීමෙන්.</p>
+                </div>
+                <div class="reveal d1">
+                    <h4>සම්බන්ධ වන්න</h4>
+                    <a href="tel:0788345643">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+                        </svg>
+                        <span class="eng" style="letter-spacing:.1em;font-weight:600">0788 345 643</span>
+                    </a>
+                    <a href="mailto:madhubhashinichandrapala18@gmail.com">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                            <polyline points="22,6 12,13 2,6" />
+                        </svg>
+                        madhubhashinichandrapala18@gmail.com
+                    </a>
+                </div>
+                <div class="reveal d2">
+                    <h4>සමාජ ජාල</h4>
+                    <div class="social-row">
+                        <a href="https://www.facebook.com/profile.php?id=100075692104528" target="_blank"
+                            class="soc-btn fb">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                            </svg>
+                        </a>
+                        <a href="http://www.youtube.com/@madhubhashinichandrapala4816" target="_blank"
+                            class="soc-btn yt">
+                            <svg viewBox="0 0 24 24">
+                                <path
+                                    d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.08c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.41z" />
+                                <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
+                            </svg>
+                        </a>
+                        <a href="https://www.tiktok.com/@madubhashini.chan0" target="_blank" class="soc-btn tk">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="reveal d3">
+                    <h4>අපගේ දැක්ම</h4>
+                    <p class="footer-vision">"දැනුමෙන් සන්නද්ධ දියුණු සමාජයක් බිහිකිරීම උදෙසා නිරන්තරයෙන් කැපවීම."</p>
+                </div>
+            </div>
+            <div class="footer-bottom">&copy; 2026 Nexus Institute. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll
+        function ss(e, id) { e.preventDefault(); const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }) }
+
+        // Mobile menu
+        function openMenu() { document.getElementById('mobMenu').classList.add('open'); document.body.style.overflow = 'hidden' }
+        function closeMenu() { document.getElementById('mobMenu').classList.remove('open'); document.body.style.overflow = '' }
+
+        // Navbar
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            const y = window.pageYOffset;
+            navbar.classList.toggle('scrolled', y > 50);
+            const bg = document.getElementById('heroBg');
+            if (bg && y < window.innerHeight) bg.style.transform = `translateY(${y * .4}px) scale(1.12)`;
+        }, { passive: true });
+
+        // Scroll reveal
+        const ro = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible') });
+        }, { threshold: .1, rootMargin: '0px 0px -40px 0px' });
+        document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+
+        // Colourful particles
+        (function () {
+            const c = document.getElementById('heroParticles');
+            if (!c) return;
+            const colours = ['#4ade80', '#fcd34d', '#a78bfa', '#fb7185', '#93c5fd', '#fff'];
+            for (let i = 0; i < 50; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.cssText = `
+        left:${Math.random() * 100}%;
+        bottom:${Math.random() * 30}%;
+        width:${2 + Math.random() * 5}px;
+        height:${2 + Math.random() * 5}px;
+        background:${colours[Math.floor(Math.random() * colours.length)]};
+        animation-duration:${4 + Math.random() * 6}s;
+        animation-delay:${Math.random() * 6}s;
+        box-shadow:0 0 6px currentColor;
+      `;
+                c.appendChild(p);
+            }
+        })();
+    </script>
+</body>
+
+</html>

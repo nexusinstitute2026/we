@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="si" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ප්‍රාචීන විභාග | Nexus Institute</title>
+    <meta name="description" content="ප්‍රාරම්භ, මධ්‍ය, අවසාන ප්‍රාචීන විභාග - Nexus Institute.">
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="stylesheet" href="fonts/fonts.css">
+    <style>
+        :root {
+            --teal: #0d9488;
+            --teal2: #2dd4bf;
+            --gold: #f59e0b;
+            --gold2: #fcd34d;
+            --purple: #7c3aed;
+            --purple2: #a78bfa;
+            --rose: #f43f5e;
+            --rose2: #fb7185;
+            --blue: #3b82f6;
+            --blue2: #93c5fd;
+            --dark: #0f172a;
+            --dark2: #1e293b;
+            --g-teal: linear-gradient(135deg, #0d9488, #2dd4bf);
+            --g-gold: linear-gradient(135deg, #d97706, #fcd34d);
+            --g-purple: linear-gradient(135deg, #7c3aed, #a78bfa);
+            --g-rose: linear-gradient(135deg, #f43f5e, #fb923c);
+            --g-blue: linear-gradient(135deg, #3b82f6, #93c5fd);
+            --g-rainbow: linear-gradient(90deg, #0d9488, #3b82f6, #7c3aed, #f43f5e, #f59e0b);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: 'Noto Serif Sinhala', serif;
+            background: #f8fafc;
+            color: #1e293b;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased
+        }
+
+        .eng {
+            font-family: 'Outfit', sans-serif
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1.5rem
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--g-rainbow);
+            border-radius: 99px;
+            border: 2px solid #f1f5f9
+        }
+
+        /* ── BLOBS ── */
+        .blobs {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+            background: linear-gradient(160deg, #f0fdfa 0%, #fdf4ff 50%, #fffbeb 100%)
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: .5;
+            mix-blend-mode: multiply;
+            animation: blobDrift 22s ease-in-out infinite alternate
+        }
+
+        .b1 {
+            width: 600px;
+            height: 600px;
+            background: #99f6e4;
+            top: -15%;
+            left: -10%;
+            animation-duration: 22s
+        }
+
+        .b2 {
+            width: 500px;
+            height: 500px;
+            background: #fde68a;
+            bottom: -15%;
+            right: -10%;
+            animation-duration: 28s;
+            animation-direction: alternate-reverse
+        }
+
+        .b3 {
+            width: 400px;
+            height: 400px;
+            background: #ddd6fe;
+            top: 35%;
+            left: 35%;
+            animation-duration: 25s
+        }
+
+        .b4 {
+            width: 300px;
+            height: 300px;
+            background: #fecdd3;
+            top: 5%;
+            right: 10%;
+            animation-duration: 20s;
+            animation-direction: alternate-reverse
+        }
+
+        @keyframes blobDrift {
+            0% {
+                transform: translate(0, 0) scale(1)
+            }
+
+            100% {
+                transform: translate(50px, -40px) scale(1.08)
+            }
+        }
+
+        /* ── NAVBAR ── */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 200;
+            height: 5rem;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, .85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, .4);
+            transition: all .4s;
+        }
+
+        .navbar.scrolled {
+            box-shadow: 0 4px 30px rgba(0, 0, 0, .07);
+            height: 4.5rem
+        }
+
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            text-decoration: none
+        }
+
+        .nav-logo img {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            border: 2px solid rgba(255, 255, 255, .5);
+            box-shadow: 0 6px 18px rgba(13, 148, 136, .2);
+            transition: transform .35s
+        }
+
+        .nav-logo:hover img {
+            transform: scale(1.1) rotate(-4deg)
+        }
+
+        .brand-wrap {
+            display: flex;
+            flex-direction: column
+        }
+
+        .brand-name {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.4rem;
+            line-height: 1;
+            background: linear-gradient(90deg, var(--dark), var(--teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
+        .brand-sub {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: .58rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: .25em
+        }
+
+        .nav-links {
+            display: none;
+            align-items: center;
+            gap: .4rem
+        }
+
+        @media(min-width:768px) {
+            .nav-links {
+                display: flex
+            }
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #475569;
+            font-weight: 600;
+            font-size: .88rem;
+            padding: .55rem 1.1rem;
+            border-radius: 99px;
+            transition: all .3s
+        }
+
+        .nav-link:hover {
+            color: var(--teal);
+            background: rgba(13, 148, 136, .08)
+        }
+
+        .nav-link.active {
+            color: var(--gold);
+            background: rgba(245, 158, 11, .08);
+            font-weight: 700
+        }
+
+        .nav-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .65rem 1.6rem;
+            border-radius: 99px;
+            background: var(--g-gold);
+            color: #fff;
+            font-weight: 700;
+            font-size: .88rem;
+            text-decoration: none;
+            box-shadow: 0 8px 20px -4px rgba(245, 158, 11, .45);
+            transition: all .3s;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 30px -4px rgba(245, 158, 11, .55)
+        }
+
+        .mob-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border: none;
+            background: transparent;
+            color: var(--dark);
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all .2s
+        }
+
+        .mob-btn:hover {
+            background: rgba(13, 148, 136, .1);
+            color: var(--teal)
+        }
+
+        @media(min-width:768px) {
+            .mob-btn {
+                display: none
+            }
+        }
+
+        .mob-menu {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 300;
+            background: rgba(15, 23, 42, .97);
+            backdrop-filter: blur(24px);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.25rem
+        }
+
+        .mob-menu.open {
+            display: flex;
+            animation: fadeScale .35s ease
+        }
+
+        @keyframes fadeScale {
+            from {
+                opacity: 0;
+                transform: scale(.96)
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1)
+            }
+        }
+
+        .mob-menu a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.4rem;
+            font-weight: 700;
+            padding: 1rem 2.5rem;
+            border-radius: 1.5rem;
+            transition: all .3s;
+            width: 82%;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, .08)
+        }
+
+        .mob-menu a:hover {
+            background: rgba(255, 255, 255, .12);
+            border-color: rgba(255, 255, 255, .25);
+            transform: scale(1.03)
+        }
+
+        .mob-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 48px;
+            height: 48px;
+            border: none;
+            background: rgba(255, 255, 255, .08);
+            color: #fff;
+            font-size: 1.4rem;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all .3s
+        }
+
+        .mob-close:hover {
+            background: var(--rose);
+            transform: rotate(90deg)
+        }
+
+        /* ── HERO ── */
+        .hero {
+            position: relative;
+            min-height: 72vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding-top: 5rem;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: url('images/hero-bg.jpg') center/cover no-repeat;
+            transform: scale(1.12);
+            transition: transform .1s linear;
+            filter: saturate(1.1) brightness(.85);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg,
+                    rgba(15, 23, 42, .9) 0%,
+                    rgba(124, 58, 237, .45) 45%,
+                    rgba(248, 250, 252, .97) 100%);
+        }
+
+        .hero-radials {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse at 80% 10%, rgba(245, 158, 11, .3) 0%, transparent 45%),
+                radial-gradient(ellipse at 15% 85%, rgba(13, 148, 136, .25) 0%, transparent 45%);
+        }
+
+        .hero-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none
+        }
+
+        .ho1 {
+            width: 350px;
+            height: 350px;
+            background: rgba(124, 58, 237, .4);
+            top: -80px;
+            left: -80px;
+            animation: orbFloat 12s ease-in-out infinite alternate
+        }
+
+        .ho2 {
+            width: 300px;
+            height: 300px;
+            background: rgba(245, 158, 11, .3);
+            bottom: -60px;
+            right: -60px;
+            animation: orbFloat 15s ease-in-out infinite alternate-reverse
+        }
+
+        @keyframes orbFloat {
+            0% {
+                transform: translate(0, 0)
+            }
+
+            100% {
+                transform: translate(40px, -40px)
+            }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 5;
+            text-align: center;
+            padding: 4rem 1.5rem
+        }
+
+        .hero-back {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .55rem 1.4rem;
+            border-radius: 99px;
+            background: rgba(255, 255, 255, .12);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, .22);
+            color: rgba(255, 255, 255, .85);
+            text-decoration: none;
+            font-size: .9rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            transition: all .3s;
+        }
+
+        .hero-back:hover {
+            background: rgba(255, 255, 255, .2);
+            color: #fff;
+            transform: translateX(-4px)
+        }
+
+        .hero-back svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 900;
+            margin-bottom: 1.25rem;
+            text-shadow: 0 8px 30px rgba(0, 0, 0, .35);
+            animation: slideUp .7s ease-out;
+        }
+
+        .h1-gold {
+            background: var(--g-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 15px rgba(245, 158, 11, .4))
+        }
+
+        .hero p {
+            color: rgba(255, 255, 255, .85);
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            max-width: 640px;
+            margin: 0 auto;
+            line-height: 1.85;
+            animation: slideUp .7s ease-out .2s both
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        /* ── LEVEL CARDS ── */
+        .levels-section {
+            position: relative;
+            z-index: 20;
+            margin-top: -3.5rem;
+            padding-bottom: 2rem
+        }
+
+        .levels-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 3rem
+        }
+
+        @media(min-width:768px) {
+            .levels-grid {
+                grid-template-columns: repeat(3, 1fr)
+            }
+        }
+
+        .level-card {
+            background: #fff;
+            padding: 2.25rem;
+            border-radius: 2rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, .06);
+            border: 2px solid transparent;
+            transition: all .45s cubic-bezier(.34, 1.56, .64, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            transition: height .4s;
+        }
+
+        .lc-teal::before {
+            background: var(--g-teal)
+        }
+
+        .lc-gold::before {
+            background: var(--g-gold)
+        }
+
+        .lc-purple::before {
+            background: var(--g-purple)
+        }
+
+        .level-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, .1)
+        }
+
+        .level-card:hover::before {
+            height: 7px
+        }
+
+        .level-card.active {
+            border-color: transparent
+        }
+
+        .lc-teal.active {
+            background: linear-gradient(145deg, #f0fdfa, #ccfbf1);
+            border-color: #99f6e4
+        }
+
+        .lc-gold.active {
+            background: linear-gradient(145deg, #fffbeb, #fef3c7);
+            border-color: #fde68a
+        }
+
+        .lc-purple.active {
+            background: linear-gradient(145deg, #faf5ff, #ede9fe);
+            border-color: #c4b5fd
+        }
+
+        .level-num {
+            width: 56px;
+            height: 56px;
+            border-radius: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: 1.3rem;
+            margin-bottom: 1.25rem;
+            transition: transform .35s;
+        }
+
+        .level-card:hover .level-num {
+            transform: scale(1.1) rotate(-5deg)
+        }
+
+        .ln-teal {
+            background: rgba(13, 148, 136, .12);
+            color: var(--teal)
+        }
+
+        .ln-gold {
+            background: rgba(245, 158, 11, .12);
+            color: var(--gold)
+        }
+
+        .ln-purple {
+            background: rgba(124, 58, 237, .12);
+            color: var(--purple)
+        }
+
+        .lc-teal.active .ln-teal {
+            background: var(--g-teal);
+            color: #fff
+        }
+
+        .lc-gold.active .ln-gold {
+            background: var(--g-gold);
+            color: #fff
+        }
+
+        .lc-purple.active .ln-purple {
+            background: var(--g-purple);
+            color: #fff
+        }
+
+        .level-card h3 {
+            font-size: 1.6rem;
+            font-weight: 900;
+            margin-bottom: .5rem;
+            color: var(--dark)
+        }
+
+        .level-card p {
+            color: #64748b;
+            font-size: .9rem;
+            line-height: 1.65;
+            margin-bottom: 1rem
+        }
+
+        .level-cta {
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            font-weight: 700;
+            font-size: .8rem;
+            text-transform: uppercase;
+            letter-spacing: .05em
+        }
+
+        .lc-teal .level-cta {
+            color: var(--teal)
+        }
+
+        .lc-gold .level-cta {
+            color: var(--gold)
+        }
+
+        .lc-purple .level-cta {
+            color: var(--purple)
+        }
+
+        .level-cta svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none
+        }
+
+        /* ── LEVEL CONTENT ── */
+        .level-content {
+            background: rgba(255, 255, 255, .75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, .6);
+            border-radius: 2.5rem;
+            padding: 3rem 2rem;
+            margin-bottom: 4rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, .06);
+            transition: opacity .3s;
+        }
+
+        @media(min-width:768px) {
+            .level-content {
+                padding: 4rem
+            }
+        }
+
+        .lc-header {
+            text-align: center;
+            margin-bottom: 3rem
+        }
+
+        .lc-badge {
+            display: inline-block;
+            padding: .4rem 1.25rem;
+            border-radius: 99px;
+            font-family: 'Outfit', sans-serif;
+            font-size: .7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .15em;
+            margin-bottom: .75rem;
+        }
+
+        .badge-prarambha {
+            background: rgba(13, 148, 136, .1);
+            color: var(--teal)
+        }
+
+        .badge-madya {
+            background: rgba(245, 158, 11, .1);
+            color: var(--gold)
+        }
+
+        .badge-awasana {
+            background: rgba(124, 58, 237, .1);
+            color: var(--purple)
+        }
+
+        .lc-header h2 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            color: var(--dark);
+            margin-bottom: .5rem
+        }
+
+        .lc-header p {
+            color: #64748b;
+            font-size: 1.05rem;
+            max-width: 580px;
+            margin: 0 auto;
+            line-height: 1.75
+        }
+
+        /* Coloured divider */
+        .lc-divider {
+            width: 100px;
+            height: 6px;
+            border-radius: 99px;
+            margin: .75rem auto 1.5rem
+        }
+
+        .div-teal {
+            background: var(--g-teal)
+        }
+
+        .div-gold {
+            background: var(--g-gold)
+        }
+
+        .div-purple {
+            background: var(--g-purple)
+        }
+
+        /* ── SUBJECT CARDS ── */
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.75rem
+        }
+
+        @media(min-width:768px) {
+            .subjects-grid {
+                grid-template-columns: repeat(3, 1fr)
+            }
+        }
+
+        .subj-card {
+            background: #fff;
+            border-radius: 2rem;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, .04);
+            transition: all .45s cubic-bezier(.34, 1.56, .64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .subj-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px
+        }
+
+        .sc-teal::before {
+            background: var(--g-teal)
+        }
+
+        .sc-purple::before {
+            background: var(--g-purple)
+        }
+
+        .sc-rose::before {
+            background: var(--g-rose)
+        }
+
+        .subj-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, .1)
+        }
+
+        .subj-icon {
+            width: 76px;
+            height: 76px;
+            border-radius: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            transition: transform .4s;
+        }
+
+        .subj-card:hover .subj-icon {
+            transform: scale(1.12) rotate(6deg)
+        }
+
+        .si-teal {
+            background: rgba(13, 148, 136, .1)
+        }
+
+        .si-purple {
+            background: rgba(124, 58, 237, .1)
+        }
+
+        .si-rose {
+            background: rgba(244, 63, 94, .1)
+        }
+
+        .si-teal svg {
+            stroke: var(--teal)
+        }
+
+        .si-purple svg {
+            stroke: var(--purple)
+        }
+
+        .si-rose svg {
+            stroke: var(--rose)
+        }
+
+        .subj-icon svg {
+            width: 38px;
+            height: 38px;
+            fill: none;
+            stroke-width: 1.5
+        }
+
+        .subj-card h3 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: .5rem;
+            color: var(--dark)
+        }
+
+        .subj-card p {
+            color: #64748b;
+            font-size: .9rem;
+            margin-bottom: 1.75rem;
+            line-height: 1.65
+        }
+
+        .subj-btn {
+            display: block;
+            width: 100%;
+            padding: .95rem;
+            border-radius: 1.25rem;
+            border: 2px solid;
+            background: transparent;
+            font-family: 'Noto Serif Sinhala', serif;
+            font-weight: 700;
+            font-size: .9rem;
+            text-decoration: none;
+            text-align: center;
+            transition: all .35s;
+            cursor: pointer;
+        }
+
+        .sb-teal {
+            border-color: var(--teal);
+            color: var(--teal)
+        }
+
+        .sb-teal:hover {
+            background: var(--g-teal);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 8px 20px rgba(13, 148, 136, .3)
+        }
+
+        .sb-purple {
+            border-color: var(--purple);
+            color: var(--purple)
+        }
+
+        .sb-purple:hover {
+            background: var(--g-purple);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 8px 20px rgba(124, 58, 237, .3)
+        }
+
+        .sb-rose {
+            border-color: var(--rose);
+            color: var(--rose)
+        }
+
+        .sb-rose:hover {
+            background: var(--g-rose);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 8px 20px rgba(244, 63, 94, .3)
+        }
+
+        /* ── ABOUT SECTION ── */
+        .about {
+            padding: 7rem 0;
+            position: relative
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3.5rem;
+            align-items: center
+        }
+
+        @media(min-width:768px) {
+            .about-grid {
+                grid-template-columns: 1fr 1fr
+            }
+        }
+
+        .about-img-wrap {
+            border-radius: 2.5rem;
+            overflow: hidden;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, .12);
+            transform: rotate(1.5deg);
+            transition: transform .5s;
+            border: 4px solid rgba(255, 255, 255, .8);
+        }
+
+        .about-img-wrap:hover {
+            transform: rotate(0)
+        }
+
+        .about-img-wrap img {
+            width: 100%;
+            display: block
+        }
+
+        .about-text h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 900;
+            color: var(--dark);
+            margin-bottom: 1.25rem
+        }
+
+        .about-text>p {
+            color: #475569;
+            font-size: 1.05rem;
+            line-height: 1.85;
+            margin-bottom: 2rem
+        }
+
+        .about-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: .75rem
+        }
+
+        .about-list li {
+            display: flex;
+            align-items: center;
+            gap: .85rem;
+            color: #475569;
+            font-weight: 600;
+            font-size: 1rem
+        }
+
+        .about-list li .check {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .about-list li:nth-child(1) .check {
+            background: rgba(13, 148, 136, .1)
+        }
+
+        .about-list li:nth-child(2) .check {
+            background: rgba(245, 158, 11, .1)
+        }
+
+        .about-list li:nth-child(3) .check {
+            background: rgba(124, 58, 237, .1)
+        }
+
+        .about-list li:nth-child(1) .check svg {
+            stroke: var(--teal)
+        }
+
+        .about-list li:nth-child(2) .check svg {
+            stroke: var(--gold)
+        }
+
+        .about-list li:nth-child(3) .check svg {
+            stroke: var(--purple)
+        }
+
+        .about-list li .check svg {
+            width: 18px;
+            height: 18px;
+            fill: none;
+            stroke-width: 2.5
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            background: #020617;
+            color: #fff;
+            padding: 6rem 0 2rem;
+            position: relative;
+            overflow: hidden
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--g-rainbow)
+        }
+
+        .footer-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: .15;
+            pointer-events: none
+        }
+
+        .fob1 {
+            width: 400px;
+            height: 400px;
+            background: var(--teal);
+            top: -100px;
+            left: -100px
+        }
+
+        .fob2 {
+            width: 300px;
+            height: 300px;
+            background: var(--purple);
+            bottom: -80px;
+            right: -80px
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3rem;
+            margin-bottom: 4rem
+        }
+
+        @media(min-width:640px) {
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr)
+            }
+        }
+
+        @media(min-width:1024px) {
+            .footer-grid {
+                grid-template-columns: repeat(4, 1fr)
+            }
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: .9rem;
+            margin-bottom: 1.25rem
+        }
+
+        .footer-brand img {
+            width: 48px;
+            height: 48px;
+            border-radius: 13px;
+            border: 2px solid rgba(255, 255, 255, .1)
+        }
+
+        .footer-brand span {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.35rem
+        }
+
+        footer h4 {
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            background: var(--g-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
+        footer p,
+        footer a {
+            color: #94a3b8;
+            font-size: .92rem;
+            line-height: 1.75
+        }
+
+        footer a {
+            text-decoration: none;
+            transition: all .3s;
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            margin-bottom: .85rem
+        }
+
+        footer a:hover {
+            color: var(--teal2);
+            transform: translateX(6px)
+        }
+
+        .social-row {
+            display: flex;
+            gap: .85rem
+        }
+
+        .soc-btn {
+            width: 46px;
+            height: 46px;
+            border-radius: 13px;
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid rgba(255, 255, 255, .06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .35s;
+            margin-bottom: 0
+        }
+
+        .soc-btn:hover {
+            transform: translateY(-6px) rotate(8deg);
+            border-color: rgba(255, 255, 255, .2)
+        }
+
+        .soc-btn.fb:hover {
+            background: #1877F2;
+            box-shadow: 0 8px 20px rgba(24, 119, 242, .35)
+        }
+
+        .soc-btn.yt:hover {
+            background: #FF0000;
+            box-shadow: 0 8px 20px rgba(255, 0, 0, .35)
+        }
+
+        .soc-btn.tk:hover {
+            background: linear-gradient(45deg, #00f2ea, #ff0050);
+            box-shadow: 0 8px 20px rgba(255, 0, 80, .35)
+        }
+
+        .soc-btn svg {
+            width: 20px;
+            height: 20px;
+            stroke: #fff;
+            fill: none;
+            stroke-width: 2
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, .05);
+            padding-top: 2rem;
+            text-align: center;
+            color: #475569;
+            font-size: .82rem;
+            font-family: 'Outfit', sans-serif
+        }
+
+        .footer-vision {
+            font-style: italic;
+            font-size: .88rem;
+            color: #64748b;
+            border-left: 3px solid var(--gold);
+            padding-left: 1rem;
+            line-height: 1.8
+        }
+
+        /* ── SECTION HEADER ── */
+        .section-head {
+            text-align: center;
+            margin-bottom: 4rem
+        }
+
+        .section-tag {
+            display: inline-block;
+            padding: .4rem 1.2rem;
+            border-radius: 99px;
+            font-family: 'Outfit', sans-serif;
+            font-size: .7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .18em;
+            margin-bottom: 1rem
+        }
+
+        .section-head h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 900;
+            color: var(--dark);
+            margin-bottom: .75rem
+        }
+
+        .rainbow-bar {
+            width: 100px;
+            height: 6px;
+            border-radius: 99px;
+            margin: .75rem auto 1.25rem;
+            background: var(--g-rainbow);
+            box-shadow: 0 4px 12px rgba(13, 148, 136, .3)
+        }
+
+        .section-head p {
+            color: #64748b;
+            font-size: 1.1rem;
+            max-width: 520px;
+            margin: 0 auto
+        }
+
+        /* ── REVEAL ── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(35px);
+            transition: all .75s cubic-bezier(.16, 1, .3, 1)
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0)
+        }
+
+        .d1 {
+            transition-delay: .1s
+        }
+
+        .d2 {
+            transition-delay: .2s
+        }
+
+        .d3 {
+            transition-delay: .3s
+        }
+
+        @media(max-width:640px) {
+            .hero h1 {
+                font-size: 2.2rem
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="blobs">
+        <div class="blob b1"></div>
+        <div class="blob b2"></div>
+        <div class="blob b3"></div>
+        <div class="blob b4"></div>
+    </div>
+
+    <!-- Navbar -->
+    <header class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-inner">
+                <a href="index.html" class="nav-logo">
+                    <img src="images/logo.png" alt="Nexus Institute">
+                    <div class="brand-wrap">
+                        <span class="brand-name">NEXUS</span>
+                        <span class="brand-sub">Institute</span>
+                    </div>
+                </a>
+                <nav class="nav-links">
+                    <a href="index.html" class="nav-link">මුල් පිටුව</a>
+                    <a href="al.html" class="nav-link">A/L අංශය</a>
+                    <a href="prachina.html" class="nav-link active">ප්‍රාචීන අංශය</a>
+                    <a href="#contact" class="nav-cta">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <path
+                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+                        </svg>
+                        සම්බන්ධ වන්න
+                    </a>
+                </nav>
+                <button class="mob-btn" onclick="openMenu()" aria-label="Menu">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mob-menu" id="mobMenu">
+        <button class="mob-close" onclick="closeMenu()">✕</button>
+        <img src="images/logo.png" alt="Nexus"
+            style="width:68px;height:68px;border-radius:20px;margin-bottom:1.5rem;box-shadow:0 10px 30px rgba(0,0,0,.4)">
+        <a href="index.html" onclick="closeMenu()">මුල් පිටුව</a>
+        <a href="al.html" onclick="closeMenu()">A/L අංශය</a>
+        <a href="prachina.html" onclick="closeMenu()"
+            style="background:rgba(245,158,11,.2);border-color:rgba(245,158,11,.4)">ප්‍රාචීන අංශය</a>
+        <a href="#contact" onclick="closeMenu()"
+            style="background:linear-gradient(135deg,#d97706,#fcd34d);border:none">සම්බන්ධ වන්න</a>
+    </div>
+
+    <main>
+        <!-- Hero -->
+        <section class="hero" id="home">
+            <div class="hero-bg" id="heroBg"></div>
+            <div class="hero-overlay"></div>
+            <div class="hero-radials"></div>
+            <div class="hero-orb ho1"></div>
+            <div class="hero-orb ho2"></div>
+            <div class="hero-content">
+                <a href="index.html" class="hero-back">
+                    <svg viewBox="0 0 24 24" stroke-width="2.5">
+                        <line x1="19" y1="12" x2="5" y2="12" />
+                        <polyline points="12 19 5 12 12 5" />
+                    </svg>
+                    ආපසු මුල් පිටුවට
+                </a>
+                <h1 style="color:#fff"><span class="h1-gold">ප්‍රාචීන</span> විභාග</h1>
+                <p>ප්‍රාචීන භාෂෝපකාර සමාගම මගින් පවත්වනු ලබන ප්‍රාරම්භ, මධ්‍ය සහ අවසාන විභාග සඳහා විශිෂ්ටතම මගපෙන්වීම.
+                </p>
+            </div>
+        </section>
+
+        <!-- Levels + Content -->
+        <div class="container" id="courses">
+            <!-- Level Selector -->
+            <div class="levels-grid reveal" style="margin-top:-3.5rem;padding-top:0">
+                <div class="level-card lc-teal active" id="card-prarambha" onclick="showLevel('prarambha')">
+                    <div class="level-num ln-teal">01</div>
+                    <h3>ප්‍රාරම්භ</h3>
+                    <p>මූලික භාෂා ඥානය සහ සාහිත්‍ය ප්‍රවේශය.</p>
+                    <div class="level-cta">
+                        විස්තර බලන්න
+                        <svg viewBox="0 0 24 24" stroke-width="2.5">
+                            <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="level-card lc-gold" id="card-madya" onclick="showLevel('madya')">
+                    <div class="level-num ln-gold">02</div>
+                    <h3>මධ්‍ය</h3>
+                    <p>විෂය කරුණු ගැඹුරින් සහ විචාරාත්මකව.</p>
+                    <div class="level-cta">
+                        විස්තර බලන්න
+                        <svg viewBox="0 0 24 24" stroke-width="2.5">
+                            <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="level-card lc-purple" id="card-awasana" onclick="showLevel('awasana')">
+                    <div class="level-num ln-purple">03</div>
+                    <h3>අවසාන</h3>
+                    <p>පණ්ඩිත උපාධිය සඳහා සුදුසුකම් ලබන උසස් මට්ටම.</p>
+                    <div class="level-cta">
+                        විස්තර බලන්න
+                        <svg viewBox="0 0 24 24" stroke-width="2.5">
+                            <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Level Content -->
+            <div class="level-content reveal" id="levelContent">
+                <div class="lc-header">
+                    <span class="lc-badge badge-prarambha" id="lcBadge">PRARAMBHA LEVEL</span>
+                    <h2 id="lcTitle">ප්‍රාරම්භ විභාගය</h2>
+                    <div class="lc-divider div-teal" id="lcDivider"></div>
+                    <p id="lcDesc">ආරම්භක සිසුන් සඳහා මූලික දැනුම.</p>
+                </div>
+                <div class="subjects-grid">
+                    <!-- Pali -->
+                    <div class="subj-card sc-teal reveal">
+                        <div class="subj-icon si-teal">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                            </svg>
+                        </div>
+                        <h3>පාලි</h3>
+                        <p>පාලි ව්‍යාකරණ, සාහිත්‍ය සහ පෙළ ගැඹුරින් අධ්‍යයනය.</p>
+                        <a id="link-pali" href="#" target="_blank" class="subj-btn sb-teal">පාඨමාලා විස්තර</a>
+                    </div>
+                    <!-- Sanskrit -->
+                    <div class="subj-card sc-purple reveal d1">
+                        <div class="subj-icon si-purple">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v3h4" />
+                                <path d="M19 17V5a2 2 0 0 0-2-2H4" />
+                            </svg>
+                        </div>
+                        <h3>සංස්කෘත</h3>
+                        <p>ලෞකික සහ වෛදික සංස්කෘත සාහිත්‍ය ප්‍රවේශය.</p>
+                        <a id="link-sanskrit" href="#" target="_blank" class="subj-btn sb-purple">පාඨමාලා විස්තර</a>
+                    </div>
+                    <!-- Sinhala -->
+                    <div class="subj-card sc-rose reveal d2">
+                        <div class="subj-icon si-rose">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 19l7-7 3 3-7 7-3-3z" />
+                                <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
+                                <path d="M2 2l7.586 7.586" />
+                                <circle cx="11" cy="11" r="2" />
+                            </svg>
+                        </div>
+                        <h3>සිංහල</h3>
+                        <p>සම්භාව්‍ය සිංහල ව්‍යාකරණ සහ සාහිත්‍යය.</p>
+                        <a id="link-sinhala" href="#" target="_blank" class="subj-btn sb-rose">පාඨමාලා විස්තර</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Section -->
+        <section class="about" id="about">
+            <div class="container">
+                <div class="section-head reveal">
+                    <span class="section-tag" style="background:rgba(13,148,136,.08);color:var(--teal)">About Us</span>
+                    <h2>අප ගැන</h2>
+                    <div class="rainbow-bar"></div>
+                    <p>Nexus Institute — ශ්‍රී ලංකාවේ ප්‍රාචීන අධ්‍යාපනය නංවාලීම සඳහා කැපවූ ආයතනය</p>
+                </div>
+                <div class="about-grid">
+                    <div class="about-img-wrap reveal">
+                        <img src="images/about-bg.jpg" alt="About Nexus Institute">
+                    </div>
+                    <div class="about-text reveal d1">
+                        <h2>ශ්‍රේෂ්ඨ<br><span
+                                style="background:var(--g-teal);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">අධ්‍යාපනය</span>
+                        </h2>
+                        <p>Nexus Institute යනු ශ්‍රී ලංකාවේ ප්‍රාචීන අධ්‍යාපනය නංවාලීම උදෙසා කැපවූ අද්විතීය ආයතනයකි.
+                            සිංහල, පාලි සහ සංස්කෘත භාෂා පිළිබඳ ගැඹුරු අවබෝධයක් ලබා දෙමින් අනාගත පරපුරට දේශීය දැනුම දායාද
+                            කිරීම අපගේ පරමාර්ථයයි.</p>
+                        <ul class="about-list">
+                            <li>
+                                <div class="check"><svg viewBox="0 0 24 24">
+                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                        <polyline points="22 4 12 14.01 9 11.01" />
+                                    </svg></div>
+                                පළපුරුදු ආචාර්ය මණ්ඩලය
+                            </li>
+                            <li>
+                                <div class="check"><svg viewBox="0 0 24 24">
+                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                        <polyline points="22 4 12 14.01 9 11.01" />
+                                    </svg></div>
+                                නවීන ඉගැන්වීම් ක්‍රමවේද
+                            </li>
+                            <li>
+                                <div class="check"><svg viewBox="0 0 24 24">
+                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                        <polyline points="22 4 12 14.01 9 11.01" />
+                                    </svg></div>
+                                අංග සම්පූර්ණ විෂය නිර්දේශ ආවරණය
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="footer-orb fob1"></div>
+        <div class="footer-orb fob2"></div>
+        <div class="container" style="position:relative;z-index:5">
+            <div class="footer-grid">
+                <div class="reveal">
+                    <div class="footer-brand"><img src="images/logo.png" alt="Nexus"><span class="eng">Nexus
+                            Institute</span></div>
+                    <p>අසීමාන්තික කැපවීම මගින් විශිෂ්ට ප්‍රතිඵල සොයා යන සොඳුරුතම නෞකාව. Madhubhashini Chandrapala
+                        මෙනවියගේ මෙහෙයවීමෙන්.</p>
+                </div>
+                <div class="reveal d1">
+                    <h4>සම්බන්ධ වන්න</h4>
+                    <a href="tel:0788345643"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path
+                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+                        </svg><span class="eng" style="letter-spacing:.1em;font-weight:600">0788 345 643</span></a>
+                    <a href="mailto:madhubhashinichandrapala18@gmail.com"><svg width="18" height="18"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                            <polyline points="22,6 12,13 2,6" />
+                        </svg>madhubhashinichandrapala18@gmail.com</a>
+                </div>
+                <div class="reveal d2">
+                    <h4>සමාජ ජාල</h4>
+                    <div class="social-row">
+                        <a href="https://www.facebook.com/profile.php?id=100075692104528" target="_blank"
+                            class="soc-btn fb"><svg viewBox="0 0 24 24">
+                                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                            </svg></a>
+                        <a href="http://www.youtube.com/@madhubhashinichandrapala4816" target="_blank"
+                            class="soc-btn yt"><svg viewBox="0 0 24 24">
+                                <path
+                                    d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.08c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.41z" />
+                                <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
+                            </svg></a>
+                        <a href="https://www.tiktok.com/@madubhashini.chan0" target="_blank" class="soc-btn tk"><svg
+                                viewBox="0 0 24 24">
+                                <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+                            </svg></a>
+                    </div>
+                </div>
+                <div class="reveal d3">
+                    <h4>අපගේ දැක්ම</h4>
+                    <p class="footer-vision">"දැනුමෙන් සන්නද්ධ දියුණු සමාජයක් බිහිකිරීම උදෙසා නිරන්තරයෙන් කැපවීම."</p>
+                </div>
+            </div>
+            <div class="footer-bottom">&copy; 2026 Nexus Institute. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <script>
+        const LEVELS = {
+            prarambha: {
+                title: 'ප්‍රාරම්භ විභාගය', desc: 'ආරම්භක සිසුන් සඳහා මූලික දැනුම සහ භාෂා ප්‍රවේශය.',
+                badge: 'PRARAMBHA LEVEL', badgeCls: 'badge-prarambha', divCls: 'div-teal',
+                links: { pali: 'https://sites.google.com/view/pra-pl/home', sanskrit: 'https://sites.google.com/view/pra-san/home', sinhala: 'https://sites.google.com/view/pra-sin/home' }
+            },
+            madya: {
+                title: 'මධ්‍ය විභාගය', desc: 'විෂය කරුණු ගැඹුරින් අධ්‍යයනය කරමින් දැනුම වර්ධනය කරන අන්තර් මට්ටම.',
+                badge: 'MADYA LEVEL', badgeCls: 'badge-madya', divCls: 'div-gold',
+                links: { pali: 'https://sites.google.com/view/madh-pl/home', sanskrit: 'https://sites.google.com/view/madh-sa/home', sinhala: 'https://sites.google.com/view/madh-si/home' }
+            },
+            awasana: {
+                title: 'අවසාන විභාගය', desc: 'ශ්‍රී ලංකා ප්‍රාචීන භාෂෝපකාර සමාගමේ පණ්ඩිත උපාධිය දක්වා යන උසස්ම මට්ටම.',
+                badge: 'AWASANA LEVEL', badgeCls: 'badge-awasana', divCls: 'div-purple',
+                links: { pali: 'https://sites.google.com/view/fin-pl/home', sanskrit: 'https://sites.google.com/view/fin-sa/home', sinhala: 'https://sites.google.com/view/fin-si/home' }
+            }
+        };
+
+        function showLevel(key) {
+            const d = LEVELS[key]; const lc = document.getElementById('levelContent');
+            // Update cards
+            ['prarambha', 'madya', 'awasana'].forEach(k => {
+                const c = document.getElementById('card-' + k);
+                c.classList.remove('active');
+            });
+            document.getElementById('card-' + key).classList.add('active');
+            // Fade update
+            lc.style.opacity = '.3';
+            setTimeout(() => {
+                document.getElementById('lcTitle').textContent = d.title;
+                document.getElementById('lcDesc').textContent = d.desc;
+                const badge = document.getElementById('lcBadge');
+                badge.textContent = d.badge;
+                badge.className = 'lc-badge ' + d.badgeCls;
+                const div = document.getElementById('lcDivider');
+                div.className = 'lc-divider ' + d.divCls;
+                document.getElementById('link-pali').href = d.links.pali;
+                document.getElementById('link-sanskrit').href = d.links.sanskrit;
+                document.getElementById('link-sinhala').href = d.links.sinhala;
+                lc.style.opacity = '1';
+            }, 220);
+        }
+
+        // Navbar
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            navbar.classList.toggle('scrolled', window.pageYOffset > 50);
+            const bg = document.getElementById('heroBg');
+            if (bg && window.pageYOffset < window.innerHeight) bg.style.transform = `translateY(${window.pageYOffset * .35}px) scale(1.12)`;
+        }, { passive: true });
+
+        // Mobile menu
+        function openMenu() { document.getElementById('mobMenu').classList.add('open'); document.body.style.overflow = 'hidden' }
+        function closeMenu() { document.getElementById('mobMenu').classList.remove('open'); document.body.style.overflow = '' }
+
+        // Reveal
+        const ro = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible') });
+        }, { threshold: .08 });
+        document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+
+        // Init
+        showLevel('prarambha');
+    </script>
+</body>
+
+</html>
