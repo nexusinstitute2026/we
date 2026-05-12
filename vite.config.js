@@ -4,6 +4,7 @@ import { resolve } from 'path';
 export default defineConfig({
   base: '/we/',
   build: {
+    target: 'esnext',
     outDir: 'dist',
     rollupOptions: {
       input: {
