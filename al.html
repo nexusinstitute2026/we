@@ -1213,7 +1213,7 @@
                     <a href="al.html" class="nav-link active">A/L අංශය</a>
                     <a href="prachina.html" class="nav-link">ප්‍රාචීන අංශය</a>
                     <a href="#contact" class="nav-cta">සම්බන්ධ වන්න</a>
-                    <a href="/login.html" class="nav-cta" style="background:var(--g-purple);">ලොග් වන්න</a>
+                    <a href="login.html" class="nav-cta" style="background:var(--g-purple);">ලොග් වන්න</a>
                 </nav>
                 <button class="mob-btn" onclick="openMenu()" aria-label="Menu">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -1238,7 +1238,7 @@
         <a href="prachina.html" onclick="closeMenu()">ප්‍රාචීන අංශය</a>
         <a href="#contact" onclick="closeMenu()"
             style="background:linear-gradient(135deg,#0d9488,#2dd4bf);border:none">සම්බන්ධ වන්න</a>
-        <a href="/login.html" onclick="closeMenu()"
+        <a href="login.html" onclick="closeMenu()"
             style="background:linear-gradient(135deg,#7c3aed,#a78bfa);border:none;margin-top:-0.5rem">ලොග් වන්න</a>
     </div>
 
@@ -1417,7 +1417,7 @@
             const grid = document.getElementById('cardsGrid');
             grid.innerHTML = active.classes.map(c => {
                 const upcoming = c.time.includes('ළඟදීම');
-                const href = upcoming && !c.link ? `https://wa.me/94788345643?text=${c.title}` : '/login.html';
+                const href = upcoming && !c.link ? `https://wa.me/94788345643?text=${c.title}` : 'login.html';
                 const btnCls = upcoming && !c.link ? 'ca-inactive' : `ca-active ca-${active.id}`;
                 const btnTxt = upcoming && !c.link ? 'ළඟදීම ආරම්භ වේ' : 'පන්තියට එක්වන්න';
                 return `
