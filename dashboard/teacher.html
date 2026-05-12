@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus LMS | Teacher Dashboard</title>
+<link rel="icon" type="image/png" href="/images/logo.png">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/dashboard.css">
+<style>
+.subject-card { background: white; border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+.subject-header { border-bottom: 2px solid #f1f5f9; padding-bottom: 1rem; margin-bottom: 1rem; }
+.subject-title { font-size: 1.25rem; font-weight: 800; color: var(--teal); display: flex; align-items: center; gap: 0.5rem; }
+.course-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--radius-md); margin-bottom: 0.8rem; flex-wrap: wrap; gap: 1rem; }
+.sheet-input { display: flex; gap: 0.5rem; align-items: center; flex: 1; min-width: 250px; }
+.sheet-input input { flex: 1; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: var(--radius-sm); font-size: 0.9rem; }
+.hover-card:hover { border-color: var(--teal) !important; transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+</style>
+</head>
+<body>
+<div class="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div class="dash-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand"><a href="/dashboard/teacher.html"><img src="/images/logo.png" alt="Nexus"><div><div class="brand-name eng">NEXUS</div><div class="brand-sub">LMS</div></div></a></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">ප්‍රධාන</div>
+      <a class="nav-item active" data-page="home" href="/dashboard/teacher.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a>
+      <a class="nav-item" href="/teacher/assignments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>Assignments</a>
+      <a class="nav-item" data-page="quizzes" href="/teacher/quiz-builder.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Quiz Builder</a>
+      <a class="nav-item" href="/teacher/activity.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Activity Marks</a>
+      <a class="nav-item" href="/teacher/progress.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Student Progress</a>
+      <a class="nav-item" data-page="reports" href="/teacher/reports.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Quiz Reports</a>
+      <div class="nav-section-label">දැනුම්දීම්</div>
+      <a class="nav-item" href="#" id="notif-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>දැනුම්දීම් <span class="nav-badge hidden" id="nav-notif-badge">0</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-chip" id="logout-btn">
+        <div class="user-avatar" id="user-avatar">T</div>
+        <div class="user-info"><div class="user-name" id="user-name">Loading...</div><div class="user-role" id="user-role">ගුරුවරයා</div></div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2" width="18" height="18"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="dash-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <h1 class="page-title">ගුරු <span>Dashboard</span></h1>
+      </div>
+      <div class="topbar-right">
+        <div class="notif-btn" id="notif-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-count hidden" id="notif-count">0</span></div>
+      </div>
+    </header>
+    <main class="dash-content">
+      <div class="stats-grid">
+        <div class="stat-card reveal"><div class="stat-icon si-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div class="stat-info"><div class="stat-num" id="stat-subjects">—</div><div class="stat-label">මගේ විෂයයන්</div></div></div>
+        <div class="stat-card reveal"><div class="stat-icon si-purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg></div><div class="stat-info"><div class="stat-num" id="stat-quizzes">—</div><div class="stat-label">Quizzes</div></div></div>
+        <div class="stat-card reveal"><div class="stat-icon si-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="stat-info"><div class="stat-num" id="stat-students">—</div><div class="stat-label">මේ මාසයට ගෙවූ</div></div></div>
+      </div>
+      <div class="section-header">
+        <h2>මගේ <span>විෂයයන් සහ පන්ති</span></h2>
+      </div>
+      <div id="subjects-container"><div class="skeleton" style="height:200px;border-radius:1.5rem"></div></div>
+    </main>
+  </div>
+  <div class="notif-panel" id="notif-panel">
+    <div class="notif-panel-header"><h3>දැනුම්දීම්</h3><button class="btn btn-sm btn-outline" id="mark-all-read">සියල්ල කියෙව්වා</button></div>
+    <div class="notif-list" id="notif-list"></div>
+  </div>
+</div>
+<div id="toast-container" class="toast-container"></div>
+<script type="module">
+import { requireAuth, logout, populateUserChip } from '/js/auth.js';
+import { getTeacherSubjects, syncCourseSheet } from '/js/admin.js';
+import { getTeacherQuizzes } from '/js/quiz.js';
+import { getNotifications, getUnreadCount, markAllRead, updateNotifBadge, renderNotifications, subscribeNotifications, initNotificationClicks } from '/js/notifications.js';
+import { initSidebar, initNotifPanel, showToast, initReveal } from '/js/ui.js';
+import supabase from '/js/supabase.js';
+
+const profile = await requireAuth(['teacher', 'admin']);
+if (!profile) throw new Error('Not authorized');
+populateUserChip(profile); initSidebar(); initNotifPanel(); initReveal(); initNotificationClicks('notif-list');
+document.getElementById('logout-btn').addEventListener('click', logout);
+document.getElementById('notif-nav').addEventListener('click', e => { e.preventDefault(); document.getElementById('notif-panel').classList.toggle('active'); });
+
+const currentYear = new Date().getFullYear();
+const currentMonth = new Date().getMonth() + 1;
+
+// Safe fetch helper
+async function safeFetch(promise, fallback = []) {
+  try { return await promise; }
+  catch (e) { console.error('Fetch error:', e); return fallback; }
+}
+
+const subjects = await safeFetch(getTeacherSubjects(profile.id), []);
+const quizzes = await safeFetch(getTeacherQuizzes(profile.id), []);
+const notifications = await safeFetch(getNotifications(profile.id), []);
+const unread = await safeFetch(getUnreadCount(profile.id), 0);
+
+// Get students who have approved payments for this month for teacher's courses
+const teacherCourseIds = subjects.map(s => s.courses?.map(c => c.id)).flat().filter(Boolean);
+let activeStudentsCount = 0;
+let enrollments = [];
+let paymentCourses = [];
+
+if (teacherCourseIds.length > 0) {
+  const { data: payData } = await supabase
+    .from('payment_courses')
+    .select('course_id, payments!inner(student_id)')
+    .in('course_id', teacherCourseIds)
+    .eq('payments.status', 'approved')
+    .eq('payments.paid_year', currentYear)
+    .eq('payments.paid_month', currentMonth);
+  
+  if (payData) {
+    paymentCourses = payData;
+    const uniqueStudents = new Set(payData.map(p => p.payments.student_id));
+    activeStudentsCount = uniqueStudents.size;
+  }
+
+  const { data: enData } = await supabase
+    .from('enrollments')
+    .select('course_id, student_id')
+    .in('course_id', teacherCourseIds);
+  
+  if (enData) {
+    enrollments = enData;
+  }
+}
+
+if (document.getElementById('stat-subjects')) document.getElementById('stat-subjects').textContent = subjects.length;
+if (document.getElementById('stat-quizzes')) document.getElementById('stat-quizzes').textContent = quizzes.length;
+if (document.getElementById('stat-students')) document.getElementById('stat-students').textContent = activeStudentsCount;
+subscribeNotifications(profile.id, async (newNotif) => {
+  showToast(newNotif.message, 'info');
+  const notifs = await getNotifications(profile.id);
+  const cnt = await getUnreadCount(profile.id);
+  renderNotifications(notifs, 'notif-list');
+  updateNotifBadge(cnt);
+  const nb = document.getElementById('nav-notif-badge');
+  if (nb) {
+    if (cnt > 0) { nb.textContent = cnt; nb.classList.remove('hidden'); }
+    else nb.classList.add('hidden');
+  }
+});
+document.getElementById('notif-list').dataset.userId = profile.id;
+renderNotifications(notifications, 'notif-list');
+document.getElementById('mark-all-read').addEventListener('click', async () => { await markAllRead(profile.id); updateNotifBadge(0); showToast('සියල්ල කියෙව්වා','success'); });
+
+const container = document.getElementById('subjects-container');
+if (!subjects.length) {
+  container.innerHTML = `<div class="empty-state"><h3>විෂයයන් නොමැත</h3><p>Admin විසින් ඔබට විෂයයන් assign කළ යුතුය.</p></div>`;
+} else {
+  let html = '';
+  for (const sub of subjects) {
+    html += `<div class="subject-card reveal" style="padding:1.5rem; background:#fff; border-radius:1rem; margin-bottom:2rem; box-shadow:0 10px 25px -5px rgba(0,0,0,0.05); border:1px solid #e2e8f0;">
+      <div style="border-bottom: 2px solid #f1f5f9; padding-bottom: 1rem; margin-bottom: 1.5rem; display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="font-size:1.4rem; font-weight:800; color:var(--dark); display:flex; align-items:center; gap:0.5rem;">
+          <span style="font-size:1.5rem">📚</span> ${sub.name}
+        </h2>
+        <span style="font-size:0.8rem; font-weight:600; color:var(--teal); background:var(--g-teal); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">
+          ${sub.category?.section?.name} / ${sub.category?.name}
+        </span>
+      </div>
+      <div style="display:grid; gap:1.5rem; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));">`;
+    
+    for (const c of sub.courses) {
+      const regCount = enrollments.filter(e => e.course_id === c.id).length;
+      const payCount = paymentCourses.filter(p => p.course_id === c.id).length;
+
+      html += `<div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:1rem; overflow:hidden; transition:all 0.3s;" class="hover-card">
+        <div style="padding:1.25rem; background:#fff; border-bottom:1px solid #e2e8f0;">
+          <h3 style="font-size:1.15rem; font-weight:800; color:var(--dark); margin-bottom:1rem;">${c.name}</h3>
+          <div style="display:flex; gap:1rem; margin-bottom:1rem;">
+            <div style="flex:1; background:#f0fdfa; padding:0.5rem; border-radius:0.5rem; text-align:center;">
+              <div style="font-size:1.2rem; font-weight:800; color:var(--teal);">${regCount}</div>
+              <div style="font-size:0.7rem; color:var(--text-muted); font-weight:600;">ලියාපදිංචි</div>
+            </div>
+            <div style="flex:1; background:#fefce8; padding:0.5rem; border-radius:0.5rem; text-align:center;">
+              <div style="font-size:1.2rem; font-weight:800; color:var(--gold);">${payCount}</div>
+              <div style="font-size:0.7rem; color:var(--text-muted); font-weight:600;">ගෙවීම් කළ</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:0.5rem;">
+            <a href="/pages/course.html?id=${c.id}" class="btn btn-sm btn-outline" style="flex:1; justify-content:center;">👁️ බලන්න</a>
+            <a href="/teacher/quiz-builder.html?course=${c.id}" class="btn btn-sm btn-purple" style="flex:1; justify-content:center;">📝 Quiz</a>
+          </div>
+        </div>
+        
+        <div style="padding:1rem;">
+          <button onclick="toggleMonths('months-${c.id}')" style="width:100%; background:none; border:none; color:var(--teal); font-weight:700; font-family:inherit; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
+            🗓️ මාස කළමනාකරණය (${c.course_months?.length || 0})
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          
+          <div id="months-${c.id}" style="display:none; margin-top:1rem;">`;
+      
+      if (!c.course_months || c.course_months.length === 0) {
+        html += `<p style="font-size:0.85rem;color:var(--text-muted); text-align:center;">මාස කිසිවක් එක් කර නොමැත.</p>`;
+      } else {
+        const sortedMonths = c.course_months.sort((a,b) => {
+          if (a.year !== b.year) return a.year - b.year;
+          return a.month_number - b.month_number;
+        });
+
+        for (const m of sortedMonths) {
+          html += `
+            <div style="background:#fff; border:1px solid #cbd5e1; border-radius:0.5rem; padding:0.75rem; margin-bottom:0.5rem;">
+              <div style="font-weight:700; font-size:0.9rem; color:var(--dark3); margin-bottom:0.5rem;">${m.year} - ${m.name}</div>
+              <div style="display:flex; gap:0.5rem;">
+                <input type="url" id="sheet-${m.id}" value="${m.google_sheet_url || ''}" placeholder="Google Sheet Link" style="flex:1; padding:0.4rem; border:1px solid #e2e8f0; border-radius:0.4rem; font-size:0.8rem; outline:none;">
+                <button class="btn btn-teal" style="padding:0.4rem 0.8rem; font-size:0.8rem; border-radius:0.4rem;" onclick="saveAndSyncSheet('${c.id}', '${m.id}')">Sync</button>
+              </div>
+            </div>
+          `;
+        }
+      }
+      html += `</div></div></div>`;
+    }
+    html += `</div></div>`;
+  }
+  container.innerHTML = html;
+  initReveal();
+}
+
+window.toggleMonths = (id) => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  }
+};
+
+window.saveAndSyncSheet = async (courseId, courseMonthId) => {
+  const url = document.getElementById(`sheet-${courseMonthId}`).value.trim();
+  if (!url) return showToast('Link එකක් ලබා දෙන්න', 'warning');
+  
+  try {
+    showToast('Sync වෙමින් පවතී... කරුණාකර රැඳී සිටින්න.', 'warning');
+    
+    // 1. Save URL to DB
+    await supabase.from('course_months').update({ google_sheet_url: url }).eq('id', courseMonthId);
+    
+    // 2. Trigger Client-Side Google Sheet Fetch
+    try {
+      const res = await syncCourseSheet(courseId, courseMonthId, url);
+      showToast(`සාර්ථකව පන්ති ${res.count} ක් Sync කරන ලදී!`, 'success');
+    } catch(err) {
+      console.error(err);
+      showToast(err.message, 'error');
+    }
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+};
+
+</script>
+</body>
+</html>

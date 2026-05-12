@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus LMS | Student Progress</title>
+<link rel="icon" type="image/png" href="/images/logo.png">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/dashboard.css">
+<style>
+.student-list-item{display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;border:2px solid #e2e8f0;border-radius:var(--radius-md);cursor:pointer;transition:all .2s;margin-bottom:.6rem;background:#fff}
+.student-list-item:hover,.student-list-item.selected{border-color:var(--teal);background:rgba(13,148,136,.04)}
+.student-avatar{width:44px;height:44px;border-radius:50%;background:var(--g-teal);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;flex-shrink:0}
+.pill{display:inline-block;padding:.2rem .65rem;border-radius:1rem;font-size:.75rem;font-weight:700}
+.pill-green{background:rgba(13,148,136,.12);color:var(--teal)}
+.pill-gold{background:rgba(245,158,11,.12);color:var(--gold)}
+.pill-rose{background:rgba(244,63,94,.1);color:var(--rose)}
+.pill-gray{background:#f1f5f9;color:var(--text-muted)}
+.section-box{background:#fff;border:1px solid #e2e8f0;border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.25rem}
+.session-row{display:flex;align-items:center;justify-content:space-between;padding:.7rem 1rem;border:1px solid #e2e8f0;border-radius:.75rem;margin-bottom:.5rem;gap:1rem;flex-wrap:wrap}
+.toggle-btn{padding:.35rem 1rem;border-radius:2rem;font-size:.82rem;font-weight:700;border:none;cursor:pointer;transition:all .2s}
+.toggle-present{background:rgba(13,148,136,.12);color:var(--teal)}
+.toggle-present:hover{background:var(--g-teal);color:#fff}
+.toggle-absent{background:rgba(244,63,94,.08);color:var(--rose)}
+.toggle-absent:hover{background:rgba(244,63,94,.2)}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:700px){.detail-grid{grid-template-columns:1fr}}
+.pbar{background:#f1f5f9;border-radius:1rem;height:10px;overflow:hidden;flex:1}
+.pfill{height:100%;border-radius:1rem;background:var(--g-teal);transition:width .5s}
+.back-btn{display:inline-flex;align-items:center;gap:.4rem;color:var(--teal);font-weight:700;cursor:pointer;padding:.4rem 0;font-size:.95rem}
+</style>
+</head>
+<body>
+<div class="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div class="dash-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand"><a href="/dashboard/teacher.html"><img src="/images/logo.png" alt="Nexus"><div><div class="brand-name eng">NEXUS</div><div class="brand-sub">LMS</div></div></a></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="/dashboard/teacher.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a>
+      <a class="nav-item" href="/teacher/assignments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Assignments</a>
+      <a class="nav-item" href="/teacher/quiz-builder.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Quiz Builder</a>
+      <a class="nav-item" href="/teacher/activity.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Activity Marks</a>
+      <a class="nav-item active" href="/teacher/progress.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Student Progress</a>
+      <a class="nav-item" href="/teacher/reports.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Quiz Reports</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-chip" id="logout-btn"><div class="user-avatar" id="user-avatar">T</div><div class="user-info"><div class="user-name" id="user-name">Loading...</div><div class="user-role" id="user-role">ගුරුවරයා</div></div></div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="dash-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <h1 class="page-title" id="page-title">Student <span>Progress</span></h1>
+      </div>
+    </header>
+    <main class="dash-content">
+
+      <!-- View: Select Course -->
+      <div id="view-course">
+        <div class="card-flat" style="margin-bottom:1.5rem">
+          <div class="form-group" style="margin:0">
+            <label class="form-label">පාඨමාලාව තෝරන්න</label>
+            <select id="course-select" class="form-input" style="max-width:420px"></select>
+          </div>
+        </div>
+        <div id="student-list-container"><p style="color:var(--text-muted);text-align:center;padding:3rem">පාඨමාලාවක් තෝරන්න.</p></div>
+      </div>
+
+      <!-- View: Student Detail -->
+      <div id="view-detail" style="display:none">
+        <div class="back-btn" onclick="showCourseView()" style="margin-bottom:1.5rem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><polyline points="15 18 9 12 15 6"/></svg>
+          සිසුන් ලැයිස්තුවට
+        </div>
+
+        <!-- Student Header -->
+        <div class="section-box" style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap">
+          <div class="student-avatar" id="det-avatar" style="width:64px;height:64px;font-size:1.5rem">S</div>
+          <div style="flex:1">
+            <h2 id="det-name" style="font-size:1.4rem;font-weight:800;margin-bottom:.3rem"></h2>
+            <div id="det-wa" style="color:var(--text-muted);font-size:.9rem"></div>
+          </div>
+          <div id="det-paid-badge"></div>
+        </div>
+
+        <!-- Summary Stats -->
+        <div class="detail-grid" style="margin-bottom:1.25rem">
+          <div class="section-box">
+            <div style="font-size:.85rem;color:var(--text-muted);font-weight:700;margin-bottom:.75rem">✅ Attendance</div>
+            <div style="display:flex;align-items:center;gap.75rem;gap:.75rem">
+              <div class="pbar"><div class="pfill" id="det-attend-bar" style="width:0%"></div></div>
+              <div style="font-size:1.3rem;font-weight:900;color:var(--teal)" id="det-attend-pct">0%</div>
+            </div>
+            <div style="font-size:.82rem;color:var(--text-muted);margin-top:.4rem" id="det-attend-label">0 / 0 sessions</div>
+          </div>
+          <div class="section-box">
+            <div style="font-size:.85rem;color:var(--text-muted);font-weight:700;margin-bottom:.5rem">📺 Recording Views</div>
+            <div style="font-size:1.8rem;font-weight:900;color:var(--gold)" id="det-views">0</div>
+            <div style="font-size:.82rem;color:var(--text-muted)">total recording watches</div>
+          </div>
+          <div class="section-box">
+            <div style="font-size:.85rem;color:var(--text-muted);font-weight:700;margin-bottom:.5rem">📝 Assignment Avg</div>
+            <div style="font-size:1.8rem;font-weight:900;color:var(--purple)" id="det-assign-avg">—</div>
+          </div>
+          <div class="section-box">
+            <div style="font-size:.85rem;color:var(--text-muted);font-weight:700;margin-bottom:.5rem">🏆 Quiz Avg</div>
+            <div style="font-size:1.8rem;font-weight:900;color:var(--rose)" id="det-quiz-avg">—</div>
+          </div>
+        </div>
+
+        <!-- Attendance per Session -->
+        <div class="section-box">
+          <h3 style="font-weight:800;margin-bottom:1rem;font-size:1rem">✅ Attendance — Session by Session <span style="font-size:.8rem;color:var(--teal);font-weight:500">(Real-time marking)</span></h3>
+          <div id="det-sessions"><p style="color:var(--text-muted)">Loading...</p></div>
+        </div>
+
+        <!-- Assignment Marks -->
+        <div class="section-box">
+          <h3 style="font-weight:800;margin-bottom:1rem;font-size:1rem">📝 Assignment Marks</h3>
+          <div id="det-assignments"><p style="color:var(--text-muted)">Loading...</p></div>
+        </div>
+
+        <!-- Quiz Scores -->
+        <div class="section-box">
+          <h3 style="font-weight:800;margin-bottom:1rem;font-size:1rem">🏆 Quiz Scores</h3>
+          <div id="det-quizzes"><p style="color:var(--text-muted)">Loading...</p></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+<div id="toast-container" class="toast-container"></div>
+<script type="module">
+import { requireAuth, logout, populateUserChip } from '/js/auth.js';
+import { getTeacherSubjects } from '/js/admin.js';
+import { initSidebar, showToast } from '/js/ui.js';
+import supabase from '/js/supabase.js';
+
+const profile = await requireAuth(['teacher','admin']);
+populateUserChip(profile); initSidebar();
+document.getElementById('logout-btn').addEventListener('click', logout);
+
+let allSubjects = [];
+let currentCourseId = null;
+let currentStudentId = null;
+let allSessions = [];
+
+// ── Load Courses ──
+async function init() {
+  allSubjects = await getTeacherSubjects(profile.id);
+  const sel = document.getElementById('course-select');
+  const courses = [];
+  allSubjects.forEach(s => s.courses?.forEach(c => courses.push({ id:c.id, name:`${s.name} — ${c.name}` })));
+  sel.innerHTML = `<option value="">-- තෝරන්න --</option>` + courses.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  sel.addEventListener('change', () => { currentCourseId = sel.value; if(currentCourseId) loadStudents(); });
+  const pre = new URLSearchParams(location.search).get('course');
+  if (pre) { sel.value = pre; currentCourseId = pre; loadStudents(); }
+}
+
+// ── Student List ──
+async function loadStudents() {
+  const container = document.getElementById('student-list-container');
+  container.innerHTML = '<div class="skeleton" style="height:80px;border-radius:.75rem;margin-bottom:.5rem"></div><div class="skeleton" style="height:80px;border-radius:.75rem"></div>';
+  
+  const curY = new Date().getFullYear(), curM = new Date().getMonth()+1;
+  const [enrollRes, payRes] = await Promise.all([
+    supabase.from('enrollments').select('student_id, profiles!student_id(full_name,whatsapp_number)').eq('course_id', currentCourseId),
+    supabase.from('payment_courses').select('course_id, payments!inner(student_id,paid_year,paid_month,status)').eq('course_id', currentCourseId).eq('payments.paid_year', curY).eq('payments.paid_month', curM).eq('payments.status','approved')
+  ]);
+  
+  const students = (enrollRes.data||[]).map(e=>({ id:e.student_id, name:e.profiles?.full_name, wa:e.profiles?.whatsapp_number }));
+  const paidIds = new Set((payRes.data||[]).map(p=>p.payments?.student_id));
+  
+  if (!students.length) { container.innerHTML='<p style="text-align:center;padding:3rem;color:var(--text-muted)">ලියාපදිංචි සිසුන් නොමැත.</p>'; return; }
+  
+  container.innerHTML = `<div style="margin-bottom:1rem;color:var(--text-muted);font-size:.9rem">සිසුන් ${students.length} ක් — Click කර detail බලන්න</div>` +
+    students.map(st => {
+      const paid = paidIds.has(st.id);
+      return `<div class="student-list-item" onclick="openStudent('${st.id}','${esc(st.name)}','${st.wa||''}',${paid})">
+        <div class="student-avatar">${st.name?.charAt(0)||'?'}</div>
+        <div style="flex:1"><div style="font-weight:700">${st.name}</div><div style="font-size:.82rem;color:var(--text-muted)">${st.wa||'—'}</div></div>
+        ${paid ? '<span class="pill pill-green">✅ ගෙවා ඇත</span>' : '<span class="pill pill-rose">❌ ගෙවා නැත</span>'}
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" width="18"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>`;
+    }).join('');
+}
+
+function esc(s){ return (s||'').replace(/'/g,"\\'"); }
+
+// ── Open Student Detail ──
+window.openStudent = async (sid, name, wa, paid) => {
+  currentStudentId = sid;
+  document.getElementById('view-course').style.display = 'none';
+  document.getElementById('view-detail').style.display = 'block';
+  document.getElementById('page-title').innerHTML = `<span>${name}</span> — Progress`;
+  document.getElementById('det-avatar').textContent = name.charAt(0);
+  document.getElementById('det-name').textContent = name;
+  document.getElementById('det-wa').textContent = wa || '—';
+  document.getElementById('det-paid-badge').innerHTML = paid
+    ? '<span class="pill pill-green" style="font-size:.95rem;padding:.4rem 1rem">✅ මේ මාසය ගෙවා ඇත</span>'
+    : '<span class="pill pill-rose" style="font-size:.95rem;padding:.4rem 1rem">❌ ගෙවා නැත</span>';
+
+  // Parallel fetch
+  const [sessRes, attendRes, viewsRes, assignRes, subsRes, quizRes, attRes] = await Promise.all([
+    supabase.from('sessions').select('id,title,date,yt_link').eq('course_id', currentCourseId).order('date'),
+    supabase.from('attendance').select('session_id,attended').eq('student_id', sid),
+    supabase.from('recording_views').select('session_id,view_count').eq('student_id', sid),
+    supabase.from('assignments').select('id,title,max_marks,due_date').eq('course_id', currentCourseId).order('due_date'),
+    supabase.from('submissions').select('assignment_id,grade,feedback,submitted_at').eq('student_id', sid),
+    supabase.from('quizzes').select('id,title,questions').eq('course_id', currentCourseId),
+    supabase.from('quiz_attempts').select('quiz_id,score,created_at').eq('student_id', sid)
+  ]);
+
+  allSessions = sessRes.data||[];
+  const attend = attendRes.data||[];
+  const views = viewsRes.data||[];
+  const assignments = assignRes.data||[];
+  const subs = subsRes.data||[];
+  const quizzes = quizRes.data||[];
+  const attempts = attRes.data||[];
+
+  // ── Stats ──
+  const presentCount = attend.filter(a=>a.attended).length;
+  const pct = allSessions.length ? Math.round((presentCount/allSessions.length)*100) : 0;
+  document.getElementById('det-attend-bar').style.width = pct+'%';
+  document.getElementById('det-attend-pct').textContent = pct+'%';
+  document.getElementById('det-attend-label').textContent = `${presentCount} / ${allSessions.length} sessions`;
+  
+  const totalViews = views.reduce((s,v)=>s+v.view_count,0);
+  document.getElementById('det-views').textContent = totalViews;
+
+  let aSum=0,aC=0;
+  subs.forEach(s=>{ const a=assignments.find(x=>x.id===s.assignment_id); if(a&&s.grade!=null){aSum+=(s.grade/a.max_marks)*100;aC++;} });
+  document.getElementById('det-assign-avg').textContent = aC ? Math.round(aSum/aC)+'%' : '—';
+
+  let qSum=0,qC=0;
+  attempts.forEach(a=>{ const q=quizzes.find(x=>x.id===a.quiz_id); if(q){qSum+=(a.score/(q.questions?.length||1))*100;qC++;} });
+  document.getElementById('det-quiz-avg').textContent = qC ? Math.round(qSum/qC)+'%' : '—';
+
+  // ── Sessions / Attendance ──
+  const sessEl = document.getElementById('det-sessions');
+  if (!allSessions.length) { sessEl.innerHTML='<p style="color:var(--text-muted)">Sessions නොමැත.</p>'; }
+  else {
+    sessEl.innerHTML = allSessions.map(s => {
+      const a = attend.find(x=>x.session_id===s.id);
+      const v = views.find(x=>x.session_id===s.id);
+      const isPresent = a?.attended || false;
+      return `<div class="session-row" id="sess-row-${s.id}">
+        <div style="flex:1">
+          <div style="font-weight:700">${s.title}</div>
+          <div style="font-size:.8rem;color:var(--text-muted)">${new Date(s.date).toLocaleDateString('si-LK',{weekday:'short',year:'numeric',month:'short',day:'numeric'})}</div>
+        </div>
+        ${v?.view_count ? `<span class="pill pill-gold">📺 ${v.view_count}x</span>` : ''}
+        <button class="toggle-btn ${isPresent?'toggle-present':'toggle-absent'}" id="att-btn-${s.id}" onclick="toggleAttendance('${s.id}','${sid}',${isPresent})">
+          ${isPresent ? '✅ Present' : '❌ Absent'}
+        </button>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Assignments ──
+  const assignEl = document.getElementById('det-assignments');
+  if (!assignments.length) { assignEl.innerHTML='<p style="color:var(--text-muted)">Assignments නොමැත.</p>'; }
+  else {
+    assignEl.innerHTML = assignments.map(a => {
+      const sub = subs.find(s=>s.assignment_id===a.id);
+      const due = new Date(a.due_date);
+      const isPast = due < new Date();
+      return `<div class="session-row">
+        <div style="flex:1">
+          <div style="font-weight:700">${a.title}</div>
+          <div style="font-size:.8rem;color:var(--text-muted)">Deadline: ${due.toLocaleDateString('si-LK')} · Max: ${a.max_marks}</div>
+          ${sub?.feedback ? `<div style="font-size:.8rem;color:var(--teal);margin-top:.3rem">💬 ${sub.feedback}</div>` : ''}
+        </div>
+        ${sub ? `<span class="pill ${sub.grade!=null?(sub.grade/a.max_marks>=.75?'pill-green':sub.grade/a.max_marks>=.5?'pill-gold':'pill-rose'):'pill-gray'}">${sub.grade!=null?sub.grade+'/'+a.max_marks:'Submitted'}</span>` : `<span class="pill ${isPast?'pill-rose':'pill-gray'}">${isPast?'Not Submitted':'Pending'}</span>`}
+      </div>`;
+    }).join('');
+  }
+
+  // ── Quizzes ──
+  const quizEl = document.getElementById('det-quizzes');
+  if (!quizzes.length) { quizEl.innerHTML='<p style="color:var(--text-muted)">Quizzes නොමැත.</p>'; }
+  else {
+    quizEl.innerHTML = quizzes.map(q => {
+      const att = attempts.find(a=>a.quiz_id===q.id);
+      const total = q.questions?.length||1;
+      return `<div class="session-row">
+        <div style="flex:1">
+          <div style="font-weight:700">${q.title}</div>
+          ${att ? `<div style="font-size:.8rem;color:var(--text-muted)">${new Date(att.created_at).toLocaleDateString('si-LK')}</div>` : ''}
+        </div>
+        ${att ? `<span class="pill ${att.score/total>=.75?'pill-green':att.score/total>=.5?'pill-gold':'pill-rose'}">${att.score} / ${total} (${Math.round(att.score/total*100)}%)</span>` : '<span class="pill pill-gray">Not Attempted</span>'}
+      </div>`;
+    }).join('');
+  }
+};
+
+// ── Toggle Attendance (Real-time) ──
+window.toggleAttendance = async (sessionId, studentId, currentlyPresent) => {
+  const btn = document.getElementById(`att-btn-${sessionId}`);
+  btn.disabled = true; btn.textContent = '...';
+  
+  const newVal = !currentlyPresent;
+  
+  // Upsert attendance record
+  const { error } = await supabase.from('attendance').upsert({
+    session_id: sessionId,
+    student_id: studentId,
+    attended: newVal,
+    recorded_at: new Date().toISOString()
+  }, { onConflict: 'session_id,student_id' });
+  
+  if (error) { showToast(error.message, 'error'); btn.disabled=false; return; }
+  
+  // Update button instantly
+  btn.disabled = false;
+  btn.className = `toggle-btn ${newVal?'toggle-present':'toggle-absent'}`;
+  btn.textContent = newVal ? '✅ Present' : '❌ Absent';
+  btn.setAttribute('onclick', `toggleAttendance('${sessionId}','${studentId}',${newVal})`);
+  
+  // Refresh attendance count
+  const { data: allAttend } = await supabase.from('attendance').select('session_id,attended').eq('student_id', studentId).in('session_id', allSessions.map(s=>s.id));
+  const presentCount = (allAttend||[]).filter(a=>a.attended).length;
+  const pct = allSessions.length ? Math.round((presentCount/allSessions.length)*100) : 0;
+  document.getElementById('det-attend-bar').style.width = pct+'%';
+  document.getElementById('det-attend-pct').textContent = pct+'%';
+  document.getElementById('det-attend-label').textContent = `${presentCount} / ${allSessions.length} sessions`;
+  
+  showToast(newVal ? '✅ Present ලෙස සලකුණු කෙරිණි' : '❌ Absent ලෙස සලකුණු කෙරිණි', 'success');
+};
+
+window.showCourseView = () => {
+  document.getElementById('view-detail').style.display = 'none';
+  document.getElementById('view-course').style.display = 'block';
+  document.getElementById('page-title').innerHTML = 'Student <span>Progress</span>';
+};
+
+init();
+</script>
+</body>
+</html>

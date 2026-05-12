@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus LMS | Assignment Builder</title>
+<link rel="icon" type="image/png" href="/images/logo.png">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/dashboard.css">
+<style>
+.assign-card { background:#fff;border:1px solid #e2e8f0;border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1rem;transition:box-shadow .2s; }
+.assign-card:hover { box-shadow:0 8px 25px rgba(0,0,0,.08); }
+.assign-meta { display:flex;gap:1rem;flex-wrap:wrap;margin-top:.5rem;font-size:.82rem;color:var(--text-muted); }
+.assign-meta span { display:flex;align-items:center;gap:.3rem; }
+.badge-assign { display:inline-block;padding:.25rem .6rem;border-radius:1rem;font-size:.72rem;font-weight:700; }
+.badge-open { background:rgba(13,148,136,.12);color:var(--teal); }
+.badge-closed { background:rgba(244,63,94,.1);color:var(--rose); }
+.badge-upcoming { background:rgba(245,158,11,.12);color:var(--gold); }
+.modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px); }
+.modal-overlay.active { display:flex; }
+.modal-box { background:#fff;width:90%;max-width:620px;border-radius:var(--radius-xl);padding:2rem;box-shadow:0 20px 60px rgba(0,0,0,.15);max-height:90vh;overflow-y:auto; }
+.form-row { display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem; }
+@media(max-width:600px){ .form-row { grid-template-columns:1fr; } }
+.sub-row { display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;border:1px solid #e2e8f0;border-radius:.75rem;margin-bottom:.5rem;flex-wrap:wrap;gap:.5rem; }
+.grade-input { width:80px;padding:.35rem .5rem;border:1.5px solid #e2e8f0;border-radius:.5rem;font-size:.9rem;text-align:center; }
+.grade-input:focus { border-color:var(--teal);outline:none; }
+</style>
+</head>
+<body>
+<div class="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div class="dash-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand"><a href="/dashboard/teacher.html"><img src="/images/logo.png" alt="Nexus"><div><div class="brand-name eng">NEXUS</div><div class="brand-sub">LMS</div></div></a></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="/dashboard/teacher.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a>
+      <a class="nav-item active" href="/teacher/assignments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Assignments</a>
+      <a class="nav-item" href="/teacher/quiz-builder.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Quiz Builder</a>
+      <a class="nav-item" href="/teacher/activity.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Activity Marks</a>
+      <a class="nav-item" href="/teacher/progress.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Student Progress</a>
+      <a class="nav-item" href="/teacher/reports.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Quiz Reports</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-chip" id="logout-btn"><div class="user-avatar" id="user-avatar">T</div><div class="user-info"><div class="user-name" id="user-name">Loading...</div><div class="user-role" id="user-role">ගුරුවරයා</div></div></div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="dash-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <h1 class="page-title">Assignment <span>Builder</span></h1>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-teal btn-sm" onclick="openAddModal()">+ නව Assignment</button>
+      </div>
+    </header>
+    <main class="dash-content">
+      <div class="card-flat" style="margin-bottom:1.5rem;display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap">
+        <div class="form-group" style="margin:0;min-width:250px;flex:1">
+          <label class="form-label">පාඨමාලාව</label>
+          <select id="course-select" class="form-input"></select>
+        </div>
+        <div class="form-group" style="margin:0;min-width:200px">
+          <label class="form-label">මාසය</label>
+          <select id="month-select" class="form-input"><option value="">-- සියල්ල --</option></select>
+        </div>
+      </div>
+      <div id="assignments-list"><div class="skeleton" style="height:120px;border-radius:1rem;margin-bottom:1rem"></div><div class="skeleton" style="height:120px;border-radius:1rem"></div></div>
+    </main>
+  </div>
+</div>
+
+<!-- Add / Edit Modal -->
+<div class="modal-overlay" id="assign-modal">
+  <div class="modal-box">
+    <h2 style="font-size:1.2rem;font-weight:800;margin-bottom:1.5rem;color:var(--dark)" id="modal-title">නව Assignment</h2>
+    <input type="hidden" id="edit-id">
+    <div class="form-group">
+      <label class="form-label">Title *</label>
+      <input type="text" id="a-title" class="form-input" placeholder="Assignment title">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description / Instructions</label>
+      <textarea id="a-desc" class="form-input" rows="3" placeholder="Instructions for students..."></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Start Date</label>
+        <input type="datetime-local" id="a-start" class="form-input">
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Deadline (Due Date) *</label>
+        <input type="datetime-local" id="a-due" class="form-input">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Max Marks</label>
+        <input type="number" id="a-marks" class="form-input" value="100" min="1">
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Month (Optional)</label>
+        <select id="a-month" class="form-input"><option value="">-- All Months --</option></select>
+      </div>
+      <div class="form-group" style="margin:0; grid-column: 1 / -1">
+        <label class="form-label">Max File Size (MB)</label>
+        <input type="number" id="a-maxmb" class="form-input" value="10" min="1">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Reference File URL (Optional)</label>
+      <input type="url" id="a-file" class="form-input" placeholder="e.g. Google Drive link for assignment sheet">
+    </div>
+    <div style="display:flex;gap:1rem;margin-top:1.5rem">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-teal btn-lg" style="flex:1" onclick="saveAssignment()">සුරකින්න ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- Submissions Modal -->
+<div class="modal-overlay" id="subs-modal">
+  <div class="modal-box" style="max-width:760px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+      <h2 style="font-size:1.15rem;font-weight:800;color:var(--dark)" id="subs-title">Submissions</h2>
+      <button onclick="closeSubsModal()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--text-muted)">✕</button>
+    </div>
+    <div id="subs-list"></div>
+  </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+<script type="module">
+import { requireAuth, logout, populateUserChip } from '/js/auth.js';
+import { getTeacherSubjects } from '/js/admin.js';
+import { initSidebar, showToast } from '/js/ui.js';
+import supabase from '/js/supabase.js';
+import { awardPoints, getSubjectIdForCourse } from '/js/leaderboard.js';
+
+const profile = await requireAuth(['teacher', 'admin']);
+if (!profile) throw new Error('Not authorized');
+populateUserChip(profile); initSidebar();
+document.getElementById('logout-btn').addEventListener('click', logout);
+
+let allSubjects = [];
+let currentCourseId = null;
+let currentMonths = [];
+
+async function loadCourses() {
+  allSubjects = await getTeacherSubjects(profile.id);
+  const sel = document.getElementById('course-select');
+  const courses = [];
+  allSubjects.forEach(s => s.courses?.forEach(c => courses.push({ id: c.id, name: `${s.name} — ${c.name}`, months: c.course_months || [] })));
+  sel.innerHTML = `<option value="">-- පාඨමාලාව තෝරන්න --</option>` + courses.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  
+  const preselect = new URLSearchParams(location.search).get('course');
+  if (preselect) { sel.value = preselect; onCourseChange(); }
+}
+
+async function onCourseChange() {
+  currentCourseId = document.getElementById('course-select').value;
+  if (!currentCourseId) { document.getElementById('assignments-list').innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:3rem">පාඨමාලාවක් තෝරන්න.</p>'; return; }
+  
+  // Load months for selected course
+  const subject = allSubjects.find(s => s.courses?.find(c => c.id === currentCourseId));
+  const course = subject?.courses?.find(c => c.id === currentCourseId);
+  currentMonths = course?.course_months || [];
+  
+  const monthSel = document.getElementById('month-select');
+  const aMonthSel = document.getElementById('a-month');
+  const monthOptions = '<option value="">-- සියල්ල --</option>' + currentMonths.map(m => `<option value="${m.id}">${m.year} - ${m.name}</option>`).join('');
+  monthSel.innerHTML = monthOptions;
+  aMonthSel.innerHTML = monthOptions;
+  
+  await loadAssignments();
+}
+
+async function loadAssignments() {
+  if (!currentCourseId) return;
+  const monthId = document.getElementById('month-select').value;
+  
+  let query = supabase.from('assignments')
+    .select('*, course_months(name, year)')
+    .eq('course_id', currentCourseId)
+    .order('due_date', { ascending: true });
+  if (monthId) query = query.eq('course_month_id', monthId);
+  
+  const { data: assignments, error } = await query;
+  const container = document.getElementById('assignments-list');
+  
+  if (error) { showToast(error.message, 'error'); return; }
+  if (!assignments?.length) {
+    container.innerHTML = '<div style="text-align:center;padding:4rem;color:var(--text-muted)"><h3>Assignments නොමැත</h3><p>ඉහළ "+ නව Assignment" බොත්තම click කරන්න.</p></div>';
+    return;
+  }
+  
+  // Get submissions count per assignment
+  const { data: subs } = await supabase.from('submissions').select('assignment_id').in('assignment_id', assignments.map(a => a.id));
+  const subCounts = {};
+  (subs || []).forEach(s => { subCounts[s.assignment_id] = (subCounts[s.assignment_id] || 0) + 1; });
+  
+  const now = new Date();
+  container.innerHTML = assignments.map(a => {
+    const start = a.start_date ? new Date(a.start_date) : null;
+    const due = new Date(a.due_date);
+    let status, badge;
+    if (start && now < start) { status = 'upcoming'; badge = '<span class="badge-assign badge-upcoming">⏰ ඉදිරි</span>'; }
+    else if (now > due) { status = 'closed'; badge = '<span class="badge-assign badge-closed">🔒 අවසන්</span>'; }
+    else { status = 'open'; badge = '<span class="badge-assign badge-open">✅ විවෘත</span>'; }
+    
+    const subCount = subCounts[a.id] || 0;
+    const monthLabel = a.course_months ? `${a.course_months.year} - ${a.course_months.name}` : 'All Months';
+    
+    return `<div class="assign-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.75rem">
+        <div>
+          <h3 style="font-size:1.1rem;font-weight:800;color:var(--dark);margin-bottom:.3rem">${a.title} ${badge}</h3>
+          ${a.description ? `<p style="color:var(--text-muted);font-size:.9rem;margin-bottom:.5rem">${a.description.replace(/\[MAX_MB:\d+\]/, '').trim()}</p>` : ''}
+          <div class="assign-meta">
+            ${a.start_date ? `<span>📅 Start: ${new Date(a.start_date).toLocaleString('si-LK')}</span>` : ''}
+            <span>⏱ Due: <strong style="color:var(--rose)">${new Date(a.due_date).toLocaleString('si-LK')}</strong></span>
+            <span>🏅 Marks: ${a.max_marks}</span>
+            <span>📁 ${monthLabel}</span>
+            <span>📬 Submissions: <strong style="color:var(--teal)">${subCount}</strong></span>
+          </div>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-shrink:0">
+          <button class="btn btn-sm btn-outline" onclick="editAssignment('${a.id}')">✏️ Edit</button>
+          <button class="btn btn-sm btn-teal" onclick="viewSubmissions('${a.id}', '${a.title}', ${a.max_marks})">📬 Submissions</button>
+          <button class="btn btn-sm" style="background:rgba(244,63,94,.1);color:var(--rose);border:none;border-radius:.5rem;cursor:pointer" onclick="deleteAssignment('${a.id}')">🗑️</button>
+        </div>
+      </div>
+      ${a.file_url ? `<div style="margin-top:.75rem"><a href="${a.file_url}" target="_blank" class="btn btn-sm btn-outline">📎 Reference File</a></div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('course-select').addEventListener('change', onCourseChange);
+document.getElementById('month-select').addEventListener('change', loadAssignments);
+
+// ── Modal ──
+window.openAddModal = () => {
+  document.getElementById('edit-id').value = '';
+  document.getElementById('modal-title').textContent = 'නව Assignment';
+  document.getElementById('a-title').value = '';
+  document.getElementById('a-desc').value = '';
+  document.getElementById('a-start').value = '';
+  document.getElementById('a-due').value = '';
+  document.getElementById('a-marks').value = '100';
+  document.getElementById('a-maxmb').value = '10';
+  document.getElementById('a-file').value = '';
+  document.getElementById('a-month').value = '';
+  document.getElementById('assign-modal').classList.add('active');
+};
+window.closeModal = () => document.getElementById('assign-modal').classList.remove('active');
+
+window.editAssignment = async (id) => {
+  const { data: a } = await supabase.from('assignments').select('*').eq('id', id).single();
+  if (!a) return;
+  document.getElementById('edit-id').value = a.id;
+  document.getElementById('modal-title').textContent = 'Assignment සංස්කරණය';
+  document.getElementById('a-title').value = a.title;
+  const descMatch = a.description?.match(/\[MAX_MB:(\d+)\]/);
+  const maxMb = descMatch ? parseInt(descMatch[1]) : 10;
+  const cleanDesc = a.description?.replace(/\[MAX_MB:\d+\]/, '').trim() || '';
+
+  document.getElementById('a-desc').value = cleanDesc;
+  document.getElementById('a-start').value = a.start_date ? a.start_date.substring(0,16) : '';
+  document.getElementById('a-due').value = a.due_date.substring(0,16);
+  document.getElementById('a-marks').value = a.max_marks || 100;
+  document.getElementById('a-maxmb').value = maxMb;
+  document.getElementById('a-file').value = a.file_url || '';
+  document.getElementById('a-month').value = a.course_month_id || '';
+  document.getElementById('assign-modal').classList.add('active');
+};
+
+window.saveAssignment = async () => {
+  if (!currentCourseId) return showToast('කරුණාකර පාඨමාලාවක් තෝරන්න', 'warning');
+  const title = document.getElementById('a-title').value.trim();
+  const due = document.getElementById('a-due').value;
+  if (!title || !due) return showToast('Title සහ Deadline අනිවාර්යයි!', 'warning');
+  
+  const maxMb = parseInt(document.getElementById('a-maxmb').value) || 10;
+  const rawDesc = document.getElementById('a-desc').value.trim();
+  const description = rawDesc ? `${rawDesc} [MAX_MB:${maxMb}]` : `[MAX_MB:${maxMb}]`;
+
+  const payload = {
+    course_id: currentCourseId,
+    title,
+    description: description,
+    start_date: document.getElementById('a-start').value || null,
+    due_date: due,
+    max_marks: parseInt(document.getElementById('a-marks').value) || 100,
+    file_url: document.getElementById('a-file').value.trim() || null,
+    course_month_id: document.getElementById('a-month').value || null,
+    created_by: profile.id
+  };
+  
+  const editId = document.getElementById('edit-id').value;
+  let error;
+  if (editId) {
+    ({ error } = await supabase.from('assignments').update(payload).eq('id', editId));
+  } else {
+    ({ error } = await supabase.from('assignments').insert(payload));
+  }
+  
+  if (error) return showToast(error.message, 'error');
+  
+  if (!editId) {
+    // Notify students
+    const { data: enrolls } = await supabase.from('enrollments').select('student_id').eq('course_id', currentCourseId);
+    if (enrolls && enrolls.length) {
+      const msg = `නව පැවරුමක්: "${title}" ලබා දී ඇත.|URL:/pages/course.html?id=${currentCourseId}`;
+      const notifs = enrolls.map(e => ({ user_id: e.student_id, message: msg }));
+      // Use upsert to avoid duplicates if teacher clicks multiple times
+      await supabase.from('notifications').upsert(notifs, { onConflict: 'user_id,message' });
+    }
+  }
+  
+  showToast(editId ? 'යාවත්කාලීන කරන ලදී ✅' : 'Assignment එකතු කරන ලදී ✅', 'success');
+  closeModal();
+  loadAssignments();
+};
+
+window.deleteAssignment = async (id) => {
+  if (!confirm('මෙම Assignment මකා දැමිය යුතුද?')) return;
+  const { error } = await supabase.from('assignments').delete().eq('id', id);
+  if (error) return showToast(error.message, 'error');
+  showToast('Assignment මකා දමන ලදී', 'success');
+  loadAssignments();
+};
+
+// ── Submissions ──
+let currentAssignId = null;
+let currentMaxMarks = 100;
+
+window.viewSubmissions = async (assignId, title, maxMarks) => {
+  currentAssignId = assignId;
+  currentMaxMarks = maxMarks;
+  document.getElementById('subs-title').textContent = `Submissions — ${title} (Max: ${maxMarks})`;
+  
+  const { data: subs } = await supabase.from('submissions')
+    .select('*, student:profiles(full_name, whatsapp_number)')
+    .eq('assignment_id', assignId)
+    .order('submitted_at', { ascending: false });
+  
+  const el = document.getElementById('subs-list');
+  if (!subs?.length) {
+    el.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--text-muted)">Submissions නොමැත.</p>';
+  } else {
+    el.innerHTML = subs.map(s => `
+      <div class="sub-row">
+        <div>
+          <div style="font-weight:700">${s.student?.full_name}</div>
+          <div style="font-size:.8rem;color:var(--text-muted)">${s.student?.whatsapp_number} · ${new Date(s.submitted_at).toLocaleString('si-LK')}</div>
+          ${s.feedback ? `<div style="font-size:.82rem;color:var(--teal);margin-top:.3rem">💬 ${s.feedback}</div>` : ''}
+        </div>
+        <div style="display:flex;align-items:center;gap:.75rem">
+          ${s.file_url ? `<a href="${s.file_url}" target="_blank" class="btn btn-sm btn-outline">📎 File</a>` : '<span style="font-size:.8rem;color:var(--text-muted)">No file</span>'}
+          <input type="number" class="grade-input" id="grade-${s.id}" value="${s.grade ?? ''}" placeholder="Grade" min="0" max="${maxMarks}" title="Grade out of ${maxMarks}">
+          <button class="btn btn-sm btn-teal" onclick="saveGrade('${s.id}', '${assignId}')">Save</button>
+        </div>
+      </div>
+    `).join('');
+  }
+  document.getElementById('subs-modal').classList.add('active');
+};
+
+window.saveGrade = async (subId, assignId) => {
+  const grade = parseFloat(document.getElementById(`grade-${subId}`).value);
+  if (isNaN(grade)) return showToast('ලකුණු ඇතුළත් කරන්න', 'warning');
+  
+  // Fetch full submission to get student_id and assignment for course data
+  const { data: sub } = await supabase
+    .from('submissions')
+    .select('student_id, assignment:assignments(course_id, max_marks)')
+    .eq('id', subId)
+    .single();
+
+  const { error } = await supabase.from('submissions').update({ grade }).eq('id', subId);
+  if (error) return showToast(error.message, 'error');
+  showToast('Grade සුරකින ලදී ✅', 'success');
+
+  // Award leaderboard points
+  try {
+    if (sub) {
+      const courseId = sub.assignment?.course_id;
+      const maxMarks = sub.assignment?.max_marks || 100;
+      const subjectId = await getSubjectIdForCourse(courseId);
+      await awardPoints({
+        studentId: sub.student_id, courseId, subjectId,
+        sourceId: assignId,
+        type: 'assignment',
+        score: grade,
+        maxScore: maxMarks,
+      });
+    }
+  } catch(e) { console.warn('[Leaderboard] assignment points error:', e.message); }
+};
+
+window.closeSubsModal = () => document.getElementById('subs-modal').classList.remove('active');
+
+document.getElementById('assign-modal').addEventListener('click', e => { if (e.target.id === 'assign-modal') closeModal(); });
+
+loadCourses();
+</script>
+</body>
+</html>

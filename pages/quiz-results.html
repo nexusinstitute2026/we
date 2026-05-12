@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus LMS | Premium Quiz Results</title>
+<link rel="icon" type="image/png" href="/images/logo.png">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/course.css">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body class="results-page">
+
+<div class="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+
+<div class="container" style="max-width:800px; padding:4rem 1.5rem">
+  <div id="results-loader" style="text-align:center; padding:5rem 0;">
+    <div class="skeleton" style="width:200px; height:200px; border-radius:50%; margin:0 auto 2rem"></div>
+    <div class="skeleton" style="width:300px; height:30px; margin:0 auto"></div>
+  </div>
+
+  <div id="results-content" style="display:none">
+    <div class="results-hero">
+      <div class="score-display">
+        <div class="score-ring"></div>
+        <div class="score-ring-fill" id="ring-fill"></div>
+        <div class="score-main" id="score-num">0</div>
+        <div class="score-label" id="score-total">OUT OF 0</div>
+      </div>
+      <h1 id="quiz-title" style="font-size:2rem; font-weight:900; margin-bottom:1rem">Quiz Title</h1>
+      <div id="rank-container" style="display:none">
+        <div class="rank-badge">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          RANK: <span id="rank-num">#1</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-grid-premium eng">
+      <div class="stat-card-premium">
+        <div class="val" id="stat-percentage">0%</div>
+        <div class="lbl">PERCENTAGE</div>
+      </div>
+      <div class="stat-card-premium">
+        <div class="val" id="stat-time">0:00</div>
+        <div class="lbl">TIME TAKEN</div>
+      </div>
+      <div class="stat-card-premium">
+        <div class="val" id="stat-correct">0</div>
+        <div class="lbl">CORRECT ANSWERS</div>
+      </div>
+    </div>
+
+    <div class="review-section">
+      <h3 style="font-family:'Outfit',sans-serif; font-weight:800; font-size:1.4rem; margin-bottom:2rem; text-align:center">පිළිතුරු සමාලෝචනය</h3>
+      <div id="review-list"></div>
+      
+      <div style="text-align:center; margin-top:4rem">
+        <a href="/dashboard/student.html" class="btn btn-teal btn-lg" style="min-width:280px">DASHBOARD වෙත යන්න</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script type="module">
+import { requireAuth } from '/js/auth.js';
+import { getQuiz, getMyAttempt } from '/js/quiz.js';
+import { fmtTime } from '/js/ui.js';
+
+const profile = await requireAuth(['student']);
+const urlParams = new URLSearchParams(window.location.search);
+const quizId = urlParams.get('quiz');
+if (!quizId) window.location.href = '/dashboard/student.html';
+
+try {
+  const [quizData, attempt] = await Promise.all([
+    getQuiz(quizId),
+    getMyAttempt(quizId, profile.id)
+  ]);
+
+  if (!attempt) {
+    window.location.href = '/pages/quiz.html?id=' + quizId;
+  }
+
+  const total = quizData.questions.length;
+  const score = attempt.score;
+  const percentage = Math.round((score / total) * 100);
+
+  if (percentage >= 75) {
+    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#0d9488', '#f59e0b', '#7c3aed'] });
+  }
+
+  document.getElementById('results-loader').style.display = 'none';
+  document.getElementById('results-content').style.display = 'block';
+  document.getElementById('quiz-title').textContent = quizData.title;
+  document.getElementById('score-num').textContent = score;
+  document.getElementById('score-total').textContent = `OUT OF ${total}`;
+  
+  // Animate ring
+  const ringFill = document.getElementById('ring-fill');
+  const degree = (percentage / 100) * 360 - 45;
+  ringFill.style.transform = `rotate(${degree}deg)`;
+  if (percentage < 50) ringFill.style.borderColor = 'var(--rose)';
+
+  if (attempt.rank) {
+    document.getElementById('rank-container').style.display = 'block';
+    document.getElementById('rank-num').textContent = `#${attempt.rank}`;
+  }
+
+  document.getElementById('stat-percentage').textContent = `${percentage}%`;
+  document.getElementById('stat-time').textContent = fmtTime(attempt.time_taken);
+  document.getElementById('stat-correct').textContent = score;
+
+  const reviewHTML = quizData.questions.map((q, i) => {
+    const studentAns = attempt.answers[i];
+    const isCorrect = studentAns === q.correct;
+    
+    return `
+      <div class="review-card-premium reveal">
+        <div class="rev-q">${i + 1}. ${q.text}</div>
+        <div class="rev-list">
+          ${studentAns !== null && !isCorrect ? `
+            <div class="rev-ans-box wrong">
+              <div class="rev-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+              <div><strong>ඔබේ පිළිතුර:</strong> ${q.options[studentAns]}</div>
+            </div>
+          ` : ''}
+          <div class="rev-ans-box correct">
+            <div class="rev-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><strong>නිවැරදි පිළිතුර:</strong> ${q.options[q.correct]}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('review-list').innerHTML = reviewHTML;
+
+  // Reveal effect
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => observer.observe(r));
+
+} catch (err) {
+  console.error(err);
+  showToast("Results පූරණය කිරීමේදී දෝෂයක්", "error");
+}
+</script>
+</body>
+</html>

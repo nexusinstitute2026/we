@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus LMS | Leaderboard</title>
+<link rel="icon" type="image/png" href="/images/logo.png">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/dashboard.css">
+<style>
+/* ── Podium ── */
+.podium { display:flex; justify-content:center; align-items:flex-end; gap:1rem; padding:2rem 0 1rem; }
+.podium-slot { display:flex; flex-direction:column; align-items:center; gap:0.5rem; min-width:120px; }
+.podium-avatar { width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.8rem; font-weight:900; color:#fff; position:relative; }
+.podium-avatar .crown { position:absolute; top:-20px; font-size:1.4rem; }
+.podium-name { font-weight:800; font-size:0.9rem; text-align:center; color:var(--dark); max-width:110px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.podium-pts { font-size:0.85rem; color:var(--text-muted); font-weight:700; }
+.podium-block { border-radius:1rem 1rem 0 0; width:100%; display:flex; align-items:center; justify-content:center; font-size:2rem; font-weight:900; color:white; }
+.p1 .podium-avatar { background: linear-gradient(135deg,#f59e0b,#d97706); box-shadow:0 0 0 4px rgba(245,158,11,0.3),0 8px 25px rgba(245,158,11,0.4); }
+.p1 .podium-block { background:linear-gradient(135deg,#f59e0b,#d97706); height:100px; }
+.p2 .podium-avatar { background:linear-gradient(135deg,#94a3b8,#64748b); box-shadow:0 0 0 4px rgba(148,163,184,0.3); }
+.p2 .podium-block { background:linear-gradient(135deg,#94a3b8,#64748b); height:70px; }
+.p3 .podium-avatar { background:linear-gradient(135deg,#cd7c3a,#a16207); box-shadow:0 0 0 4px rgba(205,124,58,0.2); }
+.p3 .podium-block { background:linear-gradient(135deg,#cd7c3a,#a16207); height:55px; }
+
+/* ── Rank Table ── */
+.rank-row { display:flex; align-items:center; gap:1rem; padding:1rem 1.25rem; border-bottom:1px solid #f1f5f9; transition:background .2s; }
+.rank-row:hover { background:#f8fafc; }
+.rank-row.mine { background:rgba(13,148,136,0.06); border-left:4px solid var(--teal); }
+.rank-num { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:0.9rem; background:#f1f5f9; color:var(--text-muted); flex-shrink:0; }
+.rank-num.gold { background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff; }
+.rank-num.silver { background:linear-gradient(135deg,#94a3b8,#64748b); color:#fff; }
+.rank-num.bronze { background:linear-gradient(135deg,#cd7c3a,#a16207); color:#fff; }
+.rank-avatar { width:40px; height:40px; border-radius:50%; background:var(--g-teal); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1rem; flex-shrink:0; }
+.pts-badge { margin-left:auto; background:rgba(13,148,136,0.1); color:var(--teal); padding:0.3rem 0.75rem; border-radius:2rem; font-weight:800; font-size:0.85rem; white-space:nowrap; }
+
+/* ── My Rank Sticky ── */
+.my-rank-bar { position:sticky; bottom:0; background:var(--dark); color:#fff; padding:1rem 1.5rem; display:flex; align-items:center; gap:1rem; border-top:3px solid var(--teal); z-index:100; }
+.my-rank-bar .lbl { font-size:0.8rem; opacity:0.6; }
+.my-rank-bar .val { font-size:1.1rem; font-weight:900; color:var(--gold); }
+
+/* ── Filters ── */
+.filter-tabs { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+.filter-tab { padding:0.4rem 1rem; border-radius:2rem; font-weight:700; font-size:0.85rem; cursor:pointer; border:2px solid #e2e8f0; background:#fff; color:var(--text-muted); transition:all .2s; }
+.filter-tab.active { border-color:var(--teal); background:var(--teal); color:#fff; }
+</style>
+</head>
+<body>
+<div class="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div class="dash-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand"><a href="/dashboard/student.html"><img src="/images/logo.png" alt="Nexus"><div><div class="brand-name eng">NEXUS</div><div class="brand-sub">LMS</div></div></a></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="/dashboard/student.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a>
+      <a class="nav-item active" href="/pages/leaderboard.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6l4-4 4 4"/><path d="M12 2v20"/><path d="M3 18l3-3 3 3"/><path d="M18 18l3-3-3-3"/></svg>Leaderboard</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-chip" id="logout-btn"><div class="user-avatar" id="user-avatar">S</div><div class="user-info"><div class="user-name" id="user-name">Loading...</div><div class="user-role">ශිෂ්‍යයා</div></div></div>
+    </div>
+  </aside>
+
+  <div class="dash-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <h1 class="page-title">🏆 <span>Leaderboard</span></h1>
+      </div>
+    </header>
+
+    <main class="dash-content">
+
+      <!-- Filters -->
+      <div class="card-flat" style="margin-bottom:1.5rem">
+        <div class="filter-tabs" id="filter-tabs">
+          <button class="filter-tab active" data-scope="overall">🌐 Overall</button>
+          <button class="filter-tab" data-scope="monthly">📅 මෙම මාසය</button>
+          <button class="filter-tab" data-scope="course">📚 Course</button>
+        </div>
+        <div id="course-filter" style="display:none">
+          <label class="form-label" style="font-size:0.8rem">Course</label>
+          <select id="course-select" class="form-input" style="max-width:360px"></select>
+        </div>
+      </div>
+
+      <!-- Podium -->
+      <div class="card-flat" style="padding:0;overflow:hidden;margin-bottom:1.5rem">
+        <div id="podium-container"><div class="podium"><p style="color:var(--text-muted);padding:2rem">Loading...</p></div></div>
+      </div>
+
+      <!-- Full Rank Table -->
+      <div class="card-flat" style="padding:0;overflow:hidden;position:relative">
+        <div style="padding:1.25rem;border-bottom:1px solid #f1f5f9;font-weight:800;font-size:1rem">සම්පූර්ණ ශ්‍රේණිගත කිරීම</div>
+        <div id="rank-list"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- My Rank Sticky Bar -->
+<div class="my-rank-bar" id="my-rank-bar" style="display:none">
+  <div>
+    <div class="lbl">ඔබේ ශ්‍රේණිය</div>
+    <div class="val" id="my-rank-val">—</div>
+  </div>
+  <div style="width:1px;height:36px;background:rgba(255,255,255,0.1)"></div>
+  <div>
+    <div class="lbl">ලකුණු</div>
+    <div class="val" id="my-pts-val">—</div>
+  </div>
+  <div style="margin-left:auto;font-size:0.85rem;opacity:0.7">ඔබ මෙහි සිටී 👋</div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script type="module">
+import { requireAuth, logout, populateUserChip } from '/js/auth.js';
+import { initSidebar } from '/js/ui.js';
+import supabase from '/js/supabase.js';
+import {
+  getLeaderboardOverall,
+  getLeaderboardMonthly,
+  getLeaderboardCourse,
+  getMyRankOverall,
+} from '/js/leaderboard.js';
+
+const profile = await requireAuth(['student', 'teacher', 'admin']);
+populateUserChip(profile); initSidebar();
+document.getElementById('logout-btn').addEventListener('click', logout);
+
+let currentScope = 'overall';
+let courses = [];
+
+// Load enrolled courses for filter
+const { data: enrollments } = await supabase
+  .from('enrollments')
+  .select('course_id, courses(id, name, subjects(name))')
+  .eq('student_id', profile.id);
+
+courses = (enrollments || []).map(e => ({
+  id: e.course_id,
+  name: `${e.courses?.subjects?.name || ''} — ${e.courses?.name || ''}`,
+}));
+
+const sel = document.getElementById('course-select');
+sel.innerHTML = courses.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+// Filter tabs
+document.getElementById('filter-tabs').addEventListener('click', async (e) => {
+  const tab = e.target.closest('.filter-tab');
+  if (!tab) return;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  currentScope = tab.dataset.scope;
+  document.getElementById('course-filter').style.display = currentScope === 'course' ? 'block' : 'none';
+  await loadLeaderboard();
+});
+
+sel.addEventListener('change', loadLeaderboard);
+
+async function loadLeaderboard() {
+  document.getElementById('rank-list').innerHTML = '<div style="padding:3rem;text-align:center;color:var(--text-muted)">Loading...</div>';
+  document.getElementById('podium-container').innerHTML = '<div class="podium"><p style="color:var(--text-muted);padding:2rem">Loading...</p></div>';
+
+  let data = [];
+  try {
+    if (currentScope === 'overall') {
+      data = await getLeaderboardOverall();
+    } else if (currentScope === 'monthly') {
+      const now = new Date();
+      data = await getLeaderboardMonthly(now.getFullYear(), now.getMonth() + 1);
+    } else if (currentScope === 'course') {
+      const courseId = sel.value;
+      if (!courseId) { document.getElementById('rank-list').innerHTML = '<div style="padding:3rem;text-align:center;color:var(--text-muted)">Course එකක් තෝරන්න</div>'; return; }
+      data = await getLeaderboardCourse(courseId);
+    }
+  } catch(e) {
+    document.getElementById('rank-list').innerHTML = `<div style="padding:2rem;text-align:center;color:var(--rose)">${e.message}</div>`;
+    return;
+  }
+
+  renderPodium(data.slice(0, 3));
+  renderRankList(data);
+
+  // My rank
+  if (currentScope === 'overall') {
+    const myRank = await getMyRankOverall(profile.id);
+    if (myRank) {
+      document.getElementById('my-rank-bar').style.display = 'flex';
+      document.getElementById('my-rank-val').textContent = `#${myRank.rank}`;
+      document.getElementById('my-pts-val').textContent = `${myRank.total_points} pts`;
+    }
+  }
+}
+
+function renderPodium(top3) {
+  const order = [top3[1], top3[0], top3[2]].filter(Boolean); // 2nd, 1st, 3rd
+  const classes = ['p2', 'p1', 'p3'];
+  const crowns = ['🥈', '👑', '🥉'];
+  const heights = ['70px', '100px', '55px'];
+
+  document.getElementById('podium-container').innerHTML = `
+    <div class="podium">
+      ${order.map((p, i) => `
+        <div class="podium-slot ${classes[i]}">
+          <div class="podium-avatar">
+            <div class="crown">${crowns[i]}</div>
+            ${p.full_name?.charAt(0) || '?'}
+          </div>
+          <div class="podium-name">${p.full_name}</div>
+          <div class="podium-pts">${parseFloat(p.total_points).toFixed(1)} pts</div>
+          <div class="podium-block" style="height:${heights[i]}">#${p.rank}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderRankList(data) {
+  if (!data.length) {
+    document.getElementById('rank-list').innerHTML = '<div style="padding:3rem;text-align:center;color:var(--text-muted)">ලකුණු ලබා ගත් සිසුන් නොමැත.</div>';
+    return;
+  }
+  document.getElementById('rank-list').innerHTML = data.map(p => {
+    const isMe = p.student_id === profile.id;
+    const rankClass = p.rank == 1 ? 'gold' : p.rank == 2 ? 'silver' : p.rank == 3 ? 'bronze' : '';
+    return `
+      <div class="rank-row ${isMe ? 'mine' : ''}">
+        <div class="rank-num ${rankClass}">#${p.rank}</div>
+        <div class="rank-avatar">${p.full_name?.charAt(0)}</div>
+        <div style="flex:1">
+          <div style="font-weight:700;color:var(--dark)">${p.full_name} ${isMe ? '<span style="color:var(--teal);font-size:0.75rem">(ඔබ)</span>' : ''}</div>
+        </div>
+        <div class="pts-badge">${parseFloat(p.total_points).toFixed(1)} pts</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Subscribe to real-time updates
+supabase.channel('leaderboard-realtime')
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'student_points' }, () => {
+    loadLeaderboard();
+  })
+  .subscribe();
+
+loadLeaderboard();
+</script>
+</body>
+</html>

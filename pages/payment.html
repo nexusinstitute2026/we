@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus LMS | ගෙවීම</title>
+<link rel="icon" type="image/png" href="/images/logo.png">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/dashboard.css">
+<style>
+.upload-zone{border:3px dashed #e2e8f0;border-radius:var(--radius-xl);padding:3rem;text-align:center;cursor:pointer;transition:all .3s}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--teal);background:rgba(13,148,136,.04)}
+.upload-zone svg{width:56px;height:56px;stroke:var(--text-muted);margin-bottom:1rem}
+.upload-zone p{color:var(--text-muted);font-size:.95rem}
+.upload-zone strong{color:var(--teal)}
+.upload-preview{display:none;align-items:center;gap:1rem;background:#f0fdfa;border:2px solid var(--teal2);border-radius:var(--radius-lg);padding:1.25rem;margin-top:1rem}
+.upload-preview img{width:64px;height:64px;object-fit:cover;border-radius:.5rem;border:2px solid var(--teal2)}
+.upload-preview .file-info{flex:1}
+.course-check{display:flex;align-items:center;gap:.85rem;padding:1rem 1.25rem;border:2px solid #e2e8f0;border-radius:var(--radius-md);cursor:pointer;transition:all .3s;margin-bottom:.75rem}
+.course-check:hover{border-color:var(--teal2);background:rgba(13,148,136,.03)}
+.course-check input[type=checkbox]{width:20px;height:20px;accent-color:var(--teal);flex-shrink:0}
+.course-check.selected{border-color:var(--teal);background:rgba(13,148,136,.06)}
+.step-indicator{display:flex;align-items:center;gap:0;margin-bottom:2.5rem}
+.step{display:flex;align-items:center;gap:.5rem;font-size:.85rem;font-weight:700;color:var(--text-muted);padding:.5rem 1.25rem;border-radius:var(--radius-full)}
+.step.active{background:rgba(13,148,136,.12);color:var(--teal)}
+.step.done{background:rgba(13,148,136,.08);color:var(--teal)}
+.step-line{flex:1;height:2px;background:#e2e8f0;min-width:40px}
+.step-line.done{background:var(--teal)}
+.category-block.collapsed .course-check:not(.selected) { display: none; }
+.category-block.collapsed .cat-icon { transform: rotate(-90deg); }
+</style>
+</head>
+<body>
+<div class="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div class="dash-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand"><a href="/dashboard/student.html"><img src="/images/logo.png" alt="Nexus"><div><div class="brand-name eng">NEXUS</div><div class="brand-sub">LMS</div></div></a></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="/dashboard/student.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a>
+      <a class="nav-item active" href="/pages/payment.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>ගෙවීම</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-chip" id="logout-btn">
+        <div class="user-avatar" id="user-avatar">S</div>
+        <div class="user-info"><div class="user-name" id="user-name">Loading...</div><div class="user-role" id="user-role">සිසුවා</div></div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="dash-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <h1 class="page-title">ගෙවීම් <span>Upload</span></h1>
+      </div>
+    </header>
+    <main class="dash-content" style="max-width:700px">
+      <!-- Single Step Form -->
+      <div id="payment-form-container">
+        <div class="card-flat" style="margin-bottom:1.5rem">
+          <h2 style="font-size:1.25rem;font-weight:800;margin-bottom:1.5rem;color:var(--dark)">නව ගෙවීමක් කරන්න</h2>
+          
+          <div style="display:flex;gap:1rem;margin-bottom:1.5rem;">
+            <div style="flex:1">
+              <label style="display:block;font-size:0.85rem;font-weight:700;margin-bottom:0.4rem;color:var(--dark)">අවුරුද්ද</label>
+              <select id="paid-year" class="form-input" style="width:100%;padding:0.6rem;border-radius:0.5rem;border:1px solid #cbd5e1">
+                <option value="2026">2026</option>
+                <option value="2027">2027</option>
+              </select>
+            </div>
+            <div style="flex:1">
+              <label style="display:block;font-size:0.85rem;font-weight:700;margin-bottom:0.4rem;color:var(--dark)">මාසය</label>
+              <select id="paid-month" class="form-input" style="width:100%;padding:0.6rem;border-radius:0.5rem;border:1px solid #cbd5e1">
+                <option value="1">ජනවාරි</option><option value="2">පෙබරවාරි</option><option value="3">මාර්තු</option>
+                <option value="4">අප්‍රේල්</option><option value="5">මැයි</option><option value="6">ජූනි</option>
+                <option value="7">ජූලි</option><option value="8">අගෝස්තු</option><option value="9">සැප්තැම්බර්</option>
+                <option value="10">ඔක්තෝබර්</option><option value="11">නොවැම්බර්</option><option value="12">දෙසැම්බර්</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="card-flat" style="margin-bottom:1.5rem; background:#f8fafc; padding:1.25rem; border-radius:1rem; border:1px solid #e2e8f0;">
+            <h3 style="font-size:0.95rem;font-weight:800;margin-bottom:0.8rem;color:var(--dark)">ලිපිනය යාවත්කාලීන කිරීම (අවශ්‍ය නම්)</h3>
+            <input class="form-input" type="text" id="address-override" placeholder="නව ලිපිනය (හිස් නම් දැනට ඇති ලිපිනය භාවිතා කෙරේ)" style="width:100%;padding:0.6rem;border-radius:0.5rem;border:1px solid #cbd5e1">
+          </div>
+
+          <label style="display:block;font-size:0.85rem;font-weight:700;margin-bottom:0.8rem;color:var(--dark)">පන්ති තෝරන්න (එකක් හෝ කිහිපයක්)</label>
+          <div id="courses-list" style="margin-bottom:1.5rem">
+            <div class="skeleton" style="height:60px;border-radius:.75rem;margin-bottom:.75rem"></div>
+          </div>
+
+          <div style="background:#f0fdfa;border:2px solid #14b8a6;border-radius:1rem;padding:1.25rem;margin-bottom:1.5rem;text-align:center">
+            <h3 style="font-size:1.1rem;color:#0f766e;margin-bottom:0.5rem;font-weight:800">ගෙවිය යුතු මුළු මුදල</h3>
+            <div id="total-amount-display" style="font-size:2rem;font-weight:900;color:var(--dark)">රු. 0.00</div>
+          </div>
+
+          <div id="slip-section">
+            <label style="display:block;font-size:0.85rem;font-weight:700;margin-bottom:0.8rem;color:var(--dark)">ගෙවීම් රිසිට් පත Upload කරන්න</label>
+            <div class="upload-zone" id="upload-zone" onclick="document.getElementById('slip-file').click()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <p>Click කර ගොනුව තෝරන්න හෝ <strong>Drag & Drop</strong> කරන්න</p>
+            </div>
+            <input type="file" id="slip-file" accept="image/*,application/pdf" style="display:none">
+            <div class="upload-preview" id="upload-preview">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" width="40" height="40"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <div class="file-info"><strong id="file-name">file.jpg</strong><p style="font-size:.8rem;color:var(--text-muted)" id="file-size">0 KB</p></div>
+              <button onclick="clearFile()" style="color:var(--rose);background:none;border:none;cursor:pointer;font-size:1.3rem">✕</button>
+            </div>
+          </div>
+
+          <button class="btn btn-gold btn-lg" id="submit-btn" style="width:100%;margin-top:1.5rem">Upload &amp; Submit 🚀</button>
+        </div>
+      </div>
+
+      <!-- Success View -->
+      <div id="success-view" style="display:none;text-align:center;padding:3rem 0">
+        <div style="width:100px;height:100px;border-radius:50%;background:var(--g-teal);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;box-shadow:0 12px 30px rgba(13,148,136,.4)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" width="50" height="50"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h2 style="font-size:1.8rem;font-weight:900;margin-bottom:.75rem">ගෙවීම Submit විය! 🎉</h2>
+        <p style="color:var(--text-muted);max-width:400px;margin:0 auto 2rem">ඔබේ ගෙවීම් රිසිට් පත Admin වෙත යවන ලදී. අනුමත වන තුරු <strong style="color:var(--gold)">තාවකාලික ප්‍රවේශය</strong> ලැබේ.</p>
+        <a href="/dashboard/student.html" class="btn btn-teal btn-lg">Dashboard වෙත</a>
+      </div>
+
+      <!-- Payment History -->
+      <div style="margin-top:3rem" id="history-section">
+        <div class="section-header"><h2>ගෙවීම් <span>ඉතිහාසය</span></h2></div>
+        <div id="payment-history"><div class="skeleton" style="height:100px;border-radius:1rem"></div></div>
+      </div>
+    </main>
+  </div>
+</div>
+<div id="toast-container" class="toast-container"></div>
+<script type="module">
+import { requireAuth, logout, populateUserChip } from '/js/auth.js';
+import { getMyEnrollments, getMyPayments, submitPaymentSlip } from '/js/payment.js';
+import { getFullHierarchy } from '/js/admin.js';
+import { initSidebar, showToast, statusBadge } from '/js/ui.js';
+import supabase from '/js/supabase.js';
+
+const profile = await requireAuth(['student']);
+if (!profile) throw new Error('Not authorized');
+populateUserChip(profile); initSidebar();
+document.getElementById('logout-btn').addEventListener('click', logout);
+
+let selectedCourses = [];
+let slipFile = null;
+let courseFeesMap = {};
+let totalAmount = 0;
+
+function showSuccess() {
+  document.getElementById('payment-form-container').style.display = 'none';
+  document.getElementById('history-section').style.display = 'none';
+  document.getElementById('success-view').style.display = 'block';
+}
+
+const [hierarchy, enrollments, payments] = await Promise.all([
+  getFullHierarchy(), getMyEnrollments(profile.id), getMyPayments(profile.id)
+]);
+
+const urlParams = new URLSearchParams(window.location.search);
+const preselectCourseId = urlParams.get('course_id');
+
+// Set default month/year
+const today = new Date();
+document.getElementById('paid-year').value = today.getFullYear();
+document.getElementById('paid-month').value = today.getMonth() + 1;
+
+// Courses list
+const coursesList = document.getElementById('courses-list');
+let html = '';
+hierarchy.forEach(sec => {
+  sec.categories.forEach(cat => {
+    cat.subjects.forEach(sub => {
+      if (sub.courses && sub.courses.length > 0) {
+        const blockId = `block-${sub.id}`;
+        html += `<div class="category-block collapsed" id="${blockId}" style="margin-bottom:1rem;background:#f8fafc;padding:1rem;border-radius:0.75rem;border:1px solid #e2e8f0;transition:all 0.3s;">
+          <div class="category-header" onclick="expandBlock('${blockId}')" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
+            <h4 style="font-size:0.95rem;color:var(--teal);margin:0;font-weight:800">${sec.name} - ${sub.name}</h4>
+            <svg class="cat-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2" style="transition:transform 0.3s;"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="category-content" style="margin-top:0;">`;
+        
+        sub.courses.forEach(c => {
+          courseFeesMap[c.id] = c.is_free ? 0 : (c.fee || 2500);
+          const isEnrolled = enrollments.some(e => e.course_id === c.id);
+          const isChecked = isEnrolled || preselectCourseId === c.id;
+          html += `<label class="course-check${isChecked?' selected':''}">
+            <input type="checkbox" name="course" value="${c.id}" ${isChecked?'checked':''} onchange="toggleCourse(this)">
+            <div style="flex:1"><strong>${c.name}</strong> <span style="font-size:0.8rem;color:var(--text-muted);margin-left:0.5rem">${c.is_free ? 'Free' : `රු.${courseFeesMap[c.id]}`}</span></div>
+          </label>`;
+          
+          if (isChecked && !selectedCourses.includes(c.id)) {
+            selectedCourses.push(c.id);
+          }
+        });
+        html += `</div></div>`;
+      }
+    });
+  });
+});
+coursesList.innerHTML = html || '<p style="color:var(--text-muted)">පන්ති කිසිවක් හමු නොවීය.</p>';
+
+window.expandBlock = (blockId) => {
+  const isCurrentlyCollapsed = document.getElementById(blockId).classList.contains('collapsed');
+  
+  // Collapse all blocks
+  document.querySelectorAll('.category-block').forEach(el => {
+     el.classList.add('collapsed');
+     const content = el.querySelector('.category-content');
+     const hasSelected = content.querySelectorAll('.course-check.selected').length > 0;
+     content.style.marginTop = hasSelected ? '1rem' : '0';
+  });
+
+  // Expand the clicked one if it was collapsed
+  if (isCurrentlyCollapsed) {
+    const block = document.getElementById(blockId);
+    block.classList.remove('collapsed');
+    block.querySelector('.category-content').style.marginTop = '1rem';
+  }
+};
+
+// Auto-expand the block that contains the preselected course, or the first block
+setTimeout(() => {
+  const preselectedInput = document.querySelector('.course-check.selected input');
+  if (preselectedInput) {
+    const blockId = preselectedInput.closest('.category-block').id;
+    expandBlock(blockId);
+  } else {
+    const firstBlock = document.querySelector('.category-block');
+    if (firstBlock) expandBlock(firstBlock.id);
+  }
+}, 100);
+
+function updateTotalAmount() {
+  totalAmount = selectedCourses.reduce((sum, id) => sum + (courseFeesMap[id] || 0), 0);
+  document.getElementById('total-amount-display').textContent = `රු. ${totalAmount.toFixed(2)}`;
+  
+  const slipSection = document.getElementById('slip-section');
+  if (totalAmount === 0 && selectedCourses.length > 0) {
+    slipSection.style.display = 'none';
+    document.getElementById('slip-file').removeAttribute('required');
+  } else {
+    slipSection.style.display = 'block';
+  }
+}
+
+updateTotalAmount();
+
+window.toggleCourse = (el) => {
+  el.closest('label').classList.toggle('selected', el.checked);
+  if (el.checked) {
+    if (!selectedCourses.includes(el.value)) selectedCourses.push(el.value);
+  } else {
+    selectedCourses = selectedCourses.filter(id => id !== el.value);
+  }
+  updateTotalAmount();
+};
+
+
+
+// File upload
+const fileInput = document.getElementById('slip-file');
+const uploadZone = document.getElementById('upload-zone');
+const preview = document.getElementById('upload-preview');
+
+function setFile(f) {
+  if (!f) return;
+  if (f.size > 5*1024*1024) { showToast('ගොනු ප්‍රමාණය 5MB ට වඩා අධිකය','error'); return; }
+  slipFile = f;
+  document.getElementById('file-name').textContent = f.name;
+  document.getElementById('file-size').textContent = (f.size/1024).toFixed(1)+' KB';
+  preview.style.display = 'flex';
+}
+window.clearFile = () => { slipFile = null; fileInput.value=''; preview.style.display='none'; };
+fileInput.addEventListener('change', e => setFile(e.target.files[0]));
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag'));
+uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.classList.remove('drag'); setFile(e.dataTransfer.files[0]); });
+
+document.getElementById('submit-btn').addEventListener('click', async () => {
+  if (totalAmount > 0 && !slipFile) { showToast('Slip ගොනුව upload කරන්න','warning'); return; }
+  const submitBtn = document.getElementById('submit-btn');
+  submitBtn.disabled = true; submitBtn.textContent = 'Uploading...';
+  try {
+    const y = parseInt(document.getElementById('paid-year').value);
+    const m = parseInt(document.getElementById('paid-month').value);
+    
+    let slipUrlToUse = null;
+    if (totalAmount === 0) {
+       // Mock a free slip process
+       await supabase.from('payments').insert({
+          student_id: profile.id,
+          paid_year: y, paid_month: m, amount: 0,
+          slip_drive_link: 'free-course',
+          status: 'approved'
+       }).select().single().then(async ({data: p}) => {
+          const pcData = selectedCourses.map(cid => ({ payment_id: p.id, course_id: cid }));
+          await supabase.from('payment_courses').insert(pcData);
+          const enrollData = selectedCourses.map(cid => ({ student_id: profile.id, course_id: cid }));
+          await supabase.from('enrollments').upsert(enrollData, { onConflict: 'student_id,course_id' });
+       });
+    } else {
+       await submitPaymentSlip(profile.id, selectedCourses, y, m, slipFile, totalAmount);
+    }
+    
+    // Address Override Handling
+    const addr = document.getElementById('address-override').value.trim();
+    if (addr && addr !== profile.address) {
+       await supabase.from('profiles').update({ address: addr }).eq('id', profile.id);
+    }
+
+    showSuccess();
+  } catch(err) {
+    console.error(err);
+    showToast('Upload අසාර්ථකයි: ' + err.message,'error');
+    submitBtn.disabled = false; submitBtn.textContent = 'Upload & Submit 🚀';
+  }
+});
+
+// Payment history
+const histEl = document.getElementById('payment-history');
+if (!payments.length) {
+  histEl.innerHTML = `<p style="color:var(--text-muted);text-align:center;padding:2rem">ගෙවීම් නොමැත</p>`;
+} else {
+  histEl.innerHTML = `<div class="table-wrap"><table class="data-table"><thead><tr><th>දිනය</th><th>මාසය/පන්ති</th><th>Slip</th><th>තත්ත්වය</th></tr></thead><tbody>` +
+  payments.map(p => {
+    const coursesHtml = p.payment_courses?.map(pc => pc.course?.name).join(', ') || 'Unknown';
+    return `<tr><td class="eng">${new Date(p.created_at).toLocaleDateString('si-LK')}</td><td><strong style="color:var(--teal)">${p.paid_year}-${String(p.paid_month).padStart(2,'0')}</strong><br><span style="font-size:0.8rem;color:var(--text-muted)">${coursesHtml}</span></td><td>${p.slip_drive_link?`<a href="${p.slip_drive_link}" target="_blank" class="btn btn-sm btn-outline">Slip බලන්න</a>`:'—'}</td><td>${statusBadge(p.status)}</td></tr>`;
+  }).join('') +
+  `</tbody></table></div>`;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus LMS | ලියාපදිංචි කළමනාකරණය</title>
+<link rel="icon" type="image/png" href="/images/logo.png">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/dashboard.css">
+<style>
+.filter-bar { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.filter-bar select, .filter-bar input { padding: 0.6rem 1rem; border: 1.5px solid #e2e8f0; border-radius: var(--radius-md); font-size: 0.85rem; outline: none; font-family: inherit; }
+.filter-bar select:focus, .filter-bar input:focus { border-color: var(--teal); }
+
+/* Modal Styles */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.modal-overlay.active { display: flex; }
+.modal-content { background: #fff; width: 90%; max-width: 500px; border-radius: var(--radius-xl); padding: 2rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+.modal-title { font-size: 1.25rem; font-weight: 800; color: var(--dark); }
+.modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); }
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--dark3); margin-bottom: 0.4rem; }
+.form-group select { width: 100%; padding: 0.6rem; border: 1.5px solid #e2e8f0; border-radius: var(--radius-md); outline: none; }
+</style>
+</head>
+<body>
+<div class="dash-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand"><a href="/dashboard/admin.html"><img src="/images/logo.png" alt="Nexus"><div><div class="brand-name eng">NEXUS</div><div class="brand-sub">Admin</div></div></a></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="/dashboard/admin.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a>
+      <a class="nav-item" href="/admin/payments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>ගෙවීම්</a>
+      <a class="nav-item" href="/admin/users.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>පරිශීලකයන්</a>
+      <a class="nav-item" href="/admin/courses.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>පාඨමාලා</a>
+      <a class="nav-item active" href="/admin/enrollments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>ලියාපදිංචි</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-chip" id="logout-btn"><div class="user-avatar">A</div><div class="user-info"><div class="user-name">Admin</div><div class="user-role">පරිපාලක</div></div></div>
+    </div>
+  </aside>
+
+  <div class="dash-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <h1 class="page-title">ලියාපදිංචි <span>කළමනාකරණය</span></h1>
+      </div>
+    </header>
+    <main class="dash-content">
+      <div class="section-header">
+        <h2>සියලු <span>ලියාපදිංචි</span></h2>
+        <button class="btn btn-teal btn-sm" onclick="openEnrollModal()">+ නව ලියාපදිංචිය</button>
+      </div>
+
+      <div class="filter-bar">
+        <select id="filter-status">
+          <option value="">සියලු තත්ත්ව</option>
+          <option value="active">Active</option>
+          <option value="temp">Temp</option>
+          <option value="expired">Expired</option>
+        </select>
+        <input type="text" id="filter-search" placeholder="🔍 සිසුවාගේ නම සෙවීම...">
+      </div>
+
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr>
+            <th>සිසුවා</th>
+            <th>WhatsApp</th>
+            <th>Course</th>
+            <th>ක්‍රියාව</th>
+          </tr></thead>
+          <tbody id="enroll-table"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Assign Course Modal -->
+<div class="modal-overlay" id="enroll-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">ශිෂ්‍යයෙක්ට පාඨමාලාවක් ලබාදීම</div>
+      <button class="modal-close" onclick="closeEnrollModal()">✕</button>
+    </div>
+    <div class="form-group">
+      <label>ශිෂ්‍යයා තෝරන්න</label>
+      <select id="modal-student-select">
+        <option value="">— තෝරන්න —</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>පාඨමාලාව තෝරන්න</label>
+      <select id="modal-course-select">
+        <option value="">— තෝරන්න —</option>
+      </select>
+    </div>
+    <button class="btn btn-teal" style="width:100%;margin-top:1rem" onclick="submitManualEnrollment()">ලබා දෙන්න</button>
+  </div>
+</div>
+
+<!-- Manage Months Modal -->
+<div class="modal-overlay" id="months-modal">
+  <div class="modal-content" style="max-width:600px">
+    <div class="modal-header">
+      <div class="modal-title" id="mm-title">මාස කළමනාකරණය</div>
+      <button class="modal-close" onclick="closeMonthsModal()">✕</button>
+    </div>
+    <div id="months-list-container">
+      <div class="skeleton" style="height:100px;border-radius:1rem"></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script type="module">
+import { requireAuth, logout, populateUserChip } from '/js/auth.js';
+import { getAllEnrollments, updateEnrollment, deleteEnrollment, getUsersByRole, getFullHierarchy, createEnrollment, getStudentCourseMonths, toggleStudentMonthAccess } from '/js/admin.js';
+import { initSidebar, showToast, statusBadge } from '/js/ui.js';
+
+const profile = await requireAuth(['admin']);
+populateUserChip(profile); initSidebar();
+document.getElementById('logout-btn').addEventListener('click', logout);
+
+let allData = [];
+
+// Safe fetch helper
+async function safeFetch(promise, fallback = []) {
+  try { return await promise; }
+  catch (e) { console.error('Fetch error:', e); return fallback; }
+}
+
+async function loadEnrollments() {
+  allData = await safeFetch(getAllEnrollments(), []);
+  renderTable(allData);
+}
+
+function renderTable(data) {
+  const tbody = document.getElementById('enroll-table');
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:2rem">ලියාපදිංචි නොමැත.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = data.map(e => `
+    <tr>
+      <td><strong>${e.student?.full_name || '—'}</strong></td>
+      <td class="eng">${e.student?.whatsapp_number || '—'}</td>
+      <td>${e.course?.name || '—'}</td>
+      <td>
+        <button class="btn btn-sm btn-teal" onclick="openMonthsModal('${e.student_id}', '${e.course_id}', '${e.student?.full_name}', '${e.course?.name}')">🗓️ මාස</button>
+        <button class="btn btn-sm btn-rose" onclick="removeEnroll('${e.id}')">මකන්න</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// Filters
+document.getElementById('filter-status').addEventListener('change', applyFilters);
+document.getElementById('filter-search').addEventListener('input', applyFilters);
+
+function applyFilters() {
+  const status = document.getElementById('filter-status').value;
+  const search = document.getElementById('filter-search').value.toLowerCase();
+  let filtered = allData;
+  if (status) filtered = filtered.filter(e => e.status === status);
+  if (search) filtered = filtered.filter(e => e.student?.full_name?.toLowerCase().includes(search));
+  renderTable(filtered);
+}
+
+// Actions
+window.activateEnroll = async (id) => {
+  const days = prompt('කොපමණ දින සඳහා Active කරන්නද?', '30');
+  if (!days) return;
+  const expiry = new Date();
+  expiry.setDate(expiry.getDate() + parseInt(days));
+  try {
+    await updateEnrollment(id, 'active', expiry.toISOString());
+    showToast('ලියාපදිංචිය Active කරන ලදී ✅', 'success');
+    loadEnrollments();
+  } catch (e) { showToast(e.message, 'error'); }
+};
+
+window.expireEnroll = async (id) => {
+  if (!confirm('මෙම ලියාපදිංචිය Expire කිරීමට විශ්වාසද?')) return;
+  try {
+    await updateEnrollment(id, 'expired', new Date().toISOString());
+    showToast('ලියාපදිංචිය Expired කරන ලදී', 'warning');
+    loadEnrollments();
+  } catch (e) { showToast(e.message, 'error'); }
+};
+
+window.removeEnroll = async (id) => {
+  if (!confirm('මෙම ලියාපදිංචිය සම්පූර්ණයෙන්ම මකා දැමිය යුතුද?')) return;
+  try {
+    await deleteEnrollment(id);
+    showToast('ලියාපදිංචිය මකා දමන ලදී', 'success');
+    loadEnrollments();
+  } catch (e) { showToast(e.message, 'error'); }
+};
+
+window.openEnrollModal = async () => {
+  document.getElementById('enroll-modal').classList.add('active');
+  const [students, hierarchy] = await Promise.all([
+    getUsersByRole('student'),
+    getFullHierarchy()
+  ]);
+  
+  const studentSelect = document.getElementById('modal-student-select');
+  studentSelect.innerHTML = '<option value="">— තෝරන්න —</option>' + 
+    students.map(s => `<option value="${s.id}">${s.full_name} (${s.whatsapp_number})</option>`).join('');
+    
+  let courseOpts = '<option value="">— තෝරන්න —</option>';
+  hierarchy.forEach(sec => {
+    sec.categories.forEach(cat => {
+      cat.subjects.forEach(sub => {
+        sub.courses.forEach(c => {
+          courseOpts += `<option value="${c.id}">${sec.name} - ${sub.name} - ${c.name}</option>`;
+        });
+      });
+    });
+  });
+  document.getElementById('modal-course-select').innerHTML = courseOpts;
+};
+
+window.closeEnrollModal = () => {
+  document.getElementById('enroll-modal').classList.remove('active');
+};
+
+window.submitManualEnrollment = async () => {
+  const sId = document.getElementById('modal-student-select').value;
+  const cId = document.getElementById('modal-course-select').value;
+  if (!sId || !cId) return showToast('ශිෂ්‍යයෙක් සහ පාඨමාලාවක් තෝරන්න', 'warning');
+  try {
+    await createEnrollment(sId, cId);
+    showToast('පාඨමාලාව සාර්ථකව ලබා දෙන ලදී ✅', 'success');
+    closeEnrollModal();
+    loadEnrollments();
+  } catch (e) {
+    showToast(e.message, 'error');
+  }
+};
+
+window.openMonthsModal = async (studentId, courseId, studentName, courseName) => {
+  document.getElementById('mm-title').textContent = `${studentName} - ${courseName}`;
+  document.getElementById('months-modal').classList.add('active');
+  const container = document.getElementById('months-list-container');
+  container.innerHTML = '<div class="skeleton" style="height:100px;border-radius:1rem"></div>';
+  
+  try {
+    const { months, accessData } = await getStudentCourseMonths(studentId, courseId);
+    if (!months.length) {
+      container.innerHTML = '<p style="color:var(--text-muted);text-align:center">මෙම පාඨමාලාවට මාස කිසිවක් ඇතුළත් කර නොමැත.</p>';
+      return;
+    }
+    
+    let html = '<div style="display:flex;flex-direction:column;gap:0.8rem">';
+    months.forEach(m => {
+      // Check if student has access
+      const hasAccess = accessData.some(a => {
+        const p = Array.isArray(a.payments) ? a.payments[0] : a.payments;
+        return p && p.paid_year === m.year && p.paid_month === m.month_number;
+      });
+      
+      html += `
+        <label style="display:flex;align-items:center;justify-content:space-between;padding:1rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:var(--radius-md);cursor:pointer">
+          <div style="font-weight:700;color:var(--dark)">${m.year} ${m.name}</div>
+          <div style="display:flex;align-items:center;gap:0.5rem">
+            <span style="font-size:0.8rem;color:${hasAccess ? 'var(--teal)' : 'var(--text-muted)'}">${hasAccess ? 'Access Allowed' : 'No Access'}</span>
+            <input type="checkbox" ${hasAccess ? 'checked' : ''} onchange="toggleMonthAccess(this, '${studentId}', '${courseId}', ${m.year}, ${m.month_number})" style="width:1.2rem;height:1.2rem;cursor:pointer">
+          </div>
+        </label>
+      `;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+  } catch(e) {
+    container.innerHTML = `<p style="color:var(--rose)">Error: ${e.message}</p>`;
+  }
+};
+
+window.closeMonthsModal = () => {
+  document.getElementById('months-modal').classList.remove('active');
+};
+
+window.toggleMonthAccess = async (checkbox, studentId, courseId, year, month) => {
+  const grant = checkbox.checked;
+  checkbox.disabled = true;
+  try {
+    await toggleStudentMonthAccess(studentId, courseId, year, month, grant);
+    showToast(grant ? 'මාසයට ප්‍රවේශය ලබා දෙන ලදී' : 'මාසයේ ප්‍රවේශය ඉවත් කරන ලදී', 'success');
+    // Refresh modal
+    openMonthsModal(studentId, courseId, document.getElementById('mm-title').textContent.split(' - ')[0], document.getElementById('mm-title').textContent.split(' - ')[1]);
+  } catch (e) {
+    checkbox.checked = !grant;
+    showToast(e.message, 'error');
+  }
+  checkbox.disabled = false;
+};
+
+loadEnrollments();
+</script>
+</body>
+</html>

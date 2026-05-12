@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus LMS | Course Dashboard</title>
+<link rel="icon" type="image/png" href="/images/logo.png">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/course.css">
+<style>
+.tab-btn { padding: 0.8rem 1.5rem; background: none; border: none; font-family: inherit; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
+.tab-btn.active { color: var(--teal); border-bottom-color: var(--teal); }
+.tab-content { display: none; padding-top: 1.5rem; }
+.tab-content.active { display: block; }
+.session-card { background: white; border: 1px solid #e2e8f0; border-radius: var(--radius-md); padding: 1.5rem; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+.session-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.s-date { font-family: 'Outfit', sans-serif; font-weight: 700; color: var(--gold); font-size: 0.9rem; }
+.s-title { font-size: 1.1rem; font-weight: 700; color: var(--dark); margin-top: 0.3rem; }
+.s-actions { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+.s-actions .btn { display: inline-flex; align-items: center; gap: 0.5rem; }
+
+.assign-card { border-left: 4px solid var(--rose); background: #fff1f2; }
+</style>
+</head>
+<body class="bg-gray-50">
+
+<header class="course-header" style="background:var(--dark);color:white;padding:2rem 5%">
+  <div style="max-width:1200px;margin:0 auto">
+    <a href="#" onclick="history.back()" style="color:rgba(255,255,255,0.7);text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;margin-bottom:1rem">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> ආපසු
+    </a>
+    <h1 id="c-title" style="font-size:2rem;font-weight:800;margin-bottom:0.5rem">Loading...</h1>
+    <div style="display:flex;gap:1.5rem;font-size:0.9rem;color:rgba(255,255,255,0.8)">
+      <div id="c-teacher"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> <span>...</span></div>
+    </div>
+  </div>
+</header>
+
+<main style="max-width:1200px;margin:0 auto;padding:2rem 5%">
+  
+  <div style="border-bottom:1px solid #e2e8f0;display:flex;gap:1rem;margin-bottom:1rem">
+    <button class="tab-btn active" onclick="switchTab('sessions')">පන්ති හා වීඩියෝ (Sessions)</button>
+    <button class="tab-btn" onclick="switchTab('assignments')">පැවරුම් (Assignments)</button>
+    <button class="tab-btn" onclick="switchTab('quizzes')">අනුමාන ප්‍රශ්න (Quizzes)</button>
+  </div>
+
+  <div id="tab-sessions" class="tab-content active">
+    <div id="sessions-list"><div class="skeleton" style="height:120px;border-radius:1rem;margin-bottom:1rem"></div></div>
+  </div>
+
+  <div id="tab-assignments" class="tab-content">
+    <div id="assign-list"><p style="color:var(--text-muted)">පැවරුම් කිසිවක් තවම ලබා දී නොමැත.</p></div>
+  </div>
+
+  <div id="tab-quizzes" class="tab-content">
+    <div id="quiz-list"><p style="color:var(--text-muted)">අනුමාන ප්‍රශ්න පත්‍ර තවම ලබා දී නොමැත.</p></div>
+  </div>
+
+</main>
+
+<script type="module">
+import { requireAuth, getProfile, getStudentAccessDetails } from '/js/auth.js';
+import supabase from '/js/supabase.js';
+import { getCourseQuizzes } from '/js/quiz.js';
+import { showToast } from '/js/ui.js';
+
+await requireAuth(['student', 'teacher', 'admin']);
+
+const profile = await getProfile();
+if (!profile) window.location.href = '/login.html';
+
+const urlParams = new URLSearchParams(window.location.search);
+const courseId = urlParams.get('id');
+const monthId = urlParams.get('month'); // New parameter for month filtering
+
+window.switchTab = (tabId) => {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.getElementById(`tab-${tabId}`).classList.add('active');
+};
+
+async function loadCourseData() {
+  if (!courseId) return;
+
+  // 1. Fetch Course Info
+  const { data: course } = await supabase.from('courses')
+    .select('name, subject:subjects(name, teacher:profiles(full_name))')
+    .eq('id', courseId).single();
+
+  if (course) {
+    document.getElementById('c-title').textContent = `${course.subject?.name} - ${course.name}`;
+    document.getElementById('c-teacher').querySelector('span').textContent = course.subject?.teacher?.full_name || 'Teacher';
+  }
+
+  // 2. Fetch Sessions
+  let query = supabase.from('sessions').select('*').eq('course_id', courseId);
+  
+  if (monthId) {
+    const { data: monthData } = await supabase.from('course_months').select('year, month_number, name, is_free').eq('id', monthId).single();
+    if (monthData) {
+      document.getElementById('c-title').textContent += ` - ${monthData.year} ${monthData.name}`;
+      
+      // Access Check
+      if (profile.role === 'student') {
+        const access = await getStudentAccessDetails(profile.id, courseId);
+        const monthValue = monthData.year * 12 + (monthData.month_number - 1);
+        const isCovered = monthValue <= access.maxAccessibleValue;
+        const isExplicitlyPaid = access.paidMonths.some(p => p.year === monthData.year && p.month === monthData.month_number);
+        
+        const canAccess = monthData.is_free || (access.hasCurrentAccess && isCovered) || isExplicitlyPaid;
+        
+        if (!canAccess) {
+          document.querySelector('main').innerHTML = `
+            <div style="background:#ffebee;color:#c62828;padding:2rem;border-radius:1rem;text-align:center;margin-top:2rem;">
+              <h2 style="margin-bottom:1rem">⚠️ ප්‍රවේශය අත්හිටුවා ඇත</h2>
+              <p>මෙම පන්ති සඳහා පිවිසීමට ඔබට අවසර නොමැත.</p>
+              <a href="/pages/course-months.html?id=${courseId}" style="display:inline-block;margin-top:1rem;background:#c62828;color:white;padding:0.5rem 1rem;border-radius:0.5rem;text-decoration:none">ආපසු යන්න</a>
+            </div>
+          `;
+          return; // Stop rendering
+        }
+      }
+      
+      query = query.eq('course_month_id', monthId);
+    }
+  }
+
+  const { data: sessions } = await query.order('date', { ascending: false });
+  let filteredSessions = sessions || [];
+  
+  const sList = document.getElementById('sessions-list');
+  if (!filteredSessions || filteredSessions.length === 0) {
+    sList.innerHTML = `<div style="text-align:center;padding:3rem;background:#fff;border-radius:1rem;border:1px dashed #cbd5e1"><h3 style="color:var(--text-muted)">පන්ති දින සටහන් තවම යාවත්කාලීන වී නොමැත.</h3></div>`;
+  } else {
+    sList.innerHTML = filteredSessions.map(s => `
+      <div class="session-card">
+        <div class="session-header">
+          <div>
+            <div class="s-date">${new Date(s.date).toLocaleDateString('si-LK', { month:'long', day:'numeric', year:'numeric' })}</div>
+            <div class="s-title">${s.title}</div>
+          </div>
+        </div>
+        <div class="s-actions">
+          ${s.zoom_link ? `<a href="${s.zoom_link}" target="_blank" class="btn btn-sm btn-teal" onclick="logAttendance('${s.id}')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.6 11.6L22 7v10l-6.4-4.5v-1zM4 5h9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7c0-1.1.9-2 2-2z"/></svg> Zoom Class</a>` : ''}
+          ${s.yt_link ? `<a href="${s.yt_link}" target="_blank" class="btn btn-sm btn-rose" onclick="logRecordingView('${s.id}')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg> Recording</a>` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // 3. Fetch Assignments
+  const { data: assignments } = await supabase.from('assignments')
+    .select('*').eq('course_id', courseId).order('due_date', { ascending: true });
+  
+  const aList = document.getElementById('assign-list');
+  if (assignments && assignments.length > 0) {
+    aList.innerHTML = assignments.map(a => {
+      const descMatch = a.description?.match(/\[MAX_MB:(\d+)\]/);
+      const maxMb = descMatch ? parseInt(descMatch[1]) : 10;
+      const cleanDesc = a.description?.replace(/\[MAX_MB:\d+\]/, '').trim() || '';
+      
+      return `
+      <div class="session-card assign-card">
+        <div class="session-header">
+          <div>
+            <div class="s-date" style="color:var(--rose)">Due: ${new Date(a.due_date).toLocaleDateString('si-LK')}</div>
+            <div class="s-title">${a.title}</div>
+            <div style="font-size:0.9rem;color:var(--text-muted);margin-top:0.5rem">${cleanDesc}</div>
+          </div>
+        </div>
+        <div class="s-actions">
+          <button class="btn btn-sm btn-outline" style="border-color:var(--teal);color:var(--teal)" onclick="openAssignUpload('${a.id}', '${a.title.replace(/'/g, "\\'")}', ${maxMb})">පිළිතුරු Upload කරන්න (Max ${maxMb}MB)</button>
+        </div>
+      </div>
+      `;
+    }).join('');
+  }
+
+  // 4. Fetch Quizzes
+  const allQuizzes = await getCourseQuizzes(courseId);
+  const now = new Date();
+  const quizzes = allQuizzes.filter(q => {
+    const isPublished = q.status === 'published';
+    const isPastSchedule = !q.publish_at || new Date(q.publish_at) <= now;
+    return isPublished && isPastSchedule;
+  });
+
+  const qList = document.getElementById('quiz-list');
+  if (quizzes && quizzes.length > 0) {
+    qList.innerHTML = quizzes.map(q => `
+      <div class="session-card">
+        <div class="session-header">
+          <div><div class="s-title">${q.title}</div></div>
+        </div>
+        <div class="s-actions">
+          <a href="/pages/quiz.html?id=${q.id}" class="btn btn-sm btn-gold">Quiz එක ආරම්භ කරන්න</a>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+// ── Upload Assignment Modal Logic ──
+let curAssignId = null;
+let curAssignMaxMb = 10;
+let curAssignFile = null;
+
+// Ensure you replace this with the actual GAS Web App URL after deployment
+const GAS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyMT6HMStOuBISwz_w0b29K1apVaJZvKhYAXogOMF2dUg-A71xIbTyoboORxC_dcO-R/exec';
+
+window.openAssignUpload = (id, title, maxMb) => {
+  if (!GAS_WEBAPP_URL) {
+    showToast('Upload system is not configured yet. Missing GAS URL.', 'warning');
+  }
+  curAssignId = id;
+  curAssignMaxMb = maxMb;
+  document.getElementById('ua-title').textContent = title;
+  document.getElementById('ua-maxmb-label').textContent = `${maxMb}MB`;
+  clearAssignFile();
+  document.getElementById('upload-assign-modal').classList.add('active');
+};
+
+window.closeAssignUpload = () => {
+  document.getElementById('upload-assign-modal').classList.remove('active');
+};
+
+window.clearAssignFile = () => {
+  curAssignFile = null;
+  document.getElementById('ua-file').value = '';
+  document.getElementById('ua-preview').style.display = 'none';
+  document.getElementById('ua-dropzone').style.display = 'flex';
+};
+
+document.getElementById('ua-file')?.addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > curAssignMaxMb * 1024 * 1024) {
+    showToast(`ගොනුවෙහි ප්‍රමාණය ${curAssignMaxMb}MB ට වඩා අඩුවිය යුතුය!`, 'warning');
+    e.target.value = '';
+    return;
+  }
+  curAssignFile = file;
+  document.getElementById('ua-filename').textContent = file.name;
+  document.getElementById('ua-filesize').textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+  document.getElementById('ua-dropzone').style.display = 'none';
+  document.getElementById('ua-preview').style.display = 'block';
+});
+
+window.submitAssignUpload = async () => {
+  if (!curAssignFile) return showToast('කරුණාකර ගොනුවක් තෝරන්න', 'warning');
+  if (!GAS_WEBAPP_URL) return showToast('Admin විසින් Google Script URL එක සකසා නොමැත!', 'error');
+  
+  const btn = document.getElementById('ua-submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Uploading... (Please wait)';
+  
+  try {
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        const base64Data = reader.result.split(',')[1];
+        
+        const formData = new URLSearchParams();
+        formData.append('fileName', `${profile.id}_${curAssignId}_${curAssignFile.name}`);
+        formData.append('mimeType', curAssignFile.type);
+        formData.append('fileData', base64Data);
+        formData.append('folderId', '1F9I98Qt5FXsA-LSGfTMc4FwZ_Tfxmtk9');
+        
+        const res = await fetch(GAS_WEBAPP_URL, {
+          method: 'POST',
+          body: formData
+        });
+        
+        const json = await res.json();
+        if (json.status !== 'success') throw new Error(json.message || 'Upload failed');
+        
+        await supabase.from('submissions').upsert({
+          assignment_id: curAssignId,
+          student_id: profile.id,
+          file_url: json.url,
+          submitted_at: new Date().toISOString()
+        }, { onConflict: 'assignment_id,student_id' });
+        
+        showToast('සාර්ථකව Upload කරන ලදී!', 'success');
+        closeAssignUpload();
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Upload කරන්න';
+      }
+    };
+    reader.onerror = () => {
+      showToast('Error reading file', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Upload කරන්න';
+    };
+    reader.readAsDataURL(curAssignFile);
+  } catch (err) {
+    showToast(err.message, 'error');
+    btn.disabled = false;
+    btn.textContent = 'Upload කරන්න';
+  }
+};
+
+// ── Tracking ──
+window.logAttendance = async (sessionId) => {
+  if (profile.role !== 'student') return;
+  try {
+    await supabase.from('attendance').upsert({
+      session_id: sessionId,
+      student_id: profile.id,
+      attended: true,
+      recorded_at: new Date().toISOString()
+    }, { onConflict: 'session_id,student_id' });
+  } catch (e) { console.error('Attendance log failed', e); }
+};
+
+window.logRecordingView = async (sessionId) => {
+  if (profile.role !== 'student') return;
+  try {
+    const { data } = await supabase.from('recording_views')
+      .select('view_count')
+      .eq('session_id', sessionId)
+      .eq('student_id', profile.id)
+      .single();
+
+    if (data) {
+      await supabase.from('recording_views')
+        .update({ view_count: data.view_count + 1, last_viewed_at: new Date().toISOString() })
+        .eq('session_id', sessionId)
+        .eq('student_id', profile.id);
+    } else {
+      await supabase.from('recording_views').insert({
+        session_id: sessionId,
+        student_id: profile.id,
+        view_count: 1,
+        last_viewed_at: new Date().toISOString()
+      });
+    }
+  } catch (e) { console.error('Recording view log failed', e); }
+};
+
+loadCourseData();
+</script>
+<!-- Upload Assignment Modal -->
+<div class="modal-overlay" id="upload-assign-modal">
+  <div class="modal-content" style="max-width:500px;background:#fff;border-radius:var(--radius-xl);padding:2rem;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+      <div style="font-size:1.25rem;font-weight:800;color:var(--dark)" id="ua-title">Assignment Upload</div>
+      <button onclick="closeAssignUpload()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted)">✕</button>
+    </div>
+    <div style="padding:1rem 0">
+      <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:1rem">
+        කරුණාකර ඔබගේ පිළිතුරු ගොනුව (PDF/Image) තෝරන්න. 
+        උපරිම ප්‍රමාණය <strong id="ua-maxmb-label">10MB</strong> යි.
+      </p>
+      
+      <div class="upload-zone" id="ua-dropzone" onclick="document.getElementById('ua-file').click()" style="margin-bottom:1rem;border:2px dashed #cbd5e1;border-radius:1rem;padding:2rem;text-align:center;cursor:pointer;background:#f8fafc;transition:all 0.3s">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40" style="margin-bottom:1rem;color:var(--teal)"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <p style="font-weight:600;color:var(--dark3)">Click කර ගොනුව තෝරන්න</p>
+      </div>
+      <input type="file" id="ua-file" accept="image/*,application/pdf" style="display:none">
+      
+      <div id="ua-preview" style="display:none;margin-bottom:1rem">
+        <div style="display:flex;align-items:center;gap:1rem;background:#f0fdfa;padding:1rem;border-radius:0.75rem;border:1px solid #ccfbf1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" width="24" height="24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <div style="flex:1;overflow:hidden">
+            <div style="font-weight:700;font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--dark)" id="ua-filename">file.pdf</div>
+            <div style="font-size:0.8rem;color:var(--teal)" id="ua-filesize">0 MB</div>
+          </div>
+          <button onclick="clearAssignFile()" style="background:none;border:none;color:var(--rose);cursor:pointer;font-weight:800;font-size:1.2rem">✕</button>
+        </div>
+      </div>
+      
+      <button class="btn btn-teal" style="width:100%;padding:0.85rem;font-weight:800;border-radius:0.75rem;border:none;cursor:pointer" id="ua-submit-btn" onclick="submitAssignUpload()">Upload කරන්න</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

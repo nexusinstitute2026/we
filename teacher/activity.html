@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus LMS | Activity Marks</title>
+<link rel="icon" type="image/png" href="/images/logo.png">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/dashboard.css">
+<style>
+.activity-card { background:#fff; border:1px solid #e2e8f0; border-radius:var(--radius-lg); padding:1.5rem; margin-bottom:1.25rem; transition: all 0.3s; position: relative; }
+.activity-card:hover { border-color: var(--teal); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+.activity-meta { display:flex; gap:1rem; margin-top:0.75rem; font-size:0.85rem; color:var(--text-muted); }
+.grading-table { width:100%; border-collapse: collapse; margin-top:1.5rem; }
+.grading-table th { text-align:left; padding:1rem; background:#f8fafc; border-bottom:2px solid #e2e8f0; font-size:0.85rem; font-weight:800; color:var(--text-muted); }
+.grading-table td { padding:1rem; border-bottom:1px solid #f1f5f9; vertical-align: middle; }
+.grading-table tr:hover { background: rgba(13,148,136, 0.02); }
+.mark-input { width:80px; padding:0.5rem; border:2px solid #e2e8f0; border-radius:0.5rem; text-align:center; font-weight:700; font-family: inherit; }
+.mark-input:focus { border-color: var(--teal); outline:none; background: rgba(13,148,136, 0.05); }
+.student-row { display:flex; align-items:center; gap:0.75rem; }
+.st-avatar { width:32px; height:32px; border-radius:50%; background:var(--g-teal); color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:800; }
+
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; display:none; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
+.modal-overlay.active { display:flex; }
+.modal-box { background:#fff; width:90%; max-width:550px; border-radius:var(--radius-xl); padding:2rem; box-shadow:0 20px 60px rgba(0,0,0,0.15); }
+
+.back-btn { display:inline-flex; align-items:center; gap:0.5rem; color:var(--teal); font-weight:700; cursor:pointer; margin-bottom:1.5rem; font-size:0.95rem; }
+.back-btn:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div class="dash-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand"><a href="/dashboard/teacher.html"><img src="/images/logo.png" alt="Nexus"><div><div class="brand-name eng">NEXUS</div><div class="brand-sub">LMS</div></div></a></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="/dashboard/teacher.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a>
+      <a class="nav-item" href="/teacher/assignments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Assignments</a>
+      <a class="nav-item" href="/teacher/quiz-builder.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Quiz Builder</a>
+      <a class="nav-item active" href="/teacher/activity.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Activity Marks</a>
+      <a class="nav-item" href="/teacher/progress.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Student Progress</a>
+      <a class="nav-item" href="/teacher/reports.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Quiz Reports</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-chip" id="logout-btn"><div class="user-avatar" id="user-avatar">T</div><div class="user-info"><div class="user-name" id="user-name">Loading...</div><div class="user-role">ගුරුවරයා</div></div></div>
+    </div>
+  </aside>
+
+  <div class="dash-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <h1 class="page-title" id="main-title">Activity <span>Marks</span></h1>
+      </div>
+      <div class="topbar-right" id="topbar-actions">
+        <button class="btn btn-teal btn-sm" onclick="openAddModal()">+ නව Activity</button>
+      </div>
+    </header>
+
+    <main class="dash-content">
+      
+      <!-- View 1: Activity List -->
+      <div id="view-list">
+        <div class="card-flat" style="margin-bottom:1.5rem">
+          <div class="form-group" style="margin:0">
+            <label class="form-label">පාඨමාලාව තෝරන්න</label>
+            <select id="course-select" class="form-input" style="max-width:400px"></select>
+          </div>
+        </div>
+        <div id="activity-container">
+          <p style="text-align:center;padding:3rem;color:var(--text-muted)">පාඨමාලාවක් තෝරන්න.</p>
+        </div>
+      </div>
+
+      <!-- View 2: Grading View -->
+      <div id="view-grading" style="display:none">
+        <div class="back-btn" onclick="showListView()">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Activities ලැයිස්තුවට
+        </div>
+        
+        <div class="section-header" style="margin-bottom:1.5rem">
+          <div>
+            <h2 id="grade-act-title" style="font-size:1.4rem;font-weight:900;color:var(--dark)">—</h2>
+            <p id="grade-act-meta" style="color:var(--text-muted);font-size:0.9rem;margin-top:0.25rem"></p>
+          </div>
+          <button class="btn btn-teal" onclick="saveAllMarks()">සියල්ල සුරකින්න ✅</button>
+        </div>
+
+        <div class="card-flat" style="padding:0; overflow:hidden">
+          <table class="grading-table">
+            <thead>
+              <tr>
+                <th>ශිෂ්‍යයාගේ නම</th>
+                <th style="width:150px; text-align:center">ලකුණු</th>
+                <th>Feedback (Optional)</th>
+              </tr>
+            </thead>
+            <tbody id="grading-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal-box">
+    <h2 style="font-size:1.2rem;font-weight:800;margin-bottom:1.5rem;color:var(--dark)" id="modal-title">නව Activity එකක් එක් කරන්න</h2>
+    <input type="hidden" id="edit-id">
+    <div class="form-group">
+      <label class="form-label">Activity Title *</label>
+      <input type="text" id="act-title" class="form-input" placeholder="e.g. මාසික පරීක්ෂණය - ජනවාරි">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea id="act-desc" class="form-input" rows="2" placeholder="වැඩිදුර විස්තර..."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Max Marks *</label>
+      <input type="number" id="act-marks" class="form-input" value="100">
+    </div>
+    <div style="display:flex;gap:1rem;margin-top:1.5rem">
+      <button class="btn btn-outline" onclick="closeModal()">අවලංගු කරන්න</button>
+      <button class="btn btn-teal btn-lg" style="flex:1" onclick="saveActivity()">සුරකින්න ✓</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script type="module">
+import { requireAuth, logout, populateUserChip } from '/js/auth.js';
+import { getTeacherSubjects } from '/js/admin.js';
+import { initSidebar, showToast } from '/js/ui.js';
+import supabase from '/js/supabase.js';
+import { awardPoints, getSubjectIdForCourse } from '/js/leaderboard.js';
+
+const profile = await requireAuth(['teacher', 'admin']);
+populateUserChip(profile); initSidebar();
+document.getElementById('logout-btn').addEventListener('click', logout);
+
+let currentCourseId = null;
+let currentActivity = null;
+
+// Load Courses
+async function loadCourses() {
+  const subjects = await getTeacherSubjects(profile.id);
+  const sel = document.getElementById('course-select');
+  const courses = [];
+  subjects.forEach(s => s.courses?.forEach(c => courses.push({ id: c.id, name: `${s.name} — ${c.name}` })));
+  sel.innerHTML = '<option value="">-- පාඨමාලාව තෝරන්න --</option>' + courses.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  
+  sel.addEventListener('change', () => {
+    currentCourseId = sel.value;
+    if (currentCourseId) loadActivities();
+  });
+
+  const preselect = new URLSearchParams(location.search).get('course');
+  if (preselect) {
+    sel.value = preselect;
+    currentCourseId = preselect;
+    loadActivities();
+  }
+}
+
+// Load Activities
+async function loadActivities() {
+  const container = document.getElementById('activity-container');
+  container.innerHTML = '<div class="skeleton" style="height:100px;border-radius:1rem;margin-bottom:1rem"></div>';
+  
+  const { data: activities, error } = await supabase
+    .from('activities')
+    .select('*')
+    .eq('course_id', currentCourseId)
+    .order('created_at', { ascending: false });
+    
+  if (error) { showToast('Activities ලබා ගැනීමට නොහැකි විය', 'error'); return; }
+  
+  if (!activities?.length) {
+    container.innerHTML = '<div style="text-align:center;padding:4rem;color:var(--text-muted)"><h3>Activities නොමැත</h3><p>නව Activity එකක් එක් කිරීමට ඉහළ බොත්තම භාවිතා කරන්න.</p></div>';
+    return;
+  }
+  
+  container.innerHTML = activities.map(a => `
+    <div class="activity-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <h3 style="font-weight:800;color:var(--dark)">${a.title}</h3>
+          <p style="color:var(--text-muted);font-size:0.9rem;margin-top:0.3rem">${a.description || 'විස්තරයක් නොමැත'}</p>
+          <div class="activity-meta">
+            <span>🏅 උපරිම ලකුණු: ${a.max_marks}</span>
+            <span>📅 නිර්මාණය කළ දිනය: ${new Date(a.created_at).toLocaleDateString('si-LK')}</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:0.5rem">
+          <button class="btn btn-teal" onclick="openGrading('${a.id}')">📝 ලකුණු ඇතුළත් කරන්න</button>
+          <button class="btn btn-outline" style="min-width:auto" onclick="editActivity('${a.id}')">✏️</button>
+          <button class="btn" style="background:#fff1f2;color:var(--rose);min-width:auto" onclick="deleteActivity('${a.id}')">🗑️</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Open Grading View
+window.openGrading = async (activityId) => {
+  const { data: act } = await supabase.from('activities').select('*').eq('id', activityId).single();
+  if (!act) return;
+  currentActivity = act;
+  
+  document.getElementById('view-list').style.display = 'none';
+  document.getElementById('view-grading').style.display = 'block';
+  document.getElementById('topbar-actions').style.display = 'none';
+  document.getElementById('grade-act-title').textContent = act.title;
+  document.getElementById('grade-act-meta').textContent = `උපරිම ලකුණු: ${act.max_marks} | පන්තිය: ${document.getElementById('course-select').options[document.getElementById('course-select').selectedIndex].text}`;
+  
+  // Load Students and their current marks
+  const [enrollRes, markRes] = await Promise.all([
+    supabase.from('enrollments').select('student_id, profiles!student_id(full_name)').eq('course_id', currentCourseId),
+    supabase.from('activity_marks').select('*').eq('activity_id', activityId)
+  ]);
+  
+  const students = (enrollRes.data || []).map(e => ({ id: e.student_id, name: e.profiles?.full_name }));
+  const marksMap = {};
+  (markRes.data || []).forEach(m => { marksMap[m.student_id] = m; });
+  
+  const tbody = document.getElementById('grading-body');
+  if (!students.length) {
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:3rem;color:var(--text-muted)">මෙම පාඨමාලාවට සිසුන් ලියාපදිංචි වී නොමැත.</td></tr>';
+  } else {
+    tbody.innerHTML = students.map(st => {
+      const markData = marksMap[st.id] || { marks: '', feedback: '' };
+      return `
+        <tr>
+          <td>
+            <div class="student-row">
+              <div class="st-avatar">${st.name?.charAt(0)}</div>
+              <div style="font-weight:700">${st.name}</div>
+            </div>
+          </td>
+          <td style="text-align:center">
+            <input type="number" class="mark-input" data-student="${st.id}" value="${markData.marks}" max="${act.max_marks}" min="0">
+            <span style="font-size:0.8rem;color:var(--text-muted);margin-left:0.3rem">/ ${act.max_marks}</span>
+          </td>
+          <td>
+            <input type="text" class="form-input" style="height:38px; font-size:0.85rem" data-feedback="${st.id}" value="${markData.feedback || ''}" placeholder="Feedback...">
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+};
+
+window.showListView = () => {
+  document.getElementById('view-grading').style.display = 'none';
+  document.getElementById('view-list').style.display = 'block';
+  document.getElementById('topbar-actions').style.display = 'block';
+  currentActivity = null;
+};
+
+// Save All Marks
+window.saveAllMarks = async () => {
+  if (!currentActivity) return;
+  const rows = document.querySelectorAll('#grading-body tr');
+  const marksToSave = [];
+  
+  rows.forEach(row => {
+    const markInput = row.querySelector('.mark-input');
+    const feedbackInput = row.querySelector('[data-feedback]');
+    const studentId = markInput.dataset.student;
+    const marks = markInput.value;
+    
+    if (marks !== "") {
+      marksToSave.push({
+        activity_id: currentActivity.id,
+        student_id: studentId,
+        marks: parseFloat(marks),
+        feedback: feedbackInput.value.trim() || null,
+        graded_at: new Date().toISOString()
+      });
+    }
+  });
+  
+  if (marksToSave.length === 0) { showToast('ලකුණු කිසිවක් ඇතුළත් කර නැත', 'warning'); return; }
+  
+  const btn = event.target;
+  btn.disabled = true; btn.textContent = 'සුරකිමින්...';
+  
+  const { error } = await supabase.from('activity_marks').upsert(marksToSave, { onConflict: 'activity_id,student_id' });
+  
+  if (error) { showToast(error.message, 'error'); }
+  else {
+    showToast('සියලු ලකුණු සාර්ථකව සුරකින ලදී ✅', 'success');
+    // Award leaderboard points for each graded student
+    try {
+      const subjectId = await getSubjectIdForCourse(currentActivity.course_id);
+      await Promise.all(marksToSave.map(m => awardPoints({
+        studentId: m.student_id,
+        courseId: currentActivity.course_id,
+        subjectId,
+        sourceId: currentActivity.id,
+        type: 'activity',
+        score: m.marks,
+        maxScore: currentActivity.max_marks,
+      })));
+    } catch(e) { console.warn('[Leaderboard] activity points error:', e.message); }
+  }
+  
+  btn.disabled = false; btn.textContent = 'සියල්ල සුරකින්න ✅';
+};
+
+// Activity Management
+window.openAddModal = () => {
+  if (!currentCourseId) { showToast('කරුණාකර පාඨමාලාවක් තෝරන්න', 'warning'); return; }
+  document.getElementById('edit-id').value = '';
+  document.getElementById('modal-title').textContent = 'නව Activity එකක් එක් කරන්න';
+  document.getElementById('act-title').value = '';
+  document.getElementById('act-desc').value = '';
+  document.getElementById('act-marks').value = '100';
+  document.getElementById('add-modal').classList.add('active');
+};
+
+window.closeModal = () => document.getElementById('add-modal').classList.remove('active');
+
+window.saveActivity = async () => {
+  const title = document.getElementById('act-title').value.trim();
+  const desc = document.getElementById('act-desc').value.trim();
+  const marks = parseInt(document.getElementById('act-marks').value);
+  const editId = document.getElementById('edit-id').value;
+  
+  if (!title || !marks) { showToast('Title සහ Max Marks අනිවාර්යයි', 'warning'); return; }
+  
+  const payload = {
+    course_id: currentCourseId,
+    title,
+    description: desc,
+    max_marks: marks,
+    created_by: profile.id
+  };
+  
+  let res;
+  if (editId) {
+    res = await supabase.from('activities').update(payload).eq('id', editId);
+  } else {
+    res = await supabase.from('activities').insert(payload);
+  }
+  
+  if (res.error) { showToast(res.error.message, 'error'); }
+  else {
+    showToast(editId ? 'Activity එක යාවත්කාලීන කරන ලදී' : 'Activity එක සාර්ථකව නිර්මාණය කළා', 'success');
+    closeModal();
+    loadActivities();
+  }
+};
+
+window.editActivity = async (id) => {
+  const { data: a } = await supabase.from('activities').select('*').eq('id', id).single();
+  if (!a) return;
+  document.getElementById('edit-id').value = a.id;
+  document.getElementById('modal-title').textContent = 'Activity සංස්කරණය';
+  document.getElementById('act-title').value = a.title;
+  document.getElementById('act-desc').value = a.description || '';
+  document.getElementById('act-marks').value = a.max_marks;
+  document.getElementById('add-modal').classList.add('active');
+};
+
+window.deleteActivity = async (id) => {
+  if (!confirm('මෙම Activity එක සහ එහි සියලු ලකුණු මකා දැමීමට විශ්වාසද?')) return;
+  const { error } = await supabase.from('activities').delete().eq('id', id);
+  if (error) showToast(error.message, 'error');
+  else { showToast('Activity එක මකා දමන ලදී', 'success'); loadActivities(); }
+};
+
+loadCourses();
+</script>
+</body>
+</html>

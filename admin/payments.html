@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus LMS | ගෙවීම් අනුමතය</title>
+<link rel="icon" type="image/png" href="/images/logo.png">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/dashboard.css">
+<style>
+.slip-preview { max-width: 200px; max-height: 200px; border-radius: var(--radius-md); border: 2px solid #e2e8f0; cursor: pointer; transition: transform 0.3s; }
+.slip-preview:hover { transform: scale(1.05); }
+.payment-card { background: #fff; border: 1px solid #e2e8f0; border-radius: var(--radius-xl); padding: 1.5rem; margin-bottom: 1rem; display: grid; grid-template-columns: auto 1fr auto; gap: 1.5rem; align-items: center; transition: all 0.3s; }
+.payment-card:hover { box-shadow: var(--shadow-md); }
+.pc-info h4 { font-weight: 800; font-size: 1rem; margin-bottom: 0.25rem; }
+.pc-info .pc-meta { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+.pc-info .pc-meta strong { color: var(--text-primary); }
+.pc-actions { display: flex; flex-direction: column; gap: 0.5rem; }
+.filter-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.filter-tab { padding: 0.5rem 1.25rem; border-radius: var(--radius-full); font-size: 0.85rem; font-weight: 700; cursor: pointer; border: 1.5px solid #e2e8f0; background: #fff; color: var(--text-secondary); transition: all 0.2s; font-family: 'Outfit', sans-serif; }
+.filter-tab:hover { border-color: var(--teal); color: var(--teal); }
+.filter-tab.active { background: var(--g-teal); color: #fff; border-color: transparent; }
+.count-badge { background: rgba(255,255,255,0.3); padding: 0.1rem 0.5rem; border-radius: var(--radius-full); font-size: 0.75rem; margin-left: 0.3rem; }
+@media(max-width:768px) { .payment-card { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="dash-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand"><a href="/dashboard/admin.html"><img src="/images/logo.png" alt="Nexus"><div><div class="brand-name eng">NEXUS</div><div class="brand-sub">Admin</div></div></a></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="/dashboard/admin.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a>
+      <a class="nav-item active" href="/admin/payments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>ගෙවීම්</a>
+      <a class="nav-item" href="/admin/users.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>පරිශීලකයන්</a>
+      <a class="nav-item" href="/admin/courses.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>පාඨමාලා</a>
+      <a class="nav-item" href="/admin/enrollments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>ලියාපදිංචි</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-chip" id="logout-btn"><div class="user-avatar">A</div><div class="user-info"><div class="user-name">Admin</div><div class="user-role">පරිපාලක</div></div></div>
+    </div>
+  </aside>
+
+  <div class="dash-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <h1 class="page-title">ගෙවීම් <span>අනුමතය</span></h1>
+      </div>
+    </header>
+    <main class="dash-content">
+      <div class="filter-tabs" id="filter-tabs">
+        <button class="filter-tab active" data-status="pending">අනුමතයට <span class="count-badge" id="cnt-pending">0</span></button>
+        <button class="filter-tab" data-status="approved">අනුමත</button>
+        <button class="filter-tab" data-status="rejected">ප්‍රතික්ෂේප</button>
+        <button class="filter-tab" data-status="all">සියල්ල</button>
+      </div>
+
+      <div id="payments-container">
+        <div class="skeleton" style="height:120px;border-radius:1rem;margin-bottom:1rem"></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script type="module">
+import { requireAuth, logout, populateUserChip } from '/js/auth.js';
+import { getPendingPayments, getAllPayments, approvePayment, rejectPayment } from '/js/payment.js';
+import { initSidebar, showToast, statusBadge } from '/js/ui.js';
+
+const profile = await requireAuth(['admin']);
+populateUserChip(profile); initSidebar();
+document.getElementById('logout-btn').addEventListener('click', logout);
+
+let allPayments = [];
+let currentFilter = 'pending';
+
+// Safe fetch helper
+async function safeFetch(promise, fallback = []) {
+  try { return await promise; }
+  catch (e) { console.error('Fetch error:', e); return fallback; }
+}
+
+async function loadPayments() {
+  allPayments = await safeFetch(getAllPayments(), []);
+  const pendingCount = allPayments.filter(p => p.status === 'pending').length;
+  const cntBadge = document.getElementById('cnt-pending');
+  if (cntBadge) cntBadge.textContent = pendingCount;
+  renderPayments();
+}
+
+function renderPayments() {
+  const container = document.getElementById('payments-container');
+  let filtered = allPayments;
+  if (currentFilter !== 'all') {
+    filtered = allPayments.filter(p => p.status === currentFilter);
+  }
+
+  if (!filtered.length) {
+    container.innerHTML = `<div style="text-align:center;padding:3rem;background:#fff;border-radius:var(--radius-xl);border:1px dashed #cbd5e1">
+      <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="opacity:0.4;margin-bottom:1rem"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      <h3 style="color:var(--text-muted);font-size:1rem">මෙම කාණ්ඩයේ ගෙවීම් නොමැත.</h3>
+    </div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(p => `
+    <div class="payment-card">
+      <div style="flex-shrink:0">
+        ${p.slip_drive_link ? `<img src="${p.slip_drive_link}" class="slip-preview" alt="Slip" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" onclick="window.open('${p.slip_drive_link}','_blank')">
+        <a href="${p.slip_drive_link}" target="_blank" class="btn btn-sm btn-outline" style="display:none">Slip බලන්න</a>` : 
+        `<div style="width:80px;height:80px;background:#f1f5f9;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:0.8rem">Slip නැත</div>`}
+      </div>
+      <div class="pc-info">
+        <h4>${p.student?.full_name || '—'}</h4>
+        <div class="pc-meta">
+          <strong>WhatsApp:</strong> ${p.student?.whatsapp_number || '—'}<br>
+          <strong>මුදල:</strong> රු. ${p.amount || '0.00'}<br>
+          <strong>දිනය:</strong> ${new Date(p.created_at).toLocaleDateString('si-LK', { year:'numeric', month:'long', day:'numeric' })}<br>
+          ${statusBadge(p.status)}
+        </div>
+      </div>
+      <div class="pc-actions">
+        ${p.status === 'pending' ? `
+          <button class="btn btn-sm btn-teal" onclick="handleApprove('${p.id}','${p.student_id}')">✅ Approve</button>
+          <button class="btn btn-sm btn-rose" onclick="handleReject('${p.id}','${p.student_id}')">❌ Reject</button>
+        ` : `
+          <span style="font-size:0.8rem;color:var(--text-muted)">සම්පූර්ණයි</span>
+        `}
+      </div>
+    </div>
+  `).join('');
+}
+
+// Filter tabs
+document.getElementById('filter-tabs').addEventListener('click', (e) => {
+  const tab = e.target.closest('.filter-tab');
+  if (!tab) return;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  currentFilter = tab.dataset.status;
+  renderPayments();
+});
+
+window.handleApprove = async (paymentId, studentId) => {
+  if (!confirm('මෙම ගෙවීම අනුමත කිරීමට විශ්වාසද?')) return;
+  try {
+    await approvePayment(paymentId, studentId);
+    showToast('ගෙවීම අනුමත කරන ලදී ✅', 'success');
+    loadPayments();
+  } catch(err) { showToast(err.message, 'error'); }
+};
+
+window.handleReject = async (paymentId, studentId) => {
+  if (!confirm('මෙම ගෙවීම ප්‍රතික්ෂේප කිරීමට විශ්වාසද?')) return;
+  try {
+    await rejectPayment(paymentId, studentId);
+    showToast('ගෙවීම ප්‍රතික්ෂේප කරන ලදී', 'warning');
+    loadPayments();
+  } catch(err) { showToast(err.message, 'error'); }
+};
+
+loadPayments();
+</script>
+</body>
+</html>

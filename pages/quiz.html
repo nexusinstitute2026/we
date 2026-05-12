@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus LMS | Premium Quiz</title>
+<link rel="icon" type="image/png" href="/images/logo.png">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/course.css">
+</head>
+<body class="quiz-page">
+
+<div class="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+
+<header class="quiz-header">
+  <div class="quiz-title">NEXUS PREMIUM QUIZ</div>
+  <div class="quiz-meta">
+    <div class="quiz-timer" id="quiz-timer">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span id="timer-text">--:--</span>
+    </div>
+    <button id="submit-btn" class="btn btn-gold btn-sm">Submit Quiz</button>
+  </div>
+</header>
+
+<div class="quiz-container">
+  <div class="progress-label" style="margin-bottom:0.5rem">
+    <span id="progress-text" class="eng">Question 1 of X</span>
+  </div>
+  <div class="progress-bar" style="margin-bottom:2.5rem; height:6px">
+    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+  </div>
+
+  <div class="q-card-premium" id="question-card">
+    <div class="skeleton" style="height:300px; border-radius:1.5rem"></div>
+  </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script type="module">
+import { requireAuth } from '/js/auth.js';
+import { getQuiz, submitAttempt, getMyAttempt } from '/js/quiz.js';
+import { showToast, fmtTime } from '/js/ui.js';
+
+const profile = await requireAuth(['student']);
+
+const urlParams = new URLSearchParams(window.location.search);
+const quizId = urlParams.get('id');
+if (!quizId) window.location.href = '/dashboard/student.html';
+
+let quizData = null;
+let currentQIndex = 0;
+let userAnswers = {};
+let startTime = 0;
+let timerInterval = null;
+let timeRemaining = 0;
+let displayedQuestions = []; // Array of { q, originalIdx }
+
+try {
+  const attempt = await getMyAttempt(quizId, profile.id);
+  if (attempt) {
+    window.location.href = '/pages/quiz-results.html?quiz=' + quizId;
+  }
+
+  quizData = await getQuiz(quizId);
+  if (!quizData || !quizData.questions || quizData.questions.length === 0) {
+    throw new Error('Invalid quiz data');
+  }
+
+  // Handle Shuffling
+  displayedQuestions = quizData.questions.map((q, i) => ({ q, originalIdx: i }));
+  if (quizData.shuffle) {
+    for (let i = displayedQuestions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [displayedQuestions[i], displayedQuestions[j]] = [displayedQuestions[j], displayedQuestions[i]];
+    }
+  }
+
+  if (quizData.time_limit) {
+    timeRemaining = quizData.time_limit;
+    document.getElementById('timer-text').textContent = fmtTime(timeRemaining);
+    startTimer();
+  } else {
+    document.getElementById('timer-text').textContent = 'No Limit';
+  }
+
+  startTime = Date.now();
+  renderQuestion();
+
+} catch (error) {
+  console.error("CRITICAL:", error);
+  document.getElementById('question-card').innerHTML = `
+    <div style="text-align:center;padding:2rem;">
+      <h3 style="margin-bottom:1rem">දෝෂයක් සිදුවිය</h3>
+      <p style="color:var(--text-muted);margin-bottom:2rem">${error.message}</p>
+      <button class="btn btn-teal" onclick="location.reload()">නැවත උත්සාහ කරන්න</button>
+    </div>`;
+}
+
+function startTimer() {
+  const timerEl = document.getElementById('quiz-timer');
+  const timerText = document.getElementById('timer-text');
+  timerInterval = setInterval(() => {
+    timeRemaining--;
+    if (timeRemaining <= 0) {
+      clearInterval(timerInterval);
+      timeRemaining = 0;
+      timerText.textContent = '00:00';
+      submitQuiz();
+    } else {
+      timerText.textContent = fmtTime(timeRemaining);
+      if (timeRemaining <= 60) timerEl.classList.add('urgent');
+    }
+  }, 1000);
+}
+
+function renderQuestion() {
+  if (!displayedQuestions.length) return;
+  const { q } = displayedQuestions[currentQIndex];
+  const total = displayedQuestions.length;
+  
+  document.getElementById('progress-text').textContent = `Question ${currentQIndex + 1} of ${total}`;
+  document.getElementById('progress-fill').style.width = `${((currentQIndex + 1) / total) * 100}%`;
+
+  const qHTML = `
+    <div class="q-meta">
+      <span class="q-index">Question ${currentQIndex + 1}</span>
+    </div>
+    <div class="q-text-premium">${q.text}</div>
+    <div class="options-list-premium">
+      ${q.options.map((opt, i) => `
+        <div class="opt-btn-premium ${userAnswers[currentQIndex] === i ? 'selected' : ''}" onclick="selectOption(${i})">
+          <div class="opt-label-premium">${String.fromCharCode(65 + i)}</div>
+          <span>${opt}</span>
+        </div>
+      `).join('')}
+    </div>
+    <div class="quiz-footer-nav">
+      <button class="btn btn-outline" onclick="prevQuestion()" ${currentQIndex === 0 ? 'disabled' : ''} style="color:#fff; border-color:rgba(255,255,255,0.1)">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        Prev
+      </button>
+      ${currentQIndex === total - 1 
+        ? `<button class="btn btn-gold" onclick="document.getElementById('submit-btn').click()">Finish & Submit</button>`
+        : `<button class="btn btn-teal" onclick="nextQuestion()">Next Question <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>`
+      }
+    </div>
+  `;
+  document.getElementById('question-card').innerHTML = qHTML;
+}
+
+window.selectOption = (idx) => {
+  userAnswers[currentQIndex] = idx;
+  renderQuestion();
+};
+
+window.prevQuestion = () => { if (currentQIndex > 0) { currentQIndex--; renderQuestion(); } };
+window.nextQuestion = () => { if (currentQIndex < displayedQuestions.length - 1) { currentQIndex++; renderQuestion(); } };
+
+document.getElementById('submit-btn').addEventListener('click', () => {
+  const answered = Object.keys(userAnswers).length;
+  if (answered < displayedQuestions.length) {
+    if (!confirm(`ඔබ තවමත් ප්‍රශ්න ${displayedQuestions.length - answered} කට පිළිතුරු දී නොමැත. Submit කිරීමට විශ්වාසද?`)) return;
+  }
+  submitQuiz();
+});
+
+async function submitQuiz() {
+  if (timerInterval) clearInterval(timerInterval);
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true; btn.textContent = 'Submitting...';
+
+  // Map answers back to original indices for consistent DB storage
+  const originalCount = quizData.questions.length;
+  const answersArr = new Array(originalCount).fill(null);
+  
+  displayedQuestions.forEach((item, i) => {
+    const studentAns = userAnswers[i];
+    if (studentAns !== undefined) {
+      answersArr[item.originalIdx] = studentAns;
+    }
+  });
+
+  const timeTaken = Math.floor((Date.now() - startTime) / 1000);
+
+  try {
+    await submitAttempt({
+      quizId: quizData.id,
+      studentId: profile.id,
+      answers: answersArr,
+      questions: quizData.questions, // Pass original questions
+      timeTaken: timeTaken
+    });
+    window.location.href = '/pages/quiz-results.html?quiz=' + quizData.id;
+  } catch (error) {
+    console.error(error);
+    showToast("Submit කිරීම අසාර්ථකයි", "error");
+    btn.disabled = false; btn.textContent = 'Submit Quiz';
+  }
+}
+</script>
+</body>
+</html>

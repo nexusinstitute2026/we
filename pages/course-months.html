@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="si">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Nexus Institute Course Months">
+    <title>Course Months</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Sinhala:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4A148C;
+            --primary-light: #7B1FA2;
+            --accent: #FFD54F;
+            --success: #00695C;
+            --success-hover: #004D40;
+            --bg-light: #F3E5F5;
+            --text-dark: #212121;
+            --border-radius: 16px;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Noto Serif Sinhala', serif;
+            background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 50px 30px;
+            background: #FFFFFF;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border-bottom: 6px solid var(--primary);
+            animation: slideInDown 0.7s ease-out;
+        }
+
+        h1 {
+            font-size: 2.8em;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            display: inline-block;
+            font-size: 1.2em;
+            color: var(--primary-light);
+            background: var(--bg-light);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .header-desc {
+            font-size: 1em;
+            color: #555;
+            max-width: 800px;
+            margin: 20px auto 0;
+            line-height: 1.8;
+        }
+
+        /* ===== CARDS GRID ===== */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 60px;
+        }
+
+        .month-card {
+            background: #FFFFFF;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: scaleIn 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .month-card:nth-child(1) { animation-delay: 0.1s; }
+        .month-card:nth-child(2) { animation-delay: 0.2s; }
+        .month-card:nth-child(3) { animation-delay: 0.3s; }
+        .month-card:nth-child(4) { animation-delay: 0.4s; }
+        .month-card:nth-child(5) { animation-delay: 0.5s; }
+        .month-card:nth-child(6) { animation-delay: 0.6s; }
+        .month-card:nth-child(7) { animation-delay: 0.7s; }
+        .month-card:nth-child(8) { animation-delay: 0.8s; }
+
+        .month-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(74, 20, 140, 0.25);
+        }
+
+        .month-card.current-month {
+            border: 3px solid var(--primary);
+            box-shadow: 0 0 20px rgba(74, 20, 140, 0.4), var(--shadow);
+            transform: scale(1.05);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.4s ease-out;
+        }
+
+        .month-card:hover .card-image {
+            transform: scale(1.1);
+        }
+
+        .card-content {
+            padding: 25px;
+            text-align: center;
+        }
+
+        .month-name {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .month-name::after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 3px;
+            background: var(--primary);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .card-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, var(--success), var(--success-hover));
+            color: #FFFFFF;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 105, 92, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+
+        .card-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 105, 92, 0.4);
+            filter: brightness(1.1);
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes slideInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .container { padding: 20px 15px; }
+            header { padding: 30px 20px; margin-bottom: 40px; }
+            h1 { font-size: 1.8em; }
+            .cards-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
+            .card-content { padding: 15px; }
+            .month-name { font-size: 1.4em; }
+            .card-btn { font-size: 0.95em; padding: 12px 20px; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <header>
+            <h1 id="courseTitle">Loading...</h1>
+            <span class="subtitle">☸ පුනරීක්ෂණ වැඩසටහන ☸</span>
+            <p class="header-desc">
+                පහත ලින්ක් ඔස්සේ පංති සඳහා සම්භන්ධ විය හැක්කෙ සෑම මසකම 14 වන දිනට පෙර නියමිත පංති ගාස්තු ගෙවන අයට පමණි.
+                ඉතින් ඔබ සුපුරුදු ඔබේ පිළිවෙත සිටින සිටින එක සිකුරාදා පංතිවලට සම්බන්ධ වන්න.
+            </p>
+        </header>
+
+        <!-- CARDS GRID -->
+        <div class="cards-grid" id="cardsGrid">
+            <!-- Cards will be generated by JavaScript -->
+        </div>
+    </div>
+
+    <script type="module">
+        import supabase from '/js/supabase.js';
+        import { getProfile, getStudentAccessDetails } from '/js/auth.js';
+
+        // ===== DOM INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCourseData();
+        });
+
+        // ===== FETCH AND RENDER =====
+        async function loadCourseData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const courseId = urlParams.get('id');
+
+            if (!courseId) {
+                document.getElementById('courseTitle').textContent = 'Course ID not found';
+                return;
+            }
+
+            try {
+                const profile = await getProfile();
+                if (!profile) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+
+                // Fetch course info
+                const { data: course, error: courseError } = await supabase
+                    .from('courses')
+                    .select('name')
+                    .eq('id', courseId)
+                    .single();
+
+                if (courseError) throw courseError;
+                if (course) {
+                    document.getElementById('courseTitle').textContent = course.name;
+                    document.title = course.name;
+                }
+
+                // Fetch months
+                const { data: months, error: monthsError } = await supabase
+                    .from('course_months')
+                    .select('*')
+                    .eq('course_id', courseId)
+                    .order('year', { ascending: true })
+                    .order('month_number', { ascending: true });
+
+                if (monthsError) throw monthsError;
+
+                // Check Access
+                const access = await getStudentAccessDetails(profile.id, courseId);
+
+                renderMonthCards(months || [], courseId, access);
+            } catch (err) {
+                console.error('Error loading course:', err);
+                document.getElementById('courseTitle').textContent = 'Error loading data';
+            }
+        }
+
+        function renderMonthCards(months, courseId, access) {
+            const grid = document.getElementById('cardsGrid');
+            const currentMonth = new Date().getMonth() + 1;
+            const currentYear = new Date().getFullYear();
+            
+            grid.innerHTML = '';
+            
+            if (months.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; background: white; border-radius: 16px;">මාස කිසිවක් ඇතුළත් කර නොමැත.</div>';
+                return;
+            }
+
+            if (!access.hasCurrentAccess) {
+                const banner = document.createElement('div');
+                banner.style = "grid-column: 1/-1; background: #ffebee; color: #c62828; padding: 20px; border-radius: 12px; border: 2px solid #ef9a9a; text-align: center; font-weight: 700; margin-bottom: 20px; font-size: 1.1em;";
+                banner.innerHTML = '⚠️ ඔබ වත්මන් මාසය සඳහා ගෙවීම් කර නොමැති බැවින් සියලුම පන්ති සඳහා ප්‍රවේශය තාවකාලිකව අත්හිටුවා ඇත. කරුණාකර ගෙවීම් සම්පූර්ණ කරන්න.';
+                grid.appendChild(banner);
+            }
+
+            months.forEach(month => {
+                // To unlock all past and current months if student has current access:
+                const monthValue = month.year * 12 + (month.month_number - 1);
+                const isCovered = monthValue <= access.maxAccessibleValue;
+                const isExplicitlyPaid = access.paidMonths.some(p => p.year === month.year && p.month === month.month_number);
+                
+                // They can access if it's FREE, or if they have CurrentAccess AND it's covered by their payment,
+                // OR if they explicitly paid for this specific future/past month.
+                const canAccess = month.is_free || (access.hasCurrentAccess && isCovered) || isExplicitlyPaid;
+
+                const card = document.createElement('div');
+                card.className = `month-card ${canAccess && month.year === currentYear && month.month_number === currentMonth ? 'current-month' : ''}`;
+                
+                if (!canAccess) {
+                    card.style.opacity = '0.6';
+                    card.style.filter = 'grayscale(0.8)';
+                }
+
+                const btnHTML = canAccess 
+                    ? `<a href="/pages/course.html?id=${courseId}&month=${month.id}" class="card-btn">පංති බලන්න →</a>`
+                    : `<button class="card-btn" style="background:#9e9e9e;cursor:not-allowed;box-shadow:none" disabled>මුදල් ගෙවා නොමැත</button>`;
+
+                card.innerHTML = `
+                  <img src="${month.image_url || `https://picsum.photos/300/200?random=${month.id}`}" alt="${month.name}" class="card-image" onerror="this.src='https://picsum.photos/300/200?random=${month.id}'">
+                  <div class="card-content">
+                    <h3 class="month-name">${month.year} ${month.name}</h3>
+                    ${btnHTML}
+                  </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            // Auto-scroll to current month if applicable
+            setTimeout(() => {
+                const currentCard = document.querySelector('.month-card.current-month');
+                if (currentCard) {
+                    currentCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus LMS | පාඨමාලා කළමනාකරණය</title>
+<link rel="icon" type="image/png" href="/images/logo.png">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/dashboard.css">
+<style>
+.hierarchy-section { background: #fff; border: 1px solid #e2e8f0; border-radius: var(--radius-xl); margin-bottom: 1.5rem; overflow: hidden; }
+.h-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem; cursor: pointer; transition: background 0.2s; }
+.h-header:hover { background: #f8fafc; }
+.h-header h3 { font-size: 1.15rem; font-weight: 800; color: var(--dark); display: flex; align-items: center; gap: 0.75rem; }
+.h-header h3 .h-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.h-body { border-top: 1px solid #f1f5f9; padding: 0; }
+.h-body.collapsed { display: none; }
+.h-actions { display: flex; gap: 0.5rem; align-items: center; }
+.h-actions button { padding: 0.4rem 0.85rem; border-radius: var(--radius-full); font-size: 0.78rem; font-weight: 700; cursor: pointer; border: none; transition: all 0.2s; font-family: 'Outfit', sans-serif; }
+.h-actions .btn-edit { background: rgba(245,158,11,0.12); color: var(--gold); }
+.h-actions .btn-edit:hover { background: rgba(245,158,11,0.25); }
+.h-actions .btn-del { background: rgba(244,63,94,0.1); color: var(--rose); }
+.h-actions .btn-del:hover { background: rgba(244,63,94,0.2); }
+.h-actions .btn-add { background: rgba(13,148,136,0.1); color: var(--teal); }
+.h-actions .btn-add:hover { background: rgba(13,148,136,0.2); }
+
+.cat-block { border-bottom: 1px solid #f1f5f9; }
+.cat-block:last-child { border-bottom: none; }
+.cat-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem 1rem 2.5rem; background: #fafbfc; }
+.cat-header h4 { font-size: 1rem; font-weight: 700; color: var(--dark3); display: flex; align-items: center; gap: 0.5rem; }
+.cat-header h4::before { content: '📂'; font-size: 1rem; }
+
+.sub-block { padding: 0.85rem 1.5rem 0.85rem 3.5rem; display: flex; align-items: flex-start; justify-content: space-between; border-top: 1px solid #f8fafc; gap: 1rem; flex-wrap: wrap; }
+.sub-info { flex: 1; min-width: 200px; }
+.sub-info .sub-name { font-weight: 700; color: var(--teal); font-size: 0.95rem; }
+.sub-info .sub-teacher { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+.course-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
+.course-chip { display: inline-flex; align-items: center; gap: 0.4rem; background: #f0fdfa; border: 1px solid #ccfbf1; padding: 0.3rem 0.75rem; border-radius: var(--radius-full); font-size: 0.78rem; font-weight: 600; color: var(--dark3); }
+.course-chip .chip-del { width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: var(--rose); cursor: pointer; transition: background 0.2s; }
+.course-chip .chip-del:hover { background: rgba(244,63,94,0.15); }
+.course-chip .chip-edit { cursor: pointer; color: var(--gold); font-size: 0.7rem; }
+.course-chip .chip-edit:hover { color: var(--dark); }
+
+.add-row { padding: 0.75rem 1.5rem; display: flex; gap: 0.5rem; align-items: center; }
+.add-row input { flex: 1; padding: 0.5rem 0.85rem; border: 1.5px solid #e2e8f0; border-radius: var(--radius-md); font-size: 0.85rem; outline: none; transition: border 0.2s; font-family: inherit; }
+.add-row input:focus { border-color: var(--teal); }
+.add-row select { padding: 0.5rem 0.85rem; border: 1.5px solid #e2e8f0; border-radius: var(--radius-md); font-size: 0.85rem; outline: none; min-width: 160px; }
+.inline-btn { padding: 0.5rem 1rem; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 700; cursor: pointer; border: none; transition: all 0.2s; font-family: 'Outfit', sans-serif; }
+.inline-btn-teal { background: var(--g-teal); color: #fff; }
+.inline-btn-teal:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(13,148,136,0.3); }
+
+.empty-row { padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.9rem; }
+
+/* Edit inline */
+.edit-inline { display: flex; gap: 0.5rem; align-items: center; }
+.edit-inline input { padding: 0.4rem 0.7rem; border: 1.5px solid var(--gold); border-radius: 0.5rem; font-size: 0.85rem; outline: none; font-family: inherit; }
+.edit-inline .save-icon { color: var(--teal); cursor: pointer; font-weight: 700; }
+.edit-inline .cancel-icon { color: var(--rose); cursor: pointer; }
+
+/* Modal Styles */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.modal-overlay.active { display: flex; }
+.modal-content { background: #fff; width: 90%; max-width: 600px; border-radius: var(--radius-xl); padding: 2rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; }
+.modal-title { font-size: 1.25rem; font-weight: 800; color: var(--dark); }
+.modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); }
+.month-list { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem; }
+.month-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--radius-md); flex-wrap: wrap; gap: 0.5rem; }
+.month-item-info { display: flex; flex-direction: column; gap: 0.2rem; flex: 1; min-width: 200px; }
+.month-item-title { font-weight: 700; color: var(--dark3); font-size: 0.95rem; }
+.month-item-meta { font-size: 0.75rem; color: var(--text-muted); display: flex; gap: 0.5rem; align-items: center; }
+.modal-add-form { display: flex; flex-wrap: wrap; gap: 0.5rem; background: #f0fdfa; padding: 1rem; border-radius: var(--radius-md); border: 1px solid #ccfbf1; }
+.modal-add-form input { flex: 1; min-width: 120px; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; outline: none; font-family: inherit;}
+.modal-add-form input:focus { border-color: var(--teal); }
+</style>
+</head>
+<body>
+<div class="dash-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand"><a href="/dashboard/admin.html"><img src="/images/logo.png" alt="Nexus"><div><div class="brand-name eng">NEXUS</div><div class="brand-sub">Admin</div></div></a></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="/dashboard/admin.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a>
+      <a class="nav-item" href="/admin/payments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>ගෙවීම්</a>
+      <a class="nav-item" href="/admin/users.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>පරිශීලකයන්</a>
+      <a class="nav-item active" href="/admin/courses.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>පාඨමාලා</a>
+      <a class="nav-item" href="/admin/enrollments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>ලියාපදිංචි</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-chip" id="logout-btn"><div class="user-avatar">A</div><div class="user-info"><div class="user-name">Admin</div><div class="user-role">පරිපාලක</div></div></div>
+    </div>
+  </aside>
+
+  <div class="dash-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <h1 class="page-title">පාඨමාලා <span>කළමනාකරණය</span></h1>
+      </div>
+    </header>
+    <main class="dash-content">
+      <!-- Add New Section -->
+      <div class="section-header">
+        <h2>ව්‍යුහය <span>සංස්කරණය</span></h2>
+        <button class="btn btn-teal btn-sm" id="btn-add-section">+ නව Section</button>
+      </div>
+      <div id="add-section-row" style="display:none;margin-bottom:1.5rem" class="add-row card-flat">
+        <input type="text" id="new-sec-name" placeholder="Section නම (e.g. A/L Section)">
+        <input type="text" id="new-sec-desc" placeholder="විස්තරය">
+        <button class="inline-btn inline-btn-teal" id="save-new-section">සුරකින්න</button>
+      </div>
+
+      <div id="hierarchy-container">
+        <div class="skeleton" style="height:200px;border-radius:1rem;margin-bottom:1rem"></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Month Management Modal -->
+<div class="modal-overlay" id="month-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-course-title">Course Name</div>
+      <button class="modal-close" onclick="closeMonthModal()">✕</button>
+    </div>
+    <div class="month-list" id="modal-month-list">
+      <!-- Months will render here -->
+    </div>
+    <div class="modal-add-form">
+      <h4 style="width:100%;font-size:0.9rem;color:var(--teal);margin-bottom:0.5rem;font-weight:700">නව මාසයක් එකතු කරන්න</h4>
+      <input type="number" id="new-m-year" placeholder="අවුරුද්ද (උදා: 2026)">
+      <input type="number" id="new-m-num" placeholder="මාස අංකය (1-12)" min="1" max="12">
+      <input type="text" id="new-m-name" placeholder="නම (උදා: ජනවාරි)">
+      <input type="url" id="new-m-sheet" placeholder="Google Sheet Link (Optional)" style="width:100%">
+      <div style="display:flex;gap:0.5rem;width:100%;align-items:center;margin-top:0.5rem">
+        <label style="font-size:0.85rem;color:var(--dark3);font-weight:600">මාසය අගුලුවැටෙන දිනය (Deadline):</label>
+        <input type="number" id="new-m-deadline" value="14" min="1" max="31" style="width:60px;flex:none;text-align:center">
+        <label style="font-size:0.85rem;color:var(--dark3);font-weight:600;margin-left:auto;display:flex;align-items:center;gap:0.4rem">
+          <input type="checkbox" id="new-m-free" style="width:16px;height:16px;accent-color:var(--teal)"> මෙය නොමිලේ දෙන මාසයකි (Free)
+        </label>
+      </div>
+      <button class="btn btn-teal" style="width:100%;margin-top:0.5rem;border:none;border-radius:0.5rem;padding:0.6rem;font-weight:700;cursor:pointer" onclick="saveNewMonth()">මාසය එකතු කරන්න</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script type="module">
+import { requireAuth, logout, populateUserChip } from '/js/auth.js';
+import {
+  getFullHierarchy, getUsersByRole,
+  createSection, updateSection, deleteSection,
+  createCategory, updateCategory, deleteCategory,
+  createSubject, updateSubject, deleteSubject,
+  createCourse, updateCourse, deleteCourse,
+  updateCourseMonth, deleteCourseMonth
+} from '/js/admin.js';
+import { initSidebar, showToast } from '/js/ui.js';
+
+const profile = await requireAuth(['admin']);
+populateUserChip(profile); initSidebar();
+document.getElementById('logout-btn').addEventListener('click', logout);
+
+let teachers = [];
+const colors = ['si-teal', 'si-gold', 'si-purple', 'si-rose', 'si-blue'];
+
+// ── Load Data ──
+async function loadHierarchy() {
+  try {
+    [teachers] = await Promise.all([getUsersByRole('teacher')]);
+    const sections = await getFullHierarchy();
+    renderHierarchy(sections);
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+function teacherOptions(selectedId) {
+  return `<option value="">— ගුරුවරයෙක් තෝරන්න —</option>` +
+    teachers.map(t => `<option value="${t.id}" ${t.id === selectedId ? 'selected' : ''}>${t.full_name}</option>`).join('');
+}
+
+// ── Render Full Hierarchy ──
+function renderHierarchy(sections) {
+  const container = document.getElementById('hierarchy-container');
+  if (!sections.length) {
+    container.innerHTML = `<div class="empty-row">Sections නොමැත. ඉහළ බොත්තම මගින් එකක් එකතු කරන්න.</div>`;
+    return;
+  }
+
+  container.innerHTML = sections.map((sec, si) => `
+    <div class="hierarchy-section" data-section-id="${sec.id}">
+      <div class="h-header" onclick="toggleBody(this)">
+        <h3><span class="h-icon ${colors[si % colors.length]}" style="background:var(--g-${colors[si % colors.length].replace('si-','')})">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        </span>${sec.name}</h3>
+        <div class="h-actions" onclick="event.stopPropagation()">
+          <button class="btn-edit" onclick="editSection('${sec.id}','${esc(sec.name)}','${esc(sec.description||'')}')">✏️</button>
+          <button class="btn-del" onclick="delSection('${sec.id}','${esc(sec.name)}')">🗑️</button>
+          <button class="btn-add" onclick="showAddCategory('${sec.id}')">+ Category</button>
+        </div>
+      </div>
+      <div class="h-body" id="body-${sec.id}">
+        <!-- Add Category Row -->
+        <div class="add-row" id="add-cat-${sec.id}" style="display:none;background:#fafbfc">
+          <input type="text" id="cat-name-${sec.id}" placeholder="Category නම (e.g. A/L Main)">
+          <button class="inline-btn inline-btn-teal" onclick="saveCategory('${sec.id}')">එකතු කරන්න</button>
+        </div>
+        ${sec.categories.length === 0 ? `<div class="empty-row">Categories නොමැත.</div>` : 
+          sec.categories.map(cat => `
+          <div class="cat-block" data-cat-id="${cat.id}">
+            <div class="cat-header">
+              <h4>${cat.name}</h4>
+              <div class="h-actions">
+                <button class="btn-edit" onclick="editCategory('${cat.id}','${esc(cat.name)}')">✏️</button>
+                <button class="btn-del" onclick="delCategory('${cat.id}','${esc(cat.name)}')">🗑️</button>
+                <button class="btn-add" onclick="showAddSubject('${cat.id}')">+ Subject</button>
+              </div>
+            </div>
+            <!-- Add Subject Row -->
+            <div class="add-row" id="add-sub-${cat.id}" style="display:none;padding-left:3.5rem">
+              <input type="text" id="sub-name-${cat.id}" placeholder="Subject නම (e.g. Buddhism)">
+              <select id="sub-teacher-${cat.id}">${teacherOptions()}</select>
+              <button class="inline-btn inline-btn-teal" onclick="saveSubject('${cat.id}')">එකතු කරන්න</button>
+            </div>
+            ${cat.subjects.length === 0 ? `<div class="empty-row" style="padding-left:3.5rem">Subjects නොමැත.</div>` :
+              cat.subjects.map(sub => `
+              <div class="sub-block">
+                <div class="sub-info">
+                  <div class="sub-name">${sub.name}</div>
+                  <div class="sub-teacher">👤 ${sub.teacher?.full_name || 'ගුරුවරයෙක් නොමැත'}</div>
+                  <div class="course-chips">
+                    ${sub.courses.map(c => `
+                      <div class="course-chip" style="display:flex;align-items:center;gap:0.4rem;padding:0.4rem 0.8rem">
+                        ${c.name} ${c.is_free ? '<span style="background:var(--g-teal);color:white;padding:2px 6px;border-radius:4px;font-size:0.7rem">Free</span>' : `<span style="font-size:0.7rem;color:var(--text-muted)">Rs.${c.fee || 2500}</span>`}
+                        <span class="chip-edit" onclick="editCourse('${c.id}','${esc(c.name)}', ${c.fee || 2500}, ${c.is_free || false})">✏️</span>
+                        <span class="chip-del" onclick="delCourse('${c.id}','${esc(c.name)}')">✕</span>
+                        <button style="margin-left:0.5rem;background:var(--g-purple);color:white;border:none;border-radius:1rem;padding:0.2rem 0.6rem;font-size:0.7rem;cursor:pointer;font-weight:700" onclick='openMonthModal(${JSON.stringify(c).replace(/'/g, "&apos;")})'>🗓️ මාස කළමනාකරණය (${c.course_months?.length || 0})</button>
+                      </div>
+                    `).join('')}
+                    <span class="course-chip" style="background:#e0f2fe;border-color:#bae6fd;cursor:pointer;color:var(--teal)" onclick="showAddCourse('${sub.id}')">+ Course</span>
+                  </div>
+                  <div class="add-row" id="add-course-${sub.id}" style="display:none;padding:0.5rem 0 0 0;flex-wrap:wrap">
+                    <input type="text" id="course-name-${sub.id}" placeholder="Course නම" style="max-width:180px">
+                    <input type="number" id="course-months-${sub.id}" placeholder="මාස ගණන" min="0" style="max-width:100px">
+                    <input type="number" id="course-fee-${sub.id}" placeholder="ගාස්තුව (රු.)" value="2500" style="max-width:100px">
+                    <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.8rem"><input type="checkbox" id="course-free-${sub.id}"> Free</label>
+                    <button class="inline-btn inline-btn-teal" onclick="saveCourse('${sub.id}')">එකතු</button>
+                  </div>
+                </div>
+                <div class="h-actions">
+                  <button class="btn-edit" onclick="editSubject('${sub.id}','${esc(sub.name)}','${sub.teacher?.id||''}')">✏️</button>
+                  <button class="btn-del" onclick="delSubject('${sub.id}','${esc(sub.name)}')">🗑️</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function esc(s) { return (s||'').replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
+
+// ── Toggle collapse ──
+window.toggleBody = (header) => {
+  const body = header.nextElementSibling;
+  body.classList.toggle('collapsed');
+};
+
+// ── Section CRUD ──
+document.getElementById('btn-add-section').addEventListener('click', () => {
+  document.getElementById('add-section-row').style.display = 'flex';
+  document.getElementById('new-sec-name').focus();
+});
+
+document.getElementById('save-new-section').addEventListener('click', async () => {
+  const name = document.getElementById('new-sec-name').value.trim();
+  const desc = document.getElementById('new-sec-desc').value.trim();
+  if (!name) return showToast('නමක් ඇතුළත් කරන්න', 'warning');
+  try {
+    await createSection(name, desc);
+    showToast('Section එකතු කරන ලදී ✅', 'success');
+    document.getElementById('add-section-row').style.display = 'none';
+    document.getElementById('new-sec-name').value = '';
+    document.getElementById('new-sec-desc').value = '';
+    loadHierarchy();
+  } catch (e) { showToast(e.message, 'error'); }
+});
+
+window.editSection = async (id, name, desc) => {
+  const newName = prompt('Section නම වෙනස් කරන්න:', name);
+  if (!newName || newName === name) return;
+  const newDesc = prompt('විස්තරය:', desc);
+  try {
+    await updateSection(id, newName, newDesc || desc);
+    showToast('Section යාවත්කාලීන කරන ලදී', 'success');
+    loadHierarchy();
+  } catch (e) { showToast(e.message, 'error'); }
+};
+
+window.delSection = async (id, name) => {
+  if (!confirm(`"${name}" Section එක සහ එහි ඇති සියලුම දත්ත මකා දැමිය යුතුද?\n\nමෙය ආපසු හැරවිය නොහැක!`)) return;
+  try {
+    await deleteSection(id);
+    showToast('Section මකා දමන ලදී', 'success');
+    loadHierarchy();
+  } catch (e) { showToast(e.message, 'error'); }
+};
+
+// ── Category CRUD ──
+window.showAddCategory = (secId) => {
+  const el = document.getElementById(`add-cat-${secId}`);
+  el.style.display = el.style.display === 'none' ? 'flex' : 'none';
+  if (el.style.display === 'flex') document.getElementById(`cat-name-${secId}`).focus();
+};
+
+window.saveCategory = async (secId) => {
+  const name = document.getElementById(`cat-name-${secId}`).value.trim();
+  if (!name) return showToast('Category නමක් ඇතුළත් කරන්න', 'warning');
+  try {
+    await createCategory(secId, name);
+    showToast('Category එකතු කරන ලදී ✅', 'success');
+    loadHierarchy();
+  } catch (e) { showToast(e.message, 'error'); }
+};
+
+window.editCategory = async (id, name) => {
+  const newName = prompt('Category නම වෙනස් කරන්න:', name);
+  if (!newName || newName === name) return;
+  try {
+    await updateCategory(id, newName);
+    showToast('Category යාවත්කාලීන කරන ලදී', 'success');
+    loadHierarchy();
+  } catch (e) { showToast(e.message, 'error'); }
+};
+
+window.delCategory = async (id, name) => {
+  if (!confirm(`"${name}" Category එක මකා දැමිය යුතුද?`)) return;
+  try {
+    await deleteCategory(id);
+    showToast('Category මකා දමන ලදී', 'success');
+    loadHierarchy();
+  } catch (e) { showToast(e.message, 'error'); }
+};
+
+// ── Subject CRUD ──
+window.showAddSubject = (catId) => {
+  const el = document.getElementById(`add-sub-${catId}`);
+  el.style.display = el.style.display === 'none' ? 'flex' : 'none';
+};
+
+window.saveSubject = async (catId) => {
+  const name = document.getElementById(`sub-name-${catId}`).value.trim();
+  const teacherId = document.getElementById(`sub-teacher-${catId}`).value;
+  if (!name) return showToast('Subject නමක් ඇතුළත් කරන්න', 'warning');
+  try {
+    await createSubject(catId, name, teacherId);
+    showToast('Subject එකතු කරන ලදී ✅', 'success');
+    loadHierarchy();
+  } catch (e) { showToast(e.message, 'error'); }
+};
+
+window.editSubject = async (id, name, teacherId) => {
+  const newName = prompt('Subject නම වෙනස් කරන්න:', name);
+  if (!newName) return;
+  // Show teacher selector
+  const tList = teachers.map((t,i) => `${i+1}. ${t.full_name}`).join('\n');
+  const sel = prompt(`ගුරුවරයා තෝරන්න (අංකය):\n0. නොමැත\n${tList}`);
+  let newTeacherId = teacherId;
+  if (sel !== null) {
+    const idx = parseInt(sel);
+    newTeacherId = idx > 0 && idx <= teachers.length ? teachers[idx-1].id : null;
+  }
+  try {
+    await updateSubject(id, newName, newTeacherId);
+    showToast('Subject යාවත්කාලීන කරන ලදී', 'success');
+    loadHierarchy();
+  } catch (e) { showToast(e.message, 'error'); }
+};
+
+window.delSubject = async (id, name) => {
+  if (!confirm(`"${name}" Subject එක මකා දැමිය යුතුද?`)) return;
+  try {
+    await deleteSubject(id);
+    showToast('Subject මකා දමන ලදී', 'success');
+    loadHierarchy();
+  } catch (e) { showToast(e.message, 'error'); }
+};
+
+// ── Course CRUD ──
+window.showAddCourse = (subId) => {
+  const el = document.getElementById(`add-course-${subId}`);
+  el.style.display = el.style.display === 'none' ? 'flex' : 'none';
+};
+
+window.saveCourse = async (subId) => {
+  const name = document.getElementById(`course-name-${subId}`).value.trim();
+  const months = document.getElementById(`course-months-${subId}`).value;
+  const fee = document.getElementById(`course-fee-${subId}`).value || 2500;
+  const isFree = document.getElementById(`course-free-${subId}`).checked;
+  if (!name) return showToast('Course නමක් ඇතුළත් කරන්න', 'warning');
+  try {
+    await createCourse(subId, name, months, fee, isFree);
+    showToast('Course එකතු කරන ලදී ✅', 'success');
+    loadHierarchy();
+  } catch (e) { showToast(e.message, 'error'); }
+};
+
+window.editCourse = async (id, name, fee, isFree) => {
+  const newName = prompt('Course නම වෙනස් කරන්න:', name);
+  if (!newName) return;
+  const newFee = prompt('ගාස්තුව (රු.):', fee || 2500);
+  const newIsFree = confirm('මෙම පාඨමාලාව සම්පූර්ණයෙන්ම නොමිලේ ලබා දෙන එකක්ද?');
+  try {
+    await updateCourse(id, newName, newFee || 2500, newIsFree);
+    showToast('Course යාවත්කාලීන කරන ලදී', 'success');
+    loadHierarchy();
+  } catch (e) { showToast(e.message, 'error'); }
+};
+
+window.delCourse = async (id, name) => {
+  if (!confirm(`"${name}" Course එක මකා දැමිය යුතුද?`)) return;
+  try {
+    await deleteCourse(id);
+    showToast('Course මකා දමන ලදී', 'success');
+    loadHierarchy();
+  } catch (e) { showToast(e.message, 'error'); }
+};
+
+// ── Month Modal Logic ──
+let currentCourseForModal = null;
+import { createCourseMonth } from '/js/admin.js';
+
+window.openMonthModal = (courseStr) => {
+  // Try to parse if it's a string, or it might be directly passed as an object
+  const course = typeof courseStr === 'string' ? JSON.parse(courseStr) : courseStr;
+  currentCourseForModal = course;
+  document.getElementById('modal-course-title').textContent = `${course.name} - මාස කළමනාකරණය`;
+  document.getElementById('new-m-year').value = new Date().getFullYear();
+  document.getElementById('new-m-num').value = '';
+  document.getElementById('new-m-name').value = '';
+  document.getElementById('new-m-sheet').value = '';
+  document.getElementById('new-m-deadline').value = '14';
+  document.getElementById('new-m-free').checked = false;
+  renderModalMonths(course.course_months || []);
+  document.getElementById('month-modal').classList.add('active');
+};
+
+window.closeMonthModal = () => {
+  document.getElementById('month-modal').classList.remove('active');
+  currentCourseForModal = null;
+  loadHierarchy(); // Refresh in case changes were made
+};
+
+function renderModalMonths(months) {
+  const list = document.getElementById('modal-month-list');
+  if (!months.length) {
+    list.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--text-muted)">මාස කිසිවක් එක් කර නොමැත.</div>';
+    return;
+  }
+  
+  // Sort by year and month number
+  months.sort((a, b) => {
+    if (a.year !== b.year) return a.year - b.year;
+    return a.month_number - b.month_number;
+  });
+
+  list.innerHTML = months.map(m => `
+    <div class="month-item">
+      <div class="month-item-info">
+        <div class="month-item-title">${m.year} - ${m.name} (මාසය ${m.month_number}) ${m.is_free ? '<span style="background:var(--g-teal);color:white;padding:2px 6px;border-radius:4px;font-size:0.7rem">Free</span>' : ''}</div>
+        <div class="month-item-meta">
+          ${m.google_sheet_url ? `<a href="${m.google_sheet_url}" target="_blank" style="color:var(--teal)">📊 Sheet</a>` : '<span style="color:var(--rose)">Sheet නැත</span>'}
+          <span style="color:var(--dark3);margin-left:0.5rem">| Deadline: ${m.payment_deadline_date} වෙනිදා</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:0.5rem">
+        <button class="btn-edit" style="background:none;border:none;cursor:pointer" onclick="editMonthItem('${m.id}', ${m.year}, ${m.month_number}, '${esc(m.name)}', '${esc(m.google_sheet_url||'')}', ${m.payment_deadline_date || 14}, ${m.is_free || false})">✏️</button>
+        <button class="btn-del" style="background:none;border:none;cursor:pointer" onclick="delMonthItem('${m.id}', '${m.year} ${esc(m.name)}')">🗑️</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+window.saveNewMonth = async () => {
+  if (!currentCourseForModal) return;
+  const year = parseInt(document.getElementById('new-m-year').value);
+  const num = parseInt(document.getElementById('new-m-num').value);
+  const name = document.getElementById('new-m-name').value.trim();
+  const sheet = document.getElementById('new-m-sheet').value.trim();
+  const deadline = parseInt(document.getElementById('new-m-deadline').value) || 14;
+  const isFree = document.getElementById('new-m-free').checked;
+
+  if (!year || !num || !name) return showToast('අවුරුද්ද, මාසයේ අංකය සහ නම අනිවාර්යයි!', 'warning');
+  
+  try {
+    const newMonth = await createCourseMonth(currentCourseForModal.id, year, num, name, sheet, deadline, isFree);
+    if (!currentCourseForModal.course_months) currentCourseForModal.course_months = [];
+    currentCourseForModal.course_months.push(newMonth);
+    renderModalMonths(currentCourseForModal.course_months);
+    showToast('නව මාසය එකතු කරන ලදී ✅', 'success');
+    
+    document.getElementById('new-m-num').value = '';
+    document.getElementById('new-m-name').value = '';
+    document.getElementById('new-m-sheet').value = '';
+    document.getElementById('new-m-deadline').value = '14';
+    document.getElementById('new-m-free').checked = false;
+  } catch (e) {
+    if (e.code === '23505') showToast('මෙම මාසයේ අංකය දැනටමත් පවතී!', 'error');
+    else showToast(e.message, 'error');
+  }
+};
+
+window.editMonthItem = async (id, year, num, name, sheet, deadline, isFree) => {
+  const newYear = prompt('අවුරුද්ද:', year);
+  if (!newYear) return;
+  const newNum = prompt('මාසයේ අංකය (1-12):', num);
+  if (!newNum) return;
+  const newName = prompt('මාසයේ නම:', name);
+  if (!newName) return;
+  const newSheet = prompt('Google Sheet Link:', sheet);
+  const newDeadlineStr = prompt('Deadline දිනය (1-31):', deadline);
+  const newDeadline = parseInt(newDeadlineStr) || 14;
+  const newIsFree = confirm('මෙම මාසය නොමිලේ දෙන එකක්ද? (Free)');
+  
+  try {
+    await updateCourseMonth(id, parseInt(newYear), parseInt(newNum), newName, newSheet || '', newDeadline, newIsFree);
+    // Update local state to reflect immediately
+    const m = currentCourseForModal.course_months.find(x => x.id === id);
+    if(m) {
+        m.year = parseInt(newYear);
+        m.month_number = parseInt(newNum);
+        m.name = newName;
+        m.google_sheet_url = newSheet || null;
+        m.payment_deadline_date = newDeadline;
+        m.is_free = newIsFree;
+    }
+    renderModalMonths(currentCourseForModal.course_months);
+    showToast('මාසය යාවත්කාලීන කරන ලදී', 'success');
+  } catch (e) { showToast(e.message, 'error'); }
+};
+
+window.delMonthItem = async (id, title) => {
+  if (!confirm(`"${title}" මාසය මකා දැමිය යුතුද?`)) return;
+  try {
+    await deleteCourseMonth(id);
+    currentCourseForModal.course_months = currentCourseForModal.course_months.filter(x => x.id !== id);
+    renderModalMonths(currentCourseForModal.course_months);
+    showToast('මාසය මකා දමන ලදී', 'success');
+  } catch (e) { showToast(e.message, 'error'); }
+};
+
+// Handle clicks outside modal to close
+document.getElementById('month-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'month-modal') closeMonthModal();
+});
+
+loadHierarchy();
+</script>
+</body>
+</html>

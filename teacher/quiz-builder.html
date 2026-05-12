@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus LMS | Quiz Builder</title>
+<link rel="icon" type="image/png" href="/images/logo.png">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/dashboard.css">
+<style>
+.qb-card { background:#fff; border:1px solid #e2e8f0; border-radius:var(--radius-lg); padding:2rem; margin-bottom:2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+.questions-list { display: flex; flex-direction: column; gap: 1.5rem; }
+.q-card { background: #fff; border: 2px solid #e2e8f0; border-radius: var(--radius-lg); padding: 1.5rem; position: relative; transition: all 0.3s; }
+.q-card:hover { border-color: var(--teal); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+.q-card .q-num { position: absolute; top: -12px; left: 1.5rem; background: var(--teal); color: white; padding: 2px 12px; border-radius: 1rem; font-weight: 800; font-size: 0.8rem; }
+.q-card .remove-q { position: absolute; top: 1rem; right: 1rem; background: #fff1f2; color: var(--rose); border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s; }
+.q-card .remove-q:hover { background: #fecdd3; }
+.opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+@media (max-width: 600px) { .opt-grid { grid-template-columns: 1fr; } }
+.opt-item { display: flex; align-items: center; gap: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.75rem; border-radius: var(--radius-md); }
+.opt-item input[type="radio"] { width: 20px; height: 20px; accent-color: var(--teal); cursor: pointer; }
+.opt-item input[type="text"] { flex: 1; border: none; background: transparent; font-family: inherit; font-size: 0.95rem; }
+.opt-item input[type="text"]:focus { outline: none; }
+.opt-item:has(input[type="radio"]:checked) { border-color: var(--teal); background: rgba(13,148,136,0.05); }
+.add-q-btn { width: 100%; padding: 1.5rem; border: 2px dashed #cbd5e1; background: #f8fafc; color: var(--text-muted); border-radius: var(--radius-lg); font-weight: 700; cursor: pointer; transition: all 0.2s; margin-bottom: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+.add-q-btn:hover { border-color: var(--teal); color: var(--teal); background: rgba(13,148,136,0.05); }
+</style>
+</head>
+<body>
+<div class="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div class="dash-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand"><a href="/dashboard/teacher.html"><img src="/images/logo.png" alt="Nexus"><div><div class="brand-name eng">NEXUS</div><div class="brand-sub">LMS</div></div></a></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="/dashboard/teacher.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a>
+      <a class="nav-item" href="/teacher/assignments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>Assignments</a>
+      <a class="nav-item active" href="/teacher/quiz-builder.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Quiz Builder</a>
+      <a class="nav-item" href="/teacher/activity.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Activity Marks</a>
+      <a class="nav-item" href="/teacher/progress.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Student Progress</a>
+      <a class="nav-item" href="/teacher/reports.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Quiz Reports</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-chip" id="logout-btn"><div class="user-avatar" id="user-avatar">T</div><div class="user-info"><div class="user-name" id="user-name">Loading</div><div class="user-role">ගුරුවරයා</div></div></div>
+    </div>
+  </aside>
+
+  <div class="dash-main">
+    <header class="topbar">
+      <div class="topbar-left"><h1 class="page-title">Quiz <span>Builder</span></h1></div>
+    </header>
+    <main class="dash-content" style="max-width:900px;margin:0 auto">
+      
+      <!-- Basic Info -->
+      <div class="qb-card">
+        <h2 style="font-size:1.2rem;font-weight:800;margin-bottom:1.5rem;color:var(--dark)">1. මූලික තොරතුරු</h2>
+        <div class="form-group">
+          <label class="form-label">පාඨමාලාව තෝරන්න *</label>
+          <select id="q-course" class="form-input"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Quiz එකෙහි නම *</label>
+          <input type="text" id="q-title" class="form-input" placeholder="උදා: සෛලය - අනුමාන ප්‍රශ්න පත්‍රය 01">
+        </div>
+        <div class="form-group" style="margin-bottom:1.5rem">
+          <label class="form-label">කාල සීමාව (විනාඩි)</label>
+          <input type="number" id="q-time" class="form-input" placeholder="උදා: 30 (කාල සීමාවක් නොමැති නම් හිස්ව තබන්න)">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+          <div class="form-group" style="margin:0">
+            <label class="form-label">ප්‍රකාශන තත්ත්වය (Status)</label>
+            <select id="q-status" class="form-input">
+              <option value="published">Publish (වහාම)</option>
+              <option value="draft">Save as Draft (පසුව Publish කිරීමට)</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label">පළ කරන දිනය සහ වේලාව (Schedule)</label>
+            <input type="datetime-local" id="q-publish-at" class="form-input">
+            <small style="color:var(--text-muted);display:block;margin-top:0.3rem">සැලසුම් කළ වේලාවට පසු සිසුන්ට මෙය දිස්වනු ඇත.</small>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top:1.5rem">
+          <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer">
+            <input type="checkbox" id="q-shuffle" style="width:20px;height:20px;accent-color:var(--teal)">
+            <span style="font-weight:700">ප්‍රශ්න අහඹු ලෙස පෙන්වන්න (Shuffle Questions)</span>
+          </label>
+          <small style="color:var(--text-muted);display:block;margin-top:0.3rem">මෙය සක්‍රීය කළහොත් සෑම ශිෂ්‍යයෙකුටම ප්‍රශ්න පෙනෙන්නේ අහඹු පිළිවෙලකටය.</small>
+        </div>
+      </div>
+
+      <!-- Import Section -->
+      <div class="qb-card" style="background:rgba(13,148,136,0.05); border:1px dashed var(--teal)">
+        <h2 style="font-size:1.1rem;font-weight:800;margin-bottom:1rem;color:var(--teal)">Google Sheet එකෙන් Import කරන්න</h2>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem">
+          ඔබේ Google Sheet එක "Anyone with the link can view" ලෙස සකසා එහි URL එක මෙහි පේස්ට් කරන්න. <br>
+          පේළි සැකසුම: <b>ප්‍රශ්නය | පිළිතුරු 1-5 | නිවැරදි පිළිතුරේ අංකය (1-5)</b>
+        </p>
+        <div style="display:grid;grid-template-columns: 2fr 1fr; gap:1rem; margin-bottom:1rem">
+          <div class="form-group" style="margin:0">
+            <label class="form-label" style="font-size:0.8rem">Google Sheet URL</label>
+            <input type="text" id="sheet-url" class="form-input" placeholder="https://docs.google.com/spreadsheets/d/.../edit#gid=0">
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label" style="font-size:0.8rem">Correct Answer Column</label>
+            <select id="correct-col" class="form-input">
+              <option value="4">Column E (ප්‍රශ්නය + පිළිතුරු 3)</option>
+              <option value="5" selected>Column F (ප්‍රශ්නය + පිළිතුරු 4)</option>
+              <option value="6">Column G (ප්‍රශ්නය + පිළිතුරු 5)</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-teal" id="import-sheet-btn" type="button" style="width:100%">ප්‍රශ්න පූරණය කරන්න (Import)</button>
+      </div>
+
+      <!-- Questions List -->
+      <div class="section-header"><h2>2. ප්‍රශ්න ඇතුළත් කරන්න</h2></div>
+      
+      <div id="questions-container" class="questions-list"></div>
+
+      <button class="add-q-btn" id="add-q-btn" type="button">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        නව ප්‍රශ්නයක් එක් කරන්න
+      </button>
+
+      <div class="qb-card" style="display:flex;justify-content:space-between;align-items:center;background:var(--dark);border:none;color:white">
+        <div>
+          <div style="font-size:0.9rem;opacity:0.8">සම්පූර්ණ ප්‍රශ්න ගණන</div>
+          <div style="font-size:1.5rem;font-weight:900" id="total-q-badge">0</div>
+        </div>
+        <button class="btn btn-gold btn-lg" id="save-quiz-btn" style="min-width:200px">Quiz එක Publish කරන්න 🚀</button>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script type="module">
+import { requireAuth, logout, populateUserChip } from '/js/auth.js';
+import { getTeacherCourses } from '/js/admin.js';
+import { createQuiz } from '/js/quiz.js';
+import { initSidebar, showToast } from '/js/ui.js';
+import supabase from '/js/supabase.js';
+
+const profile = await requireAuth(['teacher', 'admin']);
+populateUserChip(profile); initSidebar();
+document.getElementById('logout-btn').addEventListener('click', logout);
+
+// Load Courses
+const courses = await getTeacherCourses(profile.id);
+const courseSelect = document.getElementById('q-course');
+courseSelect.innerHTML = '<option value="">-- පාඨමාලාව තෝරන්න --</option>' + courses.map(c => `<option value="${c.id}">${c.title}</option>`).join('');
+
+const preselect = new URLSearchParams(location.search).get('course');
+if (preselect) courseSelect.value = preselect;
+
+let questionCount = 0;
+
+function createQuestionElement(index, data = null) {
+  const div = document.createElement('div');
+  div.className = 'q-card';
+  div.id = `q-card-${index}`;
+  
+  const text = data ? data.text : "";
+  const options = data ? data.options : ["", "", "", ""];
+  const correct = data ? data.correct : 0;
+  
+  // Ensure we have at least 4 slots in UI, but show 5 if data has 5 OR if 5th is correct
+  const displayOptions = [...options];
+  while (displayOptions.length < 4) displayOptions.push("");
+  if (correct === 4 && displayOptions.length < 5) displayOptions.push(""); 
+  if (displayOptions.length > 5) displayOptions.length = 5; 
+
+  div.innerHTML = `
+    <div class="q-num">ප්‍රශ්නය ${index + 1}</div>
+    <button class="remove-q" type="button" onclick="removeQuestion(${index})">✕</button>
+    <div class="form-group">
+      <textarea class="form-input q-text" rows="2" placeholder="ප්‍රශ්නය මෙහි ලියන්න..." style="font-weight:600;font-size:1rem">${text}</textarea>
+    </div>
+    <div class="opt-grid" style="${displayOptions.length > 4 ? 'grid-template-columns: 1fr 1fr 1fr' : ''}">
+      ${displayOptions.map((opt, i) => `
+        <div class="opt-item">
+          <input type="radio" name="correct-${index}" value="${i}" ${i === correct ? 'checked' : ''}>
+          <input type="text" class="opt-text" placeholder="පිළිතුර ${i + 1}" value="${opt}">
+        </div>
+      `).join('')}
+      ${displayOptions.length < 5 ? `
+        <button type="button" class="btn btn-sm btn-outline" onclick="addOptionToCard(${index})" style="grid-column: span 2; border-style: dashed; opacity: 0.6">+ පිළිතුරක් එක් කරන්න (උපරිම 5)</button>
+      ` : ''}
+    </div>
+  `;
+  return div;
+}
+
+window.addOptionToCard = (index) => {
+  const card = document.getElementById(`q-card-${index}`);
+  const grid = card.querySelector('.opt-grid');
+  const items = grid.querySelectorAll('.opt-item');
+  if (items.length >= 5) return;
+  
+  const newIdx = items.length;
+  const div = document.createElement('div');
+  div.className = 'opt-item';
+  div.innerHTML = `
+    <input type="radio" name="correct-${index}" value="${newIdx}">
+    <input type="text" class="opt-text" placeholder="පිළිතුර ${newIdx + 1}">
+  `;
+  grid.insertBefore(div, grid.lastElementChild);
+  if (items.length + 1 >= 5) grid.lastElementChild.remove();
+  if (items.length + 1 > 4) grid.style.gridTemplateColumns = '1fr 1fr 1fr';
+};
+
+window.addQuestion = (data = null) => {
+  const container = document.getElementById('questions-container');
+  container.appendChild(createQuestionElement(questionCount++, data));
+  updateStats();
+};
+
+window.removeQuestion = (index) => {
+  const card = document.getElementById(`q-card-${index}`);
+  if (card) {
+    card.remove();
+    reindexQuestions();
+    updateStats();
+  }
+};
+
+function reindexQuestions() {
+  const cards = document.querySelectorAll('.q-card');
+  cards.forEach((card, idx) => {
+    card.querySelector('.q-num').textContent = `ප්‍රශ්නය ${idx + 1}`;
+    const radios = card.querySelectorAll('input[type="radio"]');
+    radios.forEach(r => r.name = `correct-${idx}`);
+    // Update the remove function too
+    card.querySelector('.remove-q').setAttribute('onclick', `removeQuestion(${idx})`);
+    card.id = `q-card-${idx}`;
+  });
+}
+
+function updateStats() {
+  document.getElementById('total-q-badge').textContent = document.querySelectorAll('.q-card').length;
+}
+
+document.getElementById('add-q-btn').addEventListener('click', () => window.addQuestion());
+
+// Add first question
+addQuestion();
+
+// Google Sheet Import Logic
+function sheetUrlToCsv(url) {
+  const match = url.match(/\/d\/([^/]+)/);
+  if (!match) throw new Error('වැරදි Google Sheet URL එකක්.');
+  const sheetId = match[1];
+  return `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
+}
+
+// Robust CSV Parser
+function parseCSVRow(text) {
+  const result = [];
+  let cell = '';
+  let inQuote = false;
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    if (char === '"') {
+      if (inQuote && text[i+1] === '"') { // escaped quote
+        cell += '"';
+        i++;
+      } else {
+        inQuote = !inQuote;
+      }
+    } else if (char === ',' && !inQuote) {
+      result.push(cell.trim());
+      cell = '';
+    } else {
+      cell += char;
+    }
+  }
+  result.push(cell.trim());
+  return result;
+}
+
+async function importFromSheet() {
+  const urlInput = document.getElementById('sheet-url');
+  const url = urlInput.value.trim();
+  const correctColIdx = parseInt(document.getElementById('correct-col').value);
+  
+  if (!url) { showToast('Google Sheet URL එක ඇතුළත් කරන්න', 'warning'); return; }
+
+  const btn = document.getElementById('import-sheet-btn');
+  btn.disabled = true; btn.textContent = 'Wait...';
+
+  try {
+    const csvUrl = sheetUrlToCsv(url);
+    const resp = await fetch(csvUrl);
+    if (!resp.ok) throw new Error('Sheet එක ලබා ගත නොහැක. එය "Anyone with the link can view" ලෙස සකසා ඇති බව තහවුරු කරන්න.');
+    const text = await resp.text();
+
+    const rows = text.split(/\r?\n/).filter(row => row.trim() !== '');
+    if (rows.length < 2) throw new Error('Sheet එකේ ප්‍රමාණවත් දත්ත නොමැත (Header එක ඇතුළුව).');
+
+    // Skip header row
+    const dataRows = rows.slice(1);
+    
+    const importedQuestions = [];
+    dataRows.forEach((row) => {
+      const cleanedCols = parseCSVRow(row);
+      
+      if (cleanedCols.length > correctColIdx) {
+        const text = cleanedCols[0];
+        const options = cleanedCols.slice(1, correctColIdx).filter(o => o !== "");
+        let correct = parseInt(cleanedCols[correctColIdx]);
+        
+        // Convert 1-based (1,2,3,4,5) to 0-based (0,1,2,3,4)
+        if (!isNaN(correct) && correct >= 1) {
+          correct = correct - 1;
+        } else {
+          correct = 0;
+        }
+        
+        importedQuestions.push({ text, options, correct });
+      }
+    });
+
+    if (importedQuestions.length === 0) throw new Error('ගැළපෙන ප්‍රශ්න කිසිවක් හමු නොවීය. කරුණාකර Column සැකසුම පරීක්ෂා කරන්න.');
+
+    if (confirm(`${importedQuestions.length} ක ප්‍රශ්න ප්‍රමාණයක් හමු විය. දැනට ඇති ප්‍රශ්න ඉවත් කර මේවා ඇතුළත් කරන්නද?`)) {
+      document.getElementById('questions-container').innerHTML = '';
+      questionCount = 0;
+      
+      importedQuestions.forEach((q) => {
+        window.addQuestion(q);
+      });
+      
+      showToast(`${importedQuestions.length} ප්‍රශ්න සාර්ථකව ඇතුළත් කළා!`, 'success');
+      urlInput.value = '';
+    }
+  } catch (err) {
+    console.error(err);
+    showToast(err.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'ප්‍රශ්න පූරණය කරන්න (Import)';
+  }
+}
+
+document.getElementById('import-sheet-btn').addEventListener('click', importFromSheet);
+
+document.getElementById('save-quiz-btn').addEventListener('click', async () => {
+  const courseId = courseSelect.value;
+  const title = document.getElementById('q-title').value.trim();
+  const timeRaw = document.getElementById('q-time').value;
+  const timeLimit = timeRaw ? parseInt(timeRaw) * 60 : null;
+  const status = document.getElementById('q-status').value;
+  const publishAt = document.getElementById('q-publish-at').value || null;
+  const shuffle = document.getElementById('q-shuffle').checked;
+
+  if (!courseId || !title) { showToast('මාතෘකාව සහ පාඨමාලාව තෝරන්න', 'warning'); return; }
+
+  const qCards = document.querySelectorAll('.q-card');
+  if (qCards.length === 0) { showToast('අවම එක් ප්‍රශ්නයක් හෝ ඇතුළත් කරන්න', 'warning'); return; }
+
+  const questions = [];
+  let valid = true;
+
+  qCards.forEach((card, idx) => {
+    const text = card.querySelector('.q-text').value.trim();
+    const optTexts = Array.from(card.querySelectorAll('.opt-text')).map(i => i.value.trim());
+    const checkedRadio = card.querySelector('input[type="radio"]:checked');
+    const correct = checkedRadio ? parseInt(checkedRadio.value) : null;
+
+    if (!text) { showToast(`ප්‍රශ්නය ${idx + 1} හිස්ව පවතී`, 'warning'); valid = false; return; }
+    if (optTexts.some(o => !o)) { showToast(`ප්‍රශ්නය ${idx + 1} හි සියලු පිළිතුරු ඇතුළත් කරන්න`, 'warning'); valid = false; return; }
+    if (correct === null) { showToast(`ප්‍රශ්නය ${idx + 1} සඳහා නිවැරදි පිළිතුර තෝරා නැත`, 'warning'); valid = false; return; }
+
+    questions.push({ text, options: optTexts, correct });
+  });
+
+  if (!valid) return;
+
+  const btn = document.getElementById('save-quiz-btn');
+  btn.disabled = true;
+  btn.textContent = 'Publishing...';
+
+  try {
+    await createQuiz({ 
+      courseId, 
+      title, 
+      timeLimit, 
+      questions, 
+      createdBy: profile.id,
+      status,
+      publishAt,
+      shuffle
+    });
+    
+    showToast(status === 'draft' ? 'Draft එකක් ලෙස සුරකින ලදී! 💾' : 'Quiz එක සාර්ථකව Publish කරන ලදී! ✅', 'success');
+    setTimeout(() => window.location.href = '/dashboard/teacher.html', 1500);
+  } catch (err) {
+    showToast(err.message, 'error');
+    btn.disabled = false;
+    btn.textContent = 'Quiz එක Publish කරන්න 🚀';
+  }
+});
+
+</script>
+</body>
+</html>

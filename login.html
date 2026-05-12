@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus LMS | ලොග් වන්න</title>
+<meta name="description" content="Nexus Institute LMS - ඔබේ WhatsApp අංකය සහ Password යොදා ලොග් වන්න.">
+<link rel="icon" type="image/png" href="/images/logo.png">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/auth.css">
+</head>
+<body>
+<div class="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+
+<main class="auth-page">
+  <div class="auth-card reveal">
+    <div class="auth-logo">
+      <img src="/images/logo.png" alt="Nexus Institute">
+      <h1 class="eng">Nexus LMS</h1>
+      <p>Nexus Institute ඉගෙනුම් කළමනාකරණ පද්ධතිය</p>
+    </div>
+
+    <form id="login-form" novalidate>
+      <div class="form-group">
+        <label class="form-label" for="whatsapp">WhatsApp අංකය</label>
+        <input class="form-input" type="tel" id="whatsapp" name="whatsapp"
+          placeholder="0771234567" autocomplete="username" required>
+        <span class="form-error">WhatsApp අංකය ඇතුළත් කරන්න</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password (ID හි පළමු ඉලක්කම් 6)</label>
+        <div class="password-wrap">
+          <input class="form-input" type="password" id="password" name="password"
+            placeholder="••••••" maxlength="12" autocomplete="current-password" required>
+          <button type="button" class="password-toggle" id="pw-toggle" aria-label="Show password">
+            <svg id="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+        <span class="form-error">Password ඇතුළත් කරන්න</span>
+      </div>
+
+      <div class="form-group">
+        <label class="checkbox-wrap">
+          <input type="checkbox" id="remember-me">
+          <span>Remember Me (මතක තබාගන්න)</span>
+        </label>
+      </div>
+
+      <div id="login-error" style="display:none;background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2);border-radius:.75rem;padding:.85rem 1.25rem;font-size:.9rem;color:#f43f5e;margin-bottom:1.25rem"></div>
+
+      <button type="submit" class="btn btn-teal btn-lg" style="width:100%" id="login-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+          <polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>
+        </svg>
+        <span id="login-btn-text">ලොග් වන්න</span>
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>ගිණුමක් නොමැතිද? <a href="/register.html">ලියාපදිංචි වන්න</a></p>
+    </div>
+  </div>
+</main>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script type="module">
+import { login, redirectIfLoggedIn } from '/js/auth.js';
+import { showToast, initReveal } from '/js/ui.js';
+
+initReveal();
+redirectIfLoggedIn();
+
+const form = document.getElementById('login-form');
+const btnText = document.getElementById('login-btn-text');
+const loginBtn = document.getElementById('login-btn');
+const errBox = document.getElementById('login-error');
+const pwToggle = document.getElementById('pw-toggle');
+const pwInput = document.getElementById('password');
+
+pwToggle.addEventListener('click', () => {
+  const show = pwInput.type === 'password';
+  pwInput.type = show ? 'text' : 'password';
+  pwToggle.querySelector('#eye-icon').innerHTML = show
+    ? `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>`
+    : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+});
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const whatsapp = document.getElementById('whatsapp').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const remember = document.getElementById('remember-me').checked;
+
+  if (!whatsapp || !password) {
+    showToast('සියලු ක්ෂේත්‍ර පිරවීම අවශ්‍යය', 'warning');
+    return;
+  }
+
+  loginBtn.disabled = true;
+  btnText.textContent = 'රැඳෙන්න...';
+  errBox.style.display = 'none';
+
+  try {
+    await login(whatsapp, password, remember);
+    showToast('ලොගින් සාර්ථකයි!', 'success');
+    // Redirect handled by auth module based on role
+    const { getProfile, redirectByRole } = await import('/js/auth.js');
+    const profile = await getProfile();
+    if (profile) redirectByRole(profile.role);
+  } catch (err) {
+    errBox.textContent = 'WhatsApp අංකය හෝ Password වැරදිය. නැවත උත්සාහ කරන්න.';
+    errBox.style.display = 'block';
+    loginBtn.disabled = false;
+    btnText.textContent = 'ලොග් වන්න';
+  }
+});
+</script>
+</body>
+</html>

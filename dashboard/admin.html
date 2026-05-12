@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus LMS | Admin Dashboard</title>
+<link rel="icon" type="image/png" href="/images/logo.png">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+<div class="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div class="dash-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand"><a href="/dashboard/admin.html"><img src="/images/logo.png" alt="Nexus"><div><div class="brand-name eng">NEXUS</div><div class="brand-sub">Admin</div></div></a></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">ප්‍රධාන</div>
+      <a class="nav-item active" href="/dashboard/admin.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a>
+      <div class="nav-section-label">කළමනාකරණය</div>
+      <a class="nav-item" href="/admin/payments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>ගෙවීම් <span class="nav-badge" id="pending-badge" style="display:none">0</span></a>
+      <a class="nav-item" href="/admin/users.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>පරිශීලකයන්</a>
+      <a class="nav-item" href="/admin/courses.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>පාඨමාලා</a>
+      <a class="nav-item" href="/admin/enrollments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>ලියාපදිංචි</a>
+      <div class="nav-section-label">දැනුම්දීම්</div>
+      <a class="nav-item" href="#" id="notif-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>දැනුම්දීම් <span class="nav-badge hidden" id="nav-notif-badge">0</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-chip" id="logout-btn">
+        <div class="user-avatar" id="user-avatar">A</div>
+        <div class="user-info"><div class="user-name" id="user-name">Admin</div><div class="user-role" id="user-role">පරිපාලක</div></div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2" width="18" height="18"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="dash-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <h1 class="page-title">Admin <span>Dashboard</span></h1>
+      </div>
+      <div class="topbar-right">
+        <div class="notif-btn" id="notif-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-count hidden" id="notif-count">0</span></div>
+      </div>
+    </header>
+    <main class="dash-content">
+      <div class="stats-grid">
+        <div class="stat-card reveal"><div class="stat-icon si-teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="stat-info"><div class="stat-num" id="stat-students">—</div><div class="stat-label">සිසුන්</div></div></div>
+        <div class="stat-card reveal"><div class="stat-icon si-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div class="stat-info"><div class="stat-num" id="stat-courses">—</div><div class="stat-label">පාඨමාලා</div></div></div>
+        <div class="stat-card reveal"><div class="stat-icon si-rose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div><div class="stat-info"><div class="stat-num" id="stat-pending">—</div><div class="stat-label">අනුමතය ගෙවීම්</div></div></div>
+        <div class="stat-card reveal"><div class="stat-icon si-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div class="stat-info"><div class="stat-num" id="stat-active">—</div><div class="stat-label">සකිය ලියාපදිංචි</div></div></div>
+      </div>
+
+      <div class="section-header"><h2>ඉක්මන් <span>ක්‍රියාකාරකම්</span></h2></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem;margin-bottom:3rem">
+        <a href="/admin/payments.html" class="card" style="display:flex;align-items:center;gap:1.25rem;text-decoration:none;cursor:pointer">
+          <div class="stat-icon si-rose" style="flex-shrink:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="26" height="26"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+          <div><strong style="font-size:1rem">ගෙවීම් අනුමත කරන්න</strong><p style="font-size:.85rem;color:var(--text-muted);margin-top:.2rem">Slip reviews</p></div>
+        </a>
+        <a href="/admin/users.html" class="card" style="display:flex;align-items:center;gap:1.25rem;text-decoration:none">
+          <div class="stat-icon si-teal" style="flex-shrink:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="26" height="26"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg></div>
+          <div><strong style="font-size:1rem">ගුරුවරුන් එකතු කරන්න</strong><p style="font-size:.85rem;color:var(--text-muted);margin-top:.2rem">Teacher accounts</p></div>
+        </a>
+        <a href="/admin/courses.html" class="card" style="display:flex;align-items:center;gap:1.25rem;text-decoration:none">
+          <div class="stat-icon si-gold" style="flex-shrink:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="26" height="26"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/><line x1="12" y1="13" x2="12" y2="19"/><line x1="9" y1="16" x2="15" y2="16"/></svg></div>
+          <div><strong style="font-size:1rem">පාඨමාලා කළමනාකරණය</strong><p style="font-size:.85rem;color:var(--text-muted);margin-top:.2rem">Course CRUD</p></div>
+        </a>
+        <a href="/admin/enrollments.html" class="card" style="display:flex;align-items:center;gap:1.25rem;text-decoration:none">
+          <div class="stat-icon si-blue" style="flex-shrink:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="26" height="26"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+          <div><strong style="font-size:1rem">ලියාපදිංචි කළමනාකරණය</strong><p style="font-size:.85rem;color:var(--text-muted);margin-top:.2rem">Enrollment management</p></div>
+        </a>
+      </div>
+
+      <!-- Recent Payments -->
+      <div class="section-header"><h2>මෑත <span>ගෙවීම්</span></h2><a href="/admin/payments.html" class="btn btn-sm btn-outline">සියල්ල බලන්න</a></div>
+      <div id="recent-payments"><div class="skeleton" style="height:120px;border-radius:1rem"></div></div>
+    </main>
+  </div>
+  <div class="notif-panel" id="notif-panel">
+    <div class="notif-panel-header"><h3>දැනුම්දීම්</h3><button class="btn btn-sm btn-outline" id="mark-all-read">සියල්ල කියෙව්වා</button></div>
+    <div class="notif-list" id="notif-list"></div>
+  </div>
+</div>
+<div id="toast-container" class="toast-container"></div>
+<script type="module">
+import { requireAuth, logout, populateUserChip } from '/js/auth.js';
+import { getAdminStats } from '/js/admin.js';
+import { getAllPayments } from '/js/payment.js';
+import { getNotifications, getUnreadCount, markAllRead, updateNotifBadge, renderNotifications, subscribeNotifications, initNotificationClicks } from '/js/notifications.js';
+import { initSidebar, initNotifPanel, showToast, statusBadge, initReveal } from '/js/ui.js';
+
+const profile = await requireAuth(['admin']);
+if (!profile) throw new Error('Not authorized');
+
+populateUserChip(profile); initSidebar(); initNotifPanel(); initReveal(); initNotificationClicks('notif-list');
+document.getElementById('logout-btn').addEventListener('click', logout);
+document.getElementById('notif-nav').addEventListener('click', e => { e.preventDefault(); document.getElementById('notif-panel').classList.toggle('active'); });
+
+// Safe fetch helper
+async function safeFetch(promise, fallback = []) {
+  try { return await promise; }
+  catch (e) { console.error('Fetch error:', e); return fallback; }
+}
+
+const stats = await safeFetch(getAdminStats(), { students:0, courses:0, pendingPayments:0, activeEnrollments:0 });
+const payments = await safeFetch(getAllPayments(), []);
+const notifications = await safeFetch(getNotifications(profile.id), []);
+const unread = await safeFetch(getUnreadCount(profile.id), 0);
+const statsNum = document.getElementById('stat-students');
+if (statsNum) statsNum.textContent = stats.students;
+const coursesNum = document.getElementById('stat-courses');
+if (coursesNum) coursesNum.textContent = stats.courses;
+const pendingNum = document.getElementById('stat-pending');
+if (pendingNum) pendingNum.textContent = stats.pendingPayments;
+const activeNum = document.getElementById('stat-active');
+if (activeNum) activeNum.textContent = stats.activeEnrollments;
+
+const pendingBadge = document.getElementById('pending-badge');
+if (pendingBadge && stats.pendingPayments > 0) {
+  pendingBadge.textContent = stats.pendingPayments;
+  pendingBadge.style.display = 'flex';
+}
+
+updateNotifBadge(unread);
+const navBadge = document.getElementById('nav-notif-badge');
+if (navBadge && unread > 0) {
+  navBadge.textContent = unread;
+  navBadge.classList.remove('hidden');
+}
+renderNotifications(notifications, 'notif-list');
+document.getElementById('mark-all-read').addEventListener('click', async () => { await markAllRead(profile.id); updateNotifBadge(0); showToast('සියල්ල කියෙව්වා','success'); });
+
+const recent = payments.slice(0, 5);
+const rp = document.getElementById('recent-payments');
+if (!recent.length) {
+  rp.innerHTML = `<p style="color:var(--text-muted);text-align:center;padding:2rem">ගෙවීම් නොමැත</p>`;
+} else {
+  rp.innerHTML = `<div class="table-wrap"><table class="data-table"><thead><tr><th>සිසුවා</th><th>WhatsApp</th><th>දිනය</th><th>තත්ත්වය</th><th>ක්‍රියාව</th></tr></thead><tbody>` +
+  recent.map(p => `<tr><td>${p.student?.full_name||'—'}</td><td class="eng">${p.student?.whatsapp_number||'—'}</td><td class="eng">${new Date(p.created_at).toLocaleDateString('si-LK')}</td><td>${statusBadge(p.status)}</td><td><a href="/admin/payments.html" class="btn btn-sm btn-teal">විස්තර</a></td></tr>`).join('') +
+  `</tbody></table></div>`;
+}
+subscribeNotifications(profile.id, async (newNotif) => {
+  showToast(newNotif.message, 'info');
+  const notifs = await getNotifications(profile.id);
+  const cnt = await getUnreadCount(profile.id);
+  renderNotifications(notifs, 'notif-list');
+  updateNotifBadge(cnt);
+  const nb = document.getElementById('nav-notif-badge');
+  if (nb) {
+    if (cnt > 0) { nb.textContent = cnt; nb.classList.remove('hidden'); }
+    else nb.classList.add('hidden');
+  }
+});
+document.getElementById('notif-list').dataset.userId = profile.id;
+</script>
+</body>
+</html>
