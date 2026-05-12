@@ -1,6 +1,17 @@
 // ═══ Auth Helpers ═══
 import supabase from './supabase.js';
 
+// ── Runtime base-path helper ──
+// Works for any page depth. Finds the root of the deployment
+// by walking up until we hit the repo name segment (/we/).
+// Falls back to '/' if running locally or on a custom domain.
+function getBase() {
+  const path = window.location.pathname; // e.g. /we/dashboard/student.html
+  // Match everything up to and including the repo folder name
+  const match = path.match(/^(\/[^\/]+\/)/);   // e.g. /we/
+  return match ? match[1] : '/';
+}
+
 // Format WhatsApp number as email for Supabase Auth
 export function toAuthEmail(whatsapp) {
   const clean = whatsapp.replace(/\D/g, '');
@@ -72,7 +83,7 @@ export async function login(whatsappOrEmail, password, rememberMe = false) {
 export async function logout() {
   localStorage.removeItem('nexus_remember');
   await supabase.auth.signOut();
-  window.location.href = import.meta.env.BASE_URL + 'login.html';
+  window.location.href = getBase() + 'login.html';
 }
 
 // Get current session
@@ -98,12 +109,12 @@ export async function getProfile() {
 export async function requireAuth(allowedRoles = []) {
   const session = await getSession();
   if (!session) {
-    window.location.href = import.meta.env.BASE_URL + 'login.html';
+    window.location.href = getBase() + 'login.html';
     return null;
   }
   const profile = await getProfile();
   if (!profile) {
-    window.location.href = import.meta.env.BASE_URL + 'login.html';
+    window.location.href = getBase() + 'login.html';
     return null;
   }
   if (allowedRoles.length && !allowedRoles.includes(profile.role)) {
@@ -115,7 +126,7 @@ export async function requireAuth(allowedRoles = []) {
 
 // Redirect to correct dashboard based on role
 export function redirectByRole(role) {
-  const base = import.meta.env.BASE_URL;
+  const base = getBase();
   if (role === 'admin')   window.location.href = base + 'dashboard/admin.html';
   else if (role === 'teacher') window.location.href = base + 'dashboard/teacher.html';
   else window.location.href = base + 'dashboard/student.html';
