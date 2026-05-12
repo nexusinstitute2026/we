@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus LMS | Course Dashboard</title>
+<link rel="icon" type="image/png" href="/we/images/logo.png">
+<style>
+.tab-btn { padding: 0.8rem 1.5rem; background: none; border: none; font-family: inherit; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
+.tab-btn.active { color: var(--teal); border-bottom-color: var(--teal); }
+.tab-content { display: none; padding-top: 1.5rem; }
+.tab-content.active { display: block; }
+.session-card { background: white; border: 1px solid #e2e8f0; border-radius: var(--radius-md); padding: 1.5rem; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+.session-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.s-date { font-family: 'Outfit', sans-serif; font-weight: 700; color: var(--gold); font-size: 0.9rem; }
+.s-title { font-size: 1.1rem; font-weight: 700; color: var(--dark); margin-top: 0.3rem; }
+.s-actions { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+.s-actions .btn { display: inline-flex; align-items: center; gap: 0.5rem; }
+
+.assign-card { border-left: 4px solid var(--rose); background: #fff1f2; }
+</style>
+  <script type="module" crossorigin src="/we/assets/course-0wpRDupY.js"></script>
+  <link rel="modulepreload" crossorigin href="/we/assets/ui-DbSpmO8X.js">
+  <link rel="modulepreload" crossorigin href="/we/assets/quiz-Dw9to9Jg.js">
+  <link rel="stylesheet" crossorigin href="/we/assets/ui-BK4U8q2_.css">
+  <link rel="stylesheet" crossorigin href="/we/assets/fonts-C8iiRjZX.css">
+  <link rel="stylesheet" crossorigin href="/we/assets/course-BJa9aU_d.css">
+</head>
+<body class="bg-gray-50">
+
+<header class="course-header" style="background:var(--dark);color:white;padding:2rem 5%">
+  <div style="max-width:1200px;margin:0 auto">
+    <a href="#" onclick="history.back()" style="color:rgba(255,255,255,0.7);text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;margin-bottom:1rem">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> ආපසු
+    </a>
+    <h1 id="c-title" style="font-size:2rem;font-weight:800;margin-bottom:0.5rem">Loading...</h1>
+    <div style="display:flex;gap:1.5rem;font-size:0.9rem;color:rgba(255,255,255,0.8)">
+      <div id="c-teacher"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> <span>...</span></div>
+    </div>
+  </div>
+</header>
+
+<main style="max-width:1200px;margin:0 auto;padding:2rem 5%">
+  
+  <div style="border-bottom:1px solid #e2e8f0;display:flex;gap:1rem;margin-bottom:1rem">
+    <button class="tab-btn active" onclick="switchTab('sessions')">පන්ති හා වීඩියෝ (Sessions)</button>
+    <button class="tab-btn" onclick="switchTab('assignments')">පැවරුම් (Assignments)</button>
+    <button class="tab-btn" onclick="switchTab('quizzes')">අනුමාන ප්‍රශ්න (Quizzes)</button>
+  </div>
+
+  <div id="tab-sessions" class="tab-content active">
+    <div id="sessions-list"><div class="skeleton" style="height:120px;border-radius:1rem;margin-bottom:1rem"></div></div>
+  </div>
+
+  <div id="tab-assignments" class="tab-content">
+    <div id="assign-list"><p style="color:var(--text-muted)">පැවරුම් කිසිවක් තවම ලබා දී නොමැත.</p></div>
+  </div>
+
+  <div id="tab-quizzes" class="tab-content">
+    <div id="quiz-list"><p style="color:var(--text-muted)">අනුමාන ප්‍රශ්න පත්‍ර තවම ලබා දී නොමැත.</p></div>
+  </div>
+
+</main>
+
+<!-- Upload Assignment Modal -->
+<div class="modal-overlay" id="upload-assign-modal">
+  <div class="modal-content" style="max-width:500px;background:#fff;border-radius:var(--radius-xl);padding:2rem;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+      <div style="font-size:1.25rem;font-weight:800;color:var(--dark)" id="ua-title">Assignment Upload</div>
+      <button onclick="closeAssignUpload()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted)">✕</button>
+    </div>
+    <div style="padding:1rem 0">
+      <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:1rem">
+        කරුණාකර ඔබගේ පිළිතුරු ගොනුව (PDF/Image) තෝරන්න. 
+        උපරිම ප්‍රමාණය <strong id="ua-maxmb-label">10MB</strong> යි.
+      </p>
+      
+      <div class="upload-zone" id="ua-dropzone" onclick="document.getElementById('ua-file').click()" style="margin-bottom:1rem;border:2px dashed #cbd5e1;border-radius:1rem;padding:2rem;text-align:center;cursor:pointer;background:#f8fafc;transition:all 0.3s">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40" style="margin-bottom:1rem;color:var(--teal)"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <p style="font-weight:600;color:var(--dark3)">Click කර ගොනුව තෝරන්න</p>
+      </div>
+      <input type="file" id="ua-file" accept="image/*,application/pdf" style="display:none">
+      
+      <div id="ua-preview" style="display:none;margin-bottom:1rem">
+        <div style="display:flex;align-items:center;gap:1rem;background:#f0fdfa;padding:1rem;border-radius:0.75rem;border:1px solid #ccfbf1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" width="24" height="24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <div style="flex:1;overflow:hidden">
+            <div style="font-weight:700;font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--dark)" id="ua-filename">file.pdf</div>
+            <div style="font-size:0.8rem;color:var(--teal)" id="ua-filesize">0 MB</div>
+          </div>
+          <button onclick="clearAssignFile()" style="background:none;border:none;color:var(--rose);cursor:pointer;font-weight:800;font-size:1.2rem">✕</button>
+        </div>
+      </div>
+      
+      <button class="btn btn-teal" style="width:100%;padding:0.85rem;font-weight:800;border-radius:0.75rem;border:none;cursor:pointer" id="ua-submit-btn" onclick="submitAssignUpload()">Upload කරන්න</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

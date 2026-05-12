@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus LMS | ලියාපදිංචිය</title>
+<link rel="icon" type="image/png" href="/we/images/logo.png">
+  <script type="module" crossorigin src="/we/assets/register-DLqUE8xj.js"></script>
+  <link rel="modulepreload" crossorigin href="/we/assets/ui-DbSpmO8X.js">
+  <link rel="stylesheet" crossorigin href="/we/assets/ui-BK4U8q2_.css">
+  <link rel="stylesheet" crossorigin href="/we/assets/fonts-C8iiRjZX.css">
+  <link rel="stylesheet" crossorigin href="/we/assets/auth-D9_1oNGW.css">
+</head>
+<body>
+<div class="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+
+<main class="auth-page" style="padding:4rem 1.5rem">
+  <div class="auth-card reveal" style="max-width:540px">
+    <div class="auth-logo">
+      <img src="/we/images/logo.png" alt="Nexus Institute">
+      <h1 class="eng">ලියාපදිංචිය</h1>
+      <p>නව සිසු ගිණුමක් සාදන්න</p>
+    </div>
+
+    <!-- Registration Form -->
+    <form id="reg-form" novalidate>
+      <div class="form-group">
+        <label class="form-label" for="full-name">සම්පූර්ණ නම *</label>
+        <input class="form-input" type="text" id="full-name" placeholder="ඔබේ සම්පූර්ණ නම" required>
+        <span class="form-error">නම ඇතුළත් කරන්න</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="school">පාසල / ආයතනය</label>
+        <input class="form-input" type="text" id="school" placeholder="ඔබේ පාසලේ නම">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="address">ලිපිනය *</label>
+        <input class="form-input" type="text" id="address" placeholder="ඔබේ ගෙදර ලිපිනය" required>
+        <span class="form-error">ලිපිනය ඇතුළත් කරන්න</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="id-number">ජාතික හැඳුනුම්පත් අංකය *</label>
+        <input class="form-input eng" type="text" id="id-number" placeholder="123456789V" required>
+        <div class="form-helper">Password = ID හි පළමු ඉලක්කම් 6 (ස්වයංක්‍රීයව)</div>
+        <span class="form-error">ID අංකය ඇතුළත් කරන්න</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="whatsapp">WhatsApp අංකය *</label>
+        <input class="form-input eng" type="tel" id="whatsapp" placeholder="0771234567" required>
+        <div class="form-helper">Username ලෙස WhatsApp අංකය භාවිතා කෙරේ</div>
+        <span class="form-error">WhatsApp අංකය ඇතුළත් කරන්න</span>
+      </div>
+
+      <div id="reg-error" style="display:none;background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2);border-radius:.75rem;padding:.85rem 1.25rem;font-size:.9rem;color:#f43f5e;margin-bottom:1.25rem"></div>
+
+      <button type="submit" class="btn btn-teal btn-lg" style="width:100%" id="reg-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="8.5" cy="7" r="4"/>
+          <line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>
+        </svg>
+        <span id="reg-btn-text">ලියාපදිංචි වන්න</span>
+      </button>
+    </form>
+
+    <!-- Success State -->
+    <div class="auth-success" id="success-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+        <polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+      <h2>ලියාපදිංචිය සාර්ථකයි! 🎉</h2>
+      <p>ඔබේ Login Credentials:</p>
+      <div class="cred-box">
+        <p>📱 <strong>Username:</strong> <span id="cred-whatsapp"></span></p>
+        <p>🔑 <strong>Password:</strong> <span id="cred-password"></span></p>
+      </div>
+      <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:1.5rem">මෙම තොරතුරු ආරක්ෂිතව ගබඩා කරන්න!</p>
+      <a href="/login.html" class="btn btn-teal btn-lg">ලොග් වන්න</a>
+    </div>
+
+    <div class="auth-footer" id="reg-footer">
+      <p>ගිණුමක් ඇතිද? <a href="/login.html">ලොග් වන්න</a></p>
+    </div>
+  </div>
+</main>
+
+<div id="toast-container" class="toast-container"></div>
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+import{b as c}from"./ui-DbSpmO8X.js";async function f(t){const{count:e}=await c.from("notifications").select("*",{count:"exact",head:!0}).eq("user_id",t).eq("is_read",!1);return e||0}async function p(t){const{data:e,error:a}=await c.from("notifications").select("*").eq("user_id",t).order("created_at",{ascending:!1}).limit(50);if(a)throw a;return e||[]}async function u(t){await c.from("notifications").update({is_read:!0}).eq("id",t)}async function h(t){await c.from("notifications").update({is_read:!0}).eq("user_id",t).eq("is_read",!1)}function v(t,e){const a=document.getElementById(e);if(a){if(!t.length){a.innerHTML=`<div class="empty-state" style="padding:2rem;text-align:center;color:var(--text-muted)">
+      <svg viewBox="0 0 24 24" width="40" height="40" style="opacity:0.3;margin-bottom:1rem;stroke:currentColor;fill:none;stroke-width:2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <p>දැනුම්දීම් නොමැත</p>
+    </div>`;return}a.innerHTML=t.map(n=>{let i=n.message,s="";const o=i.match(/\|URL:(.*)$/);return o&&(s=o[1],i=i.replace(o[0],"").trim()),`
+    <div class="notif-item ${n.is_read?"":"unread"}" data-notif-id="${n.id}" ${s?`data-url="${s}" style="cursor:pointer"`:""}>
+      <div class="notif-icon ${n.is_read?"ni-teal":"ni-gold"}">
+        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </div>
+      <div class="notif-msg">
+        <p>${i}</p>
+        <time>${new Date(n.created_at).toLocaleString("si-LK")}</time>
+      </div>
+    </div>`}).join("")}}function y(t,e){const a=document.getElementById(t);a&&a.addEventListener("click",async n=>{const i=n.target.closest(".notif-item");if(!i)return;const s=i.dataset.notifId;if(!s)return;const o=i.dataset.url;if(i.classList.contains("unread"))try{await u(s),i.classList.remove("unread");const r=i.querySelector(".notif-icon");r&&(r.classList.remove("ni-gold"),r.classList.add("ni-teal"));const l=await f(i.parentElement.dataset.userId||"");m(l);const d=document.getElementById("nav-notif-badge");d&&(l>0?(d.textContent=l,d.classList.remove("hidden")):d.classList.add("hidden"))}catch(r){console.error("Failed to mark read:",r)}o&&(window.location.href=o)})}function m(t){const e=document.getElementById("notif-count");e&&(t>0?(e.textContent=t>99?"99+":t,e.style.display="flex"):e.style.display="none")}function w(t,e){return c.channel(`notifications:${t}`).on("postgres_changes",{event:"INSERT",schema:"public",table:"notifications",filter:`user_id=eq.${t}`},a=>{e?.(a.new)}).subscribe()}export{f as a,p as g,y as i,h as m,v as r,w as s,m as u};
