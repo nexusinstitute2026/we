@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nexus LMS | ලියාපදිංචිය</title>
-<link rel="icon" type="image/png" href="/images/logo.png">
-<link rel="stylesheet" href="/fonts/fonts.css">
-<link rel="stylesheet" href="/css/base.css">
-<link rel="stylesheet" href="/css/auth.css">
+<link rel="icon" type="image/png" href="images/logo.png">
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/auth.css">
 </head>
 <body>
 <div class="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
@@ -15,9 +15,9 @@
 <main class="auth-page" style="padding:4rem 1.5rem">
   <div class="auth-card reveal" style="max-width:540px">
     <div class="auth-logo">
-      <img src="/images/logo.png" alt="Nexus Institute">
-      <h1 class="eng">ලියාපදිංචිය</h1>
-      <p>නව සිසු ගිණුමක් සාදන්න</p>
+      <img src="images/logo.png" alt="Nexus Institute">
+      <h1 class="eng">Nexus LMS</h1>
+      <p>Nexus Institute ඉගෙනුම් කළමනාකරණ පද්ධතිය</p>
     </div>
 
     <!-- Registration Form -->
@@ -74,11 +74,11 @@
         <p>🔑 <strong>Password:</strong> <span id="cred-password"></span></p>
       </div>
       <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:1.5rem">මෙම තොරතුරු ආරක්ෂිතව ගබඩා කරන්න!</p>
-      <a href="/login.html" class="btn btn-teal btn-lg">ලොග් වන්න</a>
+      <a href="login.html" class="btn btn-teal btn-lg">ලොග් වන්න</a>
     </div>
 
     <div class="auth-footer" id="reg-footer">
-      <p>ගිණුමක් ඇතිද? <a href="/login.html">ලොග් වන්න</a></p>
+      <p>දැනටමත් ලියාපදිංචි වී තිබේද? <a href="login.html">ලොග් වන්න</a></p>
     </div>
   </div>
 </main>
@@ -86,8 +86,8 @@
 <div id="toast-container" class="toast-container"></div>
 
 <script type="module">
-import { registerStudent } from '/js/auth.js';
-import { showToast, initReveal } from '/js/ui.js';
+import { registerStudent } from './js/auth.js';
+import { showToast, initReveal } from './js/ui.js';
 
 initReveal();
 

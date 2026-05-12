@@ -72,7 +72,7 @@ export async function login(whatsappOrEmail, password, rememberMe = false) {
 export async function logout() {
   localStorage.removeItem('nexus_remember');
   await supabase.auth.signOut();
-  window.location.href = '/login.html';
+  window.location.href = import.meta.env.BASE_URL + 'login.html';
 }
 
 // Get current session
@@ -98,12 +98,12 @@ export async function getProfile() {
 export async function requireAuth(allowedRoles = []) {
   const session = await getSession();
   if (!session) {
-    window.location.href = '/login.html';
+    window.location.href = import.meta.env.BASE_URL + 'login.html';
     return null;
   }
   const profile = await getProfile();
   if (!profile) {
-    window.location.href = '/login.html';
+    window.location.href = import.meta.env.BASE_URL + 'login.html';
     return null;
   }
   if (allowedRoles.length && !allowedRoles.includes(profile.role)) {
@@ -115,9 +115,10 @@ export async function requireAuth(allowedRoles = []) {
 
 // Redirect to correct dashboard based on role
 export function redirectByRole(role) {
-  if (role === 'admin')   window.location.href = '/dashboard/admin.html';
-  else if (role === 'teacher') window.location.href = '/dashboard/teacher.html';
-  else window.location.href = '/dashboard/student.html';
+  const base = import.meta.env.BASE_URL;
+  if (role === 'admin')   window.location.href = base + 'dashboard/admin.html';
+  else if (role === 'teacher') window.location.href = base + 'dashboard/teacher.html';
+  else window.location.href = base + 'dashboard/student.html';
 }
 
 // Redirect logged-in users away from auth pages

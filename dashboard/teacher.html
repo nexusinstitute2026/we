@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nexus LMS | Teacher Dashboard</title>
-<link rel="icon" type="image/png" href="/images/logo.png">
-<link rel="stylesheet" href="/fonts/fonts.css">
-<link rel="stylesheet" href="/css/base.css">
-<link rel="stylesheet" href="/css/dashboard.css">
+<link rel="icon" type="image/png" href="../images/logo.png">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/dashboard.css">
 <style>
 .subject-card { background: white; border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
 .subject-header { border-bottom: 2px solid #f1f5f9; padding-bottom: 1rem; margin-bottom: 1rem; }
@@ -21,15 +21,15 @@
 <div class="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
 <div class="dash-layout">
   <aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand"><a href="/dashboard/teacher.html"><img src="/images/logo.png" alt="Nexus"><div><div class="brand-name eng">NEXUS</div><div class="brand-sub">LMS</div></div></a></div>
+    <div class="sidebar-brand"><a href="../dashboard/teacher.html"><img src="../images/logo.png" alt="Nexus"><div><div class="brand-name eng">NEXUS</div><div class="brand-sub">LMS</div></div></a></div>
     <nav class="sidebar-nav">
       <div class="nav-section-label">ප්‍රධාන</div>
-      <a class="nav-item active" data-page="home" href="/dashboard/teacher.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a>
-      <a class="nav-item" href="/teacher/assignments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>Assignments</a>
-      <a class="nav-item" data-page="quizzes" href="/teacher/quiz-builder.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Quiz Builder</a>
-      <a class="nav-item" href="/teacher/activity.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Activity Marks</a>
-      <a class="nav-item" href="/teacher/progress.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Student Progress</a>
-      <a class="nav-item" data-page="reports" href="/teacher/reports.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Quiz Reports</a>
+      <a class="nav-item active" data-page="home" href="../dashboard/teacher.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a>
+      <a class="nav-item" href="../teacher/assignments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>Assignments</a>
+      <a class="nav-item" data-page="quizzes" href="../teacher/quiz-builder.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Quiz Builder</a>
+      <a class="nav-item" href="../teacher/activity.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Activity Marks</a>
+      <a class="nav-item" href="../teacher/progress.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Student Progress</a>
+      <a class="nav-item" data-page="reports" href="../teacher/reports.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Quiz Reports</a>
       <div class="nav-section-label">දැනුම්දීම්</div>
       <a class="nav-item" href="#" id="notif-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>දැනුම්දීම් <span class="nav-badge hidden" id="nav-notif-badge">0</span></a>
     </nav>
@@ -71,12 +71,12 @@
 </div>
 <div id="toast-container" class="toast-container"></div>
 <script type="module">
-import { requireAuth, logout, populateUserChip } from '/js/auth.js';
-import { getTeacherSubjects, syncCourseSheet } from '/js/admin.js';
-import { getTeacherQuizzes } from '/js/quiz.js';
-import { getNotifications, getUnreadCount, markAllRead, updateNotifBadge, renderNotifications, subscribeNotifications, initNotificationClicks } from '/js/notifications.js';
-import { initSidebar, initNotifPanel, showToast, initReveal } from '/js/ui.js';
-import supabase from '/js/supabase.js';
+import { requireAuth, logout, populateUserChip } from '../js/auth.js';
+import { getTeacherSubjects, syncCourseSheet } from '../js/admin.js';
+import { getTeacherQuizzes } from '../js/quiz.js';
+import { getNotifications, getUnreadCount, markAllRead, updateNotifBadge, renderNotifications, subscribeNotifications, initNotificationClicks } from '../js/notifications.js';
+import { initSidebar, initNotifPanel, showToast, initReveal } from '../js/ui.js';
+import supabase from '../js/supabase.js';
 
 const profile = await requireAuth(['teacher', 'admin']);
 if (!profile) throw new Error('Not authorized');
@@ -183,8 +183,8 @@ if (!subjects.length) {
             </div>
           </div>
           <div style="display:flex; gap:0.5rem;">
-            <a href="/pages/course.html?id=${c.id}" class="btn btn-sm btn-outline" style="flex:1; justify-content:center;">👁️ බලන්න</a>
-            <a href="/teacher/quiz-builder.html?course=${c.id}" class="btn btn-sm btn-purple" style="flex:1; justify-content:center;">📝 Quiz</a>
+            <a href="../pages/course.html?id=${c.id}" class="btn btn-sm btn-outline" style="flex:1; justify-content:center;">👁️ බලන්න</a>
+            <a href="../teacher/quiz-builder.html?course=${c.id}" class="btn btn-sm btn-purple" style="flex:1; justify-content:center;">📝 Quiz</a>
           </div>
         </div>
         
