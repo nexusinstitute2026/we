@@ -220,8 +220,8 @@
     </div>
 
     <script type="module">
-        import supabase from '/js/supabase.js';
-        import { getProfile, getStudentAccessDetails } from '/js/auth.js';
+        import supabase from '../js/supabase.js';
+        import { getProfile, getStudentAccessDetails } from '../js/auth.js';
 
         // ===== DOM INITIALIZATION =====
         document.addEventListener('DOMContentLoaded', () => {
@@ -241,7 +241,7 @@
             try {
                 const profile = await getProfile();
                 if (!profile) {
-                    window.location.href = '/login.html';
+                    window.location.href = '../login.html';
                     return;
                 }
 
@@ -316,7 +316,7 @@
                 }
 
                 const btnHTML = canAccess 
-                    ? `<a href="/pages/course.html?id=${courseId}&month=${month.id}" class="card-btn">පංති බලන්න →</a>`
+                    ? `<a href="../pages/course.html?id=${courseId}&month=${month.id}" class="card-btn">පංති බලන්න →</a>`
                     : `<button class="card-btn" style="background:#9e9e9e;cursor:not-allowed;box-shadow:none" disabled>මුදල් ගෙවා නොමැත</button>`;
 
                 card.innerHTML = `

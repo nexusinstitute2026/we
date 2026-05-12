@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nexus LMS | Course Dashboard</title>
-<link rel="icon" type="image/png" href="/images/logo.png">
-<link rel="stylesheet" href="/fonts/fonts.css">
-<link rel="stylesheet" href="/css/base.css">
-<link rel="stylesheet" href="/css/course.css">
+<link rel="icon" type="image/png" href="../images/logo.png">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/course.css">
 <style>
 .tab-btn { padding: 0.8rem 1.5rem; background: none; border: none; font-family: inherit; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
 .tab-btn.active { color: var(--teal); border-bottom-color: var(--teal); }
@@ -59,15 +59,15 @@
 </main>
 
 <script type="module">
-import { requireAuth, getProfile, getStudentAccessDetails } from '/js/auth.js';
-import supabase from '/js/supabase.js';
-import { getCourseQuizzes } from '/js/quiz.js';
-import { showToast } from '/js/ui.js';
+import { requireAuth, getProfile, getStudentAccessDetails } from '../js/auth.js';
+import supabase from '../js/supabase.js';
+import { getCourseQuizzes } from '../js/quiz.js';
+import { showToast } from '../js/ui.js';
 
 await requireAuth(['student', 'teacher', 'admin']);
 
 const profile = await getProfile();
-if (!profile) window.location.href = '/login.html';
+if (!profile) window.location.href = '../login.html';
 
 const urlParams = new URLSearchParams(window.location.search);
 const courseId = urlParams.get('id');
@@ -115,7 +115,7 @@ async function loadCourseData() {
             <div style="background:#ffebee;color:#c62828;padding:2rem;border-radius:1rem;text-align:center;margin-top:2rem;">
               <h2 style="margin-bottom:1rem">⚠️ ප්‍රවේශය අත්හිටුවා ඇත</h2>
               <p>මෙම පන්ති සඳහා පිවිසීමට ඔබට අවසර නොමැත.</p>
-              <a href="/pages/course-months.html?id=${courseId}" style="display:inline-block;margin-top:1rem;background:#c62828;color:white;padding:0.5rem 1rem;border-radius:0.5rem;text-decoration:none">ආපසු යන්න</a>
+              <a href="../pages/course-months.html?id=${courseId}" style="display:inline-block;margin-top:1rem;background:#c62828;color:white;padding:0.5rem 1rem;border-radius:0.5rem;text-decoration:none">ආපසු යන්න</a>
             </div>
           `;
           return; // Stop rendering
@@ -194,7 +194,7 @@ async function loadCourseData() {
           <div><div class="s-title">${q.title}</div></div>
         </div>
         <div class="s-actions">
-          <a href="/pages/quiz.html?id=${q.id}" class="btn btn-sm btn-gold">Quiz එක ආරම්භ කරන්න</a>
+          <a href="../pages/quiz.html?id=${q.id}" class="btn btn-sm btn-gold">Quiz එක ආරම්භ කරන්න</a>
         </div>
       </div>
     `).join('');
