@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nexus LMS | පාඨමාලා කළමනාකරණය</title>
-<link rel="icon" type="image/png" href="/images/logo.png">
-<link rel="stylesheet" href="/fonts/fonts.css">
-<link rel="stylesheet" href="/css/base.css">
-<link rel="stylesheet" href="/css/dashboard.css">
+<link rel="icon" type="image/png" href="../images/logo.png">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/dashboard.css">
 <style>
 .hierarchy-section { background: #fff; border: 1px solid #e2e8f0; border-radius: var(--radius-xl); margin-bottom: 1.5rem; overflow: hidden; }
 .h-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem; cursor: pointer; transition: background 0.2s; }
@@ -77,13 +77,13 @@
 <body>
 <div class="dash-layout">
   <aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand"><a href="/dashboard/admin.html"><img src="/images/logo.png" alt="Nexus"><div><div class="brand-name eng">NEXUS</div><div class="brand-sub">Admin</div></div></a></div>
+    <div class="sidebar-brand"><a href="../dashboard/admin.html"><img src="../images/logo.png" alt="Nexus"><div><div class="brand-name eng">NEXUS</div><div class="brand-sub">Admin</div></div></a></div>
     <nav class="sidebar-nav">
-      <a class="nav-item" href="/dashboard/admin.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a>
-      <a class="nav-item" href="/admin/payments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>ගෙවීම්</a>
-      <a class="nav-item" href="/admin/users.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>පරිශීලකයන්</a>
-      <a class="nav-item active" href="/admin/courses.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>පාඨමාලා</a>
-      <a class="nav-item" href="/admin/enrollments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>ලියාපදිංචි</a>
+      <a class="nav-item" href="../dashboard/admin.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a>
+      <a class="nav-item" href="../admin/payments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>ගෙවීම්</a>
+      <a class="nav-item" href="../admin/users.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>පරිශීලකයන්</a>
+      <a class="nav-item active" href="../admin/courses.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>පාඨමාලා</a>
+      <a class="nav-item" href="../admin/enrollments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>ලියාපදිංචි</a>
     </nav>
     <div class="sidebar-footer">
       <div class="user-chip" id="logout-btn"><div class="user-avatar">A</div><div class="user-info"><div class="user-name">Admin</div><div class="user-role">පරිපාලක</div></div></div>
@@ -147,7 +147,7 @@
 <div id="toast-container" class="toast-container"></div>
 
 <script type="module">
-import { requireAuth, logout, populateUserChip } from '/js/auth.js';
+import { requireAuth, logout, populateUserChip } from '../js/auth.js';
 import {
   getFullHierarchy, getUsersByRole,
   createSection, updateSection, deleteSection,
@@ -155,8 +155,8 @@ import {
   createSubject, updateSubject, deleteSubject,
   createCourse, updateCourse, deleteCourse,
   updateCourseMonth, deleteCourseMonth
-} from '/js/admin.js';
-import { initSidebar, showToast } from '/js/ui.js';
+} from '../js/admin.js';
+import { initSidebar, showToast } from '../js/ui.js';
 
 const profile = await requireAuth(['admin']);
 populateUserChip(profile); initSidebar();
@@ -432,7 +432,7 @@ window.delCourse = async (id, name) => {
 
 // ── Month Modal Logic ──
 let currentCourseForModal = null;
-import { createCourseMonth } from '/js/admin.js';
+import { createCourseMonth } from '../js/admin.js';
 
 window.openMonthModal = (courseStr) => {
   // Try to parse if it's a string, or it might be directly passed as an object
