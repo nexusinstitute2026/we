@@ -1,13 +1,14 @@
 // ═══ Supabase Client ═══
-import { createClient } from '@supabase/supabase-js';
+// Using ESM CDN so it works in plain browsers without a bundler
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-// Use Vite environment variables
-// Create a .env file in the root and add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
-export const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-export const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// Fallback for environment variables (works in both Vite and plain browsers)
+const env = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env : {};
+export const SUPABASE_URL = env.VITE_SUPABASE_URL || window.VITE_SUPABASE_URL;
+export const SUPABASE_ANON_KEY = env.VITE_SUPABASE_ANON_KEY || window.VITE_SUPABASE_ANON_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  console.warn('Supabase credentials missing. Please check your .env file.');
+  console.warn('Supabase credentials missing.');
 }
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
