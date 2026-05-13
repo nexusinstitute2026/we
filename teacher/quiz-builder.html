@@ -323,34 +323,54 @@ async function importFromSheet() {
     }
 
     const allRows = parseCSV(text);
+    console.log(`[Import] Total rows found: ${allRows.length}`);
     if (allRows.length < 2) throw new Error('Sheet එකේ ප්‍රමාණවත් දත්ත නොමැත (පළමු පේළිය Header ලෙස සලකා මඟ හරිනු ලැබේ).');
 
     // Skip header row
     const dataRows = allRows.slice(1);
-    
     const importedQuestions = [];
+    let skippedRows = 0;
+
     dataRows.forEach((cleanedCols, idx) => {
-      if (cleanedCols.length > correctColIdx) {
+      // Basic validation: must have at least a question and 2 options
+      if (cleanedCols.length >= 3) {
         const text = cleanedCols[0];
+        
+        // Determine correct answer column: use the one selected OR the last column if it's a number
+        let correctIdx = correctColIdx;
+        if (cleanedCols.length <= correctIdx || isNaN(parseInt(cleanedCols[correctIdx]))) {
+          // Fallback to the last column if it's a valid number
+          const lastVal = parseInt(cleanedCols[cleanedCols.length - 1]);
+          if (!isNaN(lastVal)) {
+            correctIdx = cleanedCols.length - 1;
+          }
+        }
+
         // Options are between index 1 and the correct answer column
-        const options = cleanedCols.slice(1, correctColIdx).filter(o => o !== "");
-        let correct = parseInt(cleanedCols[correctColIdx]);
+        const options = cleanedCols.slice(1, correctIdx).filter(o => o !== "");
+        let correctVal = parseInt(cleanedCols[correctIdx]);
         
         // Convert 1-based (1,2,3,4,5) to 0-based (0,1,2,3,4)
-        if (!isNaN(correct) && correct >= 1) {
-          correct = correct - 1;
+        if (!isNaN(correctVal) && correctVal >= 1) {
+          correctVal = correctVal - 1;
         } else {
-          correct = 0;
+          correctVal = 0;
         }
         
-        if (text) {
-          importedQuestions.push({ text, options, correct });
+        if (text && options.length >= 2) {
+          importedQuestions.push({ text, options, correct: correctVal });
+        } else {
+          skippedRows++;
         }
+      } else {
+        skippedRows++;
       }
     });
 
+    console.log(`[Import] Success: ${importedQuestions.length}, Skipped: ${skippedRows}`);
+
     if (importedQuestions.length === 0) {
-      throw new Error('ප්‍රශ්න කිසිවක් හමු නොවීය. කරුණාකර "Correct Answer Column" සැකසුම සහ Sheet එකෙහි තීරු (Columns) පරීක්ෂා කරන්න.');
+      throw new Error('ප්‍රශ්න කිසිවක් හමු නොවීය. කරුණාකර Sheet එකේ තීරු (Columns) නිවැරදිදැයි පරීක්ෂා කරන්න. (ප්‍රශ්නය, පිළිතුරු, සහ අවසානයේ නිවැරදි පිළිතුරේ අංකය තිබිය යුතුය)');
     }
 
     if (confirm(`ප්‍රශ්න ${importedQuestions.length} ක් හමු විය. දැනට ඇති සියලු ප්‍රශ්න ඉවත් කර මේවා ඇතුළත් කරන්නද?`)) {
