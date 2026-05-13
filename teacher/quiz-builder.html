@@ -386,17 +386,17 @@ async function importFromSheet() {
       throw new Error('ප්‍රශ්න කිසිවක් හමු නොවීය. කරුණාකර Sheet එකේ තීරු (Columns) නිවැරදිදැයි පරීක්ෂා කරන්න. (ප්‍රශ්නය, පිළිතුරු, සහ අවසානයේ නිවැරදි පිළිතුරේ අංකය තිබිය යුතුය)');
     }
 
-    if (confirm(`ප්‍රශ්න ${importedQuestions.length} ක් හමු විය. දැනට ඇති සියලු ප්‍රශ්න ඉවත් කර මේවා ඇතුළත් කරන්නද?`)) {
-      document.getElementById('questions-container').innerHTML = '';
-      questionCount = 0;
-      
-      importedQuestions.forEach((q) => {
-        window.addQuestion(q);
-      });
-      
-      showToast(`ප්‍රශ්න ${importedQuestions.length} ක් සාර්ථකව ඇතුළත් කළා!`, 'success');
-      urlInput.value = '';
-    }
+    // browsers might block window.confirm after an async fetch. We will just load them directly.
+    document.getElementById('questions-container').innerHTML = '';
+    questionCount = 0;
+    
+    importedQuestions.forEach((q) => {
+      window.addQuestion(q);
+    });
+    
+    showToast(`ප්‍රශ්න ${importedQuestions.length} ක් සාර්ථකව පූරණය විය! දැන් Publish කරන්න බොත්තම ඔබන්න.`, 'success');
+    urlInput.value = '';
+
   } catch (err) {
     console.error('[Import Error]', err);
     showToast(err.message, 'error');
