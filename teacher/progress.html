@@ -137,7 +137,7 @@
 import { requireAuth, logout, populateUserChip } from '/js/auth.js';
 import { getTeacherSubjects } from '/js/admin.js';
 import { initSidebar, showToast } from '/js/ui.js';
-import supabase from '/js/supabase.js';
+import supabase from '/js/supabase.js?v=2';
 
 const profile = await requireAuth(['teacher','admin']);
 populateUserChip(profile); initSidebar();
@@ -205,7 +205,7 @@ window.openStudent = async (sid, name, wa, paid) => {
 
   // Parallel fetch
   const [sessRes, attendRes, viewsRes, assignRes, subsRes, quizRes, attRes] = await Promise.all([
-    supabase.from('sessions').select('id,title,date,yt_link').eq('course_id', currentCourseId).order('date'),
+    supabase.from('sessions').select('id,title,start_time,yt_link').eq('course_id', currentCourseId).order('start_time'),
     supabase.from('attendance').select('session_id,attended').eq('student_id', sid),
     supabase.from('recording_views').select('session_id,view_count').eq('student_id', sid),
     supabase.from('assignments').select('id,title,max_marks,due_date').eq('course_id', currentCourseId).order('due_date'),
@@ -251,7 +251,7 @@ window.openStudent = async (sid, name, wa, paid) => {
       return `<div class="session-row" id="sess-row-${s.id}">
         <div style="flex:1">
           <div style="font-weight:700">${s.title}</div>
-          <div style="font-size:.8rem;color:var(--text-muted)">${new Date(s.date).toLocaleDateString('si-LK',{weekday:'short',year:'numeric',month:'short',day:'numeric'})}</div>
+          <div style="font-size:.8rem;color:var(--text-muted)">${new Date(s.start_time).toLocaleDateString('si-LK',{weekday:'short',year:'numeric',month:'short',day:'numeric'})}</div>
         </div>
         ${v?.view_count ? `<span class="pill pill-gold">📺 ${v.view_count}x</span>` : ''}
         <button class="toggle-btn ${isPresent?'toggle-present':'toggle-absent'}" id="att-btn-${s.id}" onclick="toggleAttendance('${s.id}','${sid}',${isPresent})">

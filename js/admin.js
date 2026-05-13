@@ -324,24 +324,40 @@ export async function syncCourseSheet(courseId, courseMonthId, sheetUrl) {
           // Attempt cleanup if standard Date() fails
           parsedDate = new Date(String(dateVal).replace(/\./g, '/')); 
       }
+      
+      if (isNaN(parsedDate.getTime())) {
+          console.warn(`[Sync] Skipping row ${i} due to invalid date:`, dateVal);
+          continue; 
+      }
 
-      sessions.push({
+      const isoDate = parsedDate.toISOString();
+      const sessionObj = {
         course_id: courseId,
         course_month_id: courseMonthId,
-        start_time: parsedDate.toISOString(),
         title: topicVal,
         zoom_link: c[4] && c[4].v ? String(c[4].v) : null,
-        yt_link: c[5] && c[5].v ? String(c[5].v) : null
-      });
+        yt_link: c[5] && c[5].v ? String(c[5].v) : null,
+        // We use 'start_time' as the primary timestamp column
+        start_time: isoDate
+      };
+      sessions.push(sessionObj);
     }
+
+    if (sessions.length === 0) {
+      throw new Error('Sheet එකේ වලංගු දත්ත කිසිවක් හමු නොවීය. කරුණාකර දින වකවානු පරීක්ෂා කරන්න.');
+    }
+
+    console.log(`[Sync] Attempting to sync ${sessions.length} sessions:`);
+    console.table(sessions[0]); // Log the first one as a sample
 
     // Clear old sessions for this course month
     await supabase.from('sessions').delete().eq('course_month_id', courseMonthId);
     
     // Insert new ones
-    if (sessions.length > 0) {
-      const { error } = await supabase.from('sessions').insert(sessions);
-      if (error) throw error;
+    const { error } = await supabase.from('sessions').insert(sessions);
+    if (error) {
+      console.error('[Sync Error]', error);
+      throw error;
     }
     
     return { success: true, count: sessions.length };

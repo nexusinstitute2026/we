@@ -60,7 +60,7 @@
 
 <script type="module">
 import { requireAuth, getProfile, getStudentAccessDetails } from '../js/auth.js';
-import supabase from '../js/supabase.js';
+import supabase from '../js/supabase.js?v=3';
 import { getCourseQuizzes } from '../js/quiz.js';
 import { showToast } from '../js/ui.js';
 
@@ -126,7 +126,8 @@ async function loadCourseData() {
     }
   }
 
-  const { data: sessions } = await query.order('date', { ascending: false });
+  console.log('[Course] Fetching sessions with order: start_time');
+  const { data: sessions } = await query.order('start_time', { ascending: false });
   let filteredSessions = sessions || [];
   
   const sList = document.getElementById('sessions-list');
@@ -137,7 +138,7 @@ async function loadCourseData() {
       <div class="session-card">
         <div class="session-header">
           <div>
-            <div class="s-date">${new Date(s.date).toLocaleDateString('si-LK', { month:'long', day:'numeric', year:'numeric' })}</div>
+            <div class="s-date">${new Date(s.start_time).toLocaleDateString('si-LK', { month:'long', day:'numeric', year:'numeric' })}</div>
             <div class="s-title">${s.title}</div>
           </div>
         </div>
