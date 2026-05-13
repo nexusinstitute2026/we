@@ -301,32 +301,45 @@ export async function syncCourseSheet(courseId, courseMonthId, sheetUrl) {
     const rows = data.table.rows;
     if (!rows || rows.length === 0) throw new Error('Sheet හිස්ව පවතී.');
 
-    const sessions = [];
-    // Assume Row 0 is Headers: [Topic, Start Time, Duration, Status, Zoom Link, Youtube Link]
+    // Fetch existing sessions for this month to prevent duplicates and preserve IDs
+    const { data: existing } = await supabase.from('sessions').select('id, start_time').eq('course_month_id', courseMonthId);
+    const existingMap = new Map();
+    if (existing) {
+      existing.forEach(s => {
+        try {
+          existingMap.set(new Date(s.start_time).toISOString(), s.id);
+        } catch(e) {}
+      });
+    }
+
+    const sessionsToUpsert = [];
+    const sheetDates = new Set();
+
     // Start from index 1 (Row 2)
     for (let i = 1; i < rows.length; i++) {
       const c = rows[i].c;
-      if (!c || !c[1] || !c[1].v) continue; // Skip if 'Start Time' column is empty
+      if (!c || !c[1] || (!c[1].v && !c[1].f)) continue; // Skip if 'Start Time' column is empty
       
-      // We map the user's columns to the DB columns:
-      // c[0] = Topic -> title
-      // c[1] = Start Time -> date
-      // c[4] = Zoom Link -> zoom_link
-      // c[5] = Youtube Link -> yt_link
-      
-      let dateVal = c[1].f || c[1].v; // f holds formatted date if any
+      let dateVal = c[1].f || c[1].v;
       let topicVal = c[0] && c[0].v ? String(c[0].v) : 'පන්තිය';
       
-      // Parse Google Sheet Date string to valid ISO string
-      // Google often gives "Date(2023,9,10,14,0,0)" or "2023-10-10 14:00"
       let parsedDate = new Date(dateVal);
+      
+      // Handle Google Visualization Date string: "Date(2026,3,6,19,0,0)"
+      if (isNaN(parsedDate.getTime()) && c[1].v && String(c[1].v).startsWith('Date(')) {
+        const parts = String(c[1].v).match(/Date\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+)\)/);
+        if (parts) {
+          // JS Months are 0-indexed in Date constructor
+          parsedDate = new Date(parts[1], parts[2], parts[3], parts[4], parts[5], parts[6]);
+        }
+      }
+
       if (isNaN(parsedDate.getTime())) {
-          // Attempt cleanup if standard Date() fails
           parsedDate = new Date(String(dateVal).replace(/\./g, '/')); 
       }
       
       if (isNaN(parsedDate.getTime())) {
-          console.warn(`[Sync] Skipping row ${i} due to invalid date:`, dateVal);
+          console.warn(`[Sync] Skipping row ${i} due to invalid date:`, c[1].v, c[1].f);
           continue; 
       }
 
@@ -337,31 +350,44 @@ export async function syncCourseSheet(courseId, courseMonthId, sheetUrl) {
         title: topicVal,
         zoom_link: c[4] && c[4].v ? String(c[4].v) : null,
         yt_link: c[5] && c[5].v ? String(c[5].v) : null,
-        // We use 'start_time' as the primary timestamp column
         start_time: isoDate
       };
-      sessions.push(sessionObj);
+
+      // If we already have a session at this exact start_time, update it instead of creating a duplicate
+      if (existingMap.has(isoDate)) {
+        sessionObj.id = existingMap.get(isoDate);
+      }
+
+      sessionsToUpsert.push(sessionObj);
+      sheetDates.add(isoDate);
     }
 
-    if (sessions.length === 0) {
+    if (sessionsToUpsert.length === 0) {
       throw new Error('Sheet එකේ වලංගු දත්ත කිසිවක් හමු නොවීය. කරුණාකර දින වකවානු පරීක්ෂා කරන්න.');
     }
 
-    console.log(`[Sync] Attempting to sync ${sessions.length} sessions:`);
-    console.table(sessions[0]); // Log the first one as a sample
-
-    // Clear old sessions for this course month
-    await supabase.from('sessions').delete().eq('course_month_id', courseMonthId);
-    
-    // Insert new ones
-    const { error } = await supabase.from('sessions').insert(sessions);
+    // Upsert the sessions
+    const { error } = await supabase.from('sessions').upsert(sessionsToUpsert);
     if (error) {
       console.error('[Sync Error]', error);
       throw error;
     }
+
+    // Attempt to delete sessions that are no longer in the sheet
+    if (existing) {
+      const toDelete = existing.filter(s => {
+        try { return !sheetDates.has(new Date(s.start_time).toISOString()); }
+        catch(e) { return false; }
+      }).map(s => s.id);
+
+      if (toDelete.length > 0) {
+        // We ignore errors here because they might have foreign key constraints (e.g. attendance records)
+        await supabase.from('sessions').delete().in('id', toDelete);
+      }
+    }
     
-    return { success: true, count: sessions.length };
+    return { success: true, count: sessionsToUpsert.length };
   } catch (err) {
-    throw new Error('Sheet Sync අසාර්ථකයි: ' + err.message + ' (Sheet එක Public "Anyone with the link can view" ලෙස සකසා ඇතිදැයි බලන්න)');
+    throw new Error('Sheet Sync අසාර්ථකයි: ' + err.message);
   }
 }
