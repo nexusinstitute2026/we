@@ -312,7 +312,8 @@ export async function syncCourseSheet(courseId, courseMonthId, sheetUrl) {
       });
     }
 
-    const sessionsToUpsert = [];
+    const sessionsToUpdate = [];
+    const sessionsToInsert = [];
     const sheetDates = new Set();
 
     // Start from index 0 because Google Visualization API moves headers to 'cols'
@@ -356,21 +357,34 @@ export async function syncCourseSheet(courseId, courseMonthId, sheetUrl) {
       // If we already have a session at this exact start_time, update it instead of creating a duplicate
       if (existingMap.has(isoDate)) {
         sessionObj.id = existingMap.get(isoDate);
+        sessionsToUpdate.push(sessionObj);
+      } else {
+        sessionsToInsert.push(sessionObj);
       }
 
-      sessionsToUpsert.push(sessionObj);
       sheetDates.add(isoDate);
     }
 
-    if (sessionsToUpsert.length === 0) {
+    if (sessionsToUpdate.length === 0 && sessionsToInsert.length === 0) {
       throw new Error('Sheet එකේ වලංගු දත්ත කිසිවක් හමු නොවීය. කරුණාකර දින වකවානු පරීක්ෂා කරන්න.');
     }
 
-    // Upsert the sessions
-    const { error } = await supabase.from('sessions').upsert(sessionsToUpsert);
-    if (error) {
-      console.error('[Sync Error]', error);
-      throw error;
+    // Upsert the existing sessions
+    if (sessionsToUpdate.length > 0) {
+      const { error: updateError } = await supabase.from('sessions').upsert(sessionsToUpdate);
+      if (updateError) {
+        console.error('[Sync Update Error]', updateError);
+        throw updateError;
+      }
+    }
+
+    // Insert the new sessions
+    if (sessionsToInsert.length > 0) {
+      const { error: insertError } = await supabase.from('sessions').insert(sessionsToInsert);
+      if (insertError) {
+        console.error('[Sync Insert Error]', insertError);
+        throw insertError;
+      }
     }
 
     // Attempt to delete sessions that are no longer in the sheet
@@ -386,7 +400,7 @@ export async function syncCourseSheet(courseId, courseMonthId, sheetUrl) {
       }
     }
     
-    return { success: true, count: sessionsToUpsert.length };
+    return { success: true, count: sessionsToUpdate.length + sessionsToInsert.length };
   } catch (err) {
     throw new Error('Sheet Sync අසාර්ථකයි: ' + err.message);
   }
