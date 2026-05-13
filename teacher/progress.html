@@ -137,7 +137,7 @@
 import { requireAuth, logout, populateUserChip } from '../js/auth.js';
 import { getTeacherSubjects } from '../js/admin.js';
 import { initSidebar, showToast } from '../js/ui.js';
-import supabase from '../js/supabase.js?v=2';
+import supabase from '../js/supabase.js';
 
 const profile = await requireAuth(['teacher','admin']);
 populateUserChip(profile); initSidebar();
