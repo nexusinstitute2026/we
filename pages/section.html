@@ -61,7 +61,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const sectionId = urlParams.get('id');
 
 async function loadSection() {
-  if (!sectionId) return window.location.href = '/dashboard/student.html';
+  if (!sectionId) return window.location.href = '../dashboard/student.html';
 
   try {
     const { data: { user } } = await supabase.auth.getUser();
@@ -90,7 +90,7 @@ async function loadSection() {
           html += '<p style="color:var(--text-muted);padding:0 1rem">විෂයයන් තවම ඇතුළත් කර නොමැත.</p>';
         } else {
           for (const sub of cat.subjects) {
-            const tImg = sub.teacher?.address || '/images/default_avatar.png';
+            const tImg = sub.teacher?.address || '../images/default_avatar.png';
             html += `<div class="sub-wrap">
               <div class="sub-title">
                 ${sub.name} 

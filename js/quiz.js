@@ -111,7 +111,7 @@ export async function getQuizReport(quizId) {
 }
 
 // Teacher: create quiz
-export async function createQuiz({ courseId, title, timeLimit, questions, createdBy, status = 'published', publishAt = null, shuffle = false }) {
+export async function createQuiz({ courseId, title, timeLimit, questions, createdBy, status = 'published', publishAt = null }) {
   const { data, error } = await supabase
     .from('quizzes')
     .insert({
@@ -122,7 +122,6 @@ export async function createQuiz({ courseId, title, timeLimit, questions, create
       created_by: createdBy,
       status,
       publish_at: publishAt,
-      shuffle,
     })
     .select()
     .single();

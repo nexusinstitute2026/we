@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nexus LMS | Premium Quiz</title>
-<link rel="icon" type="image/png" href="/images/logo.png">
-<link rel="stylesheet" href="/fonts/fonts.css">
-<link rel="stylesheet" href="/css/base.css">
-<link rel="stylesheet" href="/css/course.css">
+<link rel="icon" type="image/png" href="../images/logo.png">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/course.css">
 </head>
 <body class="quiz-page">
 
@@ -39,15 +39,15 @@
 <div id="toast-container" class="toast-container"></div>
 
 <script type="module">
-import { requireAuth } from '/js/auth.js';
-import { getQuiz, submitAttempt, getMyAttempt } from '/js/quiz.js';
-import { showToast, fmtTime } from '/js/ui.js';
+import { requireAuth } from '../js/auth.js';
+import { getQuiz, submitAttempt, getMyAttempt } from '../js/quiz.js';
+import { showToast, fmtTime } from '../js/ui.js';
 
 const profile = await requireAuth(['student']);
 
 const urlParams = new URLSearchParams(window.location.search);
 const quizId = urlParams.get('id');
-if (!quizId) window.location.href = '/dashboard/student.html';
+if (!quizId) window.location.href = '../dashboard/student.html';
 
 let quizData = null;
 let currentQIndex = 0;
@@ -60,7 +60,7 @@ let displayedQuestions = []; // Array of { q, originalIdx }
 try {
   const attempt = await getMyAttempt(quizId, profile.id);
   if (attempt) {
-    window.location.href = '/pages/quiz-results.html?quiz=' + quizId;
+    window.location.href = '../pages/quiz-results.html?quiz=' + quizId;
   }
 
   quizData = await getQuiz(quizId);
@@ -192,7 +192,7 @@ async function submitQuiz() {
       questions: quizData.questions, // Pass original questions
       timeTaken: timeTaken
     });
-    window.location.href = '/pages/quiz-results.html?quiz=' + quizData.id;
+    window.location.href = '../pages/quiz-results.html?quiz=' + quizData.id;
   } catch (error) {
     console.error(error);
     showToast("Submit කිරීම අසාර්ථකයි", "error");

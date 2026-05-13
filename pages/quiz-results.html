@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nexus LMS | Premium Quiz Results</title>
-<link rel="icon" type="image/png" href="/images/logo.png">
-<link rel="stylesheet" href="/fonts/fonts.css">
-<link rel="stylesheet" href="/css/base.css">
-<link rel="stylesheet" href="/css/course.css">
+<link rel="icon" type="image/png" href="../images/logo.png">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/course.css">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body class="results-page">
@@ -56,7 +56,7 @@
       <div id="review-list"></div>
       
       <div style="text-align:center; margin-top:4rem">
-        <a href="/dashboard/student.html" class="btn btn-teal btn-lg" style="min-width:280px">DASHBOARD වෙත යන්න</a>
+        <a href="../dashboard/student.html" class="btn btn-teal btn-lg" style="min-width:280px">DASHBOARD වෙත යන්න</a>
       </div>
     </div>
   </div>
@@ -65,14 +65,14 @@
 <div id="toast-container" class="toast-container"></div>
 
 <script type="module">
-import { requireAuth } from '/js/auth.js';
-import { getQuiz, getMyAttempt } from '/js/quiz.js';
-import { fmtTime } from '/js/ui.js';
+import { requireAuth } from '../js/auth.js';
+import { getQuiz, getMyAttempt } from '../js/quiz.js';
+import { fmtTime } from '../js/ui.js';
 
 const profile = await requireAuth(['student']);
 const urlParams = new URLSearchParams(window.location.search);
 const quizId = urlParams.get('quiz');
-if (!quizId) window.location.href = '/dashboard/student.html';
+if (!quizId) window.location.href = '../dashboard/student.html';
 
 try {
   const [quizData, attempt] = await Promise.all([
@@ -81,7 +81,7 @@ try {
   ]);
 
   if (!attempt) {
-    window.location.href = '/pages/quiz.html?id=' + quizId;
+    window.location.href = '../pages/quiz.html?id=' + quizId;
   }
 
   const total = quizData.questions.length;
