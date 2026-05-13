@@ -1,4 +1,4 @@
-import{c as $,h as E,s as c,j as L}from"./ui-BjnYUZX8.js";/* empty css              *//* empty css               */import{s as a}from"./supabase-CMMIMXfU.js";import{a as M}from"./quiz-CmKH8o2R.js";import"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";await $(["student","teacher","admin"]);const n=await E();n||(window.location.href="../login.html");const b=new URLSearchParams(window.location.search),l=b.get("id"),h=b.get("month");window.switchTab=s=>{document.querySelectorAll(".tab-btn").forEach(t=>t.classList.remove("active")),document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active")),event.currentTarget.classList.add("active"),document.getElementById(`tab-${s}`).classList.add("active")};async function S(){if(!l)return;const{data:s}=await a.from("courses").select("name, subject:subjects(name, teacher:profiles(full_name))").eq("id",l).single();s&&(document.getElementById("c-title").textContent=`${s.subject?.name} - ${s.name}`,document.getElementById("c-teacher").querySelector("span").textContent=s.subject?.teacher?.full_name||"Teacher");let t=a.from("sessions").select("*").eq("course_id",l);if(h){const{data:e}=await a.from("course_months").select("year, month_number, name, is_free").eq("id",h).single();if(e){if(document.getElementById("c-title").textContent+=` - ${e.year} ${e.name}`,n.role==="student"){const d=await L(n.id,l),v=e.year*12+(e.month_number-1)<=d.maxAccessibleValue,I=d.paidMonths.some(y=>y.year===e.year&&y.month===e.month_number);if(!(e.is_free||d.hasCurrentAccess&&v||I)){document.querySelector("main").innerHTML=`
+import{c as $,h as E,s as c,b as a,j as L}from"./ui-BjnYUZX8.js";/* empty css              *//* empty css               */import{a as M}from"./quiz-CmKH8o2R.js";import"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";await $(["student","teacher","admin"]);const n=await E();n||(window.location.href="../login.html");const b=new URLSearchParams(window.location.search),l=b.get("id"),h=b.get("month");window.switchTab=s=>{document.querySelectorAll(".tab-btn").forEach(t=>t.classList.remove("active")),document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active")),event.currentTarget.classList.add("active"),document.getElementById(`tab-${s}`).classList.add("active")};async function S(){if(!l)return;const{data:s}=await a.from("courses").select("name, subject:subjects(name, teacher:profiles(full_name))").eq("id",l).single();s&&(document.getElementById("c-title").textContent=`${s.subject?.name} - ${s.name}`,document.getElementById("c-teacher").querySelector("span").textContent=s.subject?.teacher?.full_name||"Teacher");let t=a.from("sessions").select("*").eq("course_id",l);if(h){const{data:e}=await a.from("course_months").select("year, month_number, name, is_free").eq("id",h).single();if(e){if(document.getElementById("c-title").textContent+=` - ${e.year} ${e.name}`,n.role==="student"){const d=await L(n.id,l),f=e.year*12+(e.month_number-1)<=d.maxAccessibleValue,I=d.paidMonths.some(y=>y.year===e.year&&y.month===e.month_number);if(!(e.is_free||d.hasCurrentAccess&&f||I)){document.querySelector("main").innerHTML=`
             <div style="background:#ffebee;color:#c62828;padding:2rem;border-radius:1rem;text-align:center;margin-top:2rem;">
               <h2 style="margin-bottom:1rem">⚠️ ප්‍රවේශය අත්හිටුවා ඇත</h2>
               <p>මෙම පන්ති සඳහා පිවිසීමට ඔබට අවසර නොමැත.</p>
@@ -17,20 +17,20 @@ import{c as $,h as E,s as c,j as L}from"./ui-BjnYUZX8.js";/* empty css          
           ${e.yt_link?`<a href="${e.yt_link}" target="_blank" class="btn btn-sm btn-rose" onclick="logRecordingView('${e.id}')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg> Recording</a>`:""}
         </div>
       </div>
-    `).join("");const{data:r}=await a.from("assignments").select("*").eq("course_id",l).order("due_date",{ascending:!0}),_=document.getElementById("assign-list");r&&r.length>0&&(_.innerHTML=r.map(e=>{const d=e.description?.match(/\[MAX_MB:(\d+)\]/),u=d?parseInt(d[1]):10,v=e.description?.replace(/\[MAX_MB:\d+\]/,"").trim()||"";return`
+    `).join("");const{data:r}=await a.from("assignments").select("*").eq("course_id",l).order("due_date",{ascending:!0}),_=document.getElementById("assign-list");r&&r.length>0&&(_.innerHTML=r.map(e=>{const d=e.description?.match(/\[MAX_MB:(\d+)\]/),u=d?parseInt(d[1]):10,f=e.description?.replace(/\[MAX_MB:\d+\]/,"").trim()||"";return`
       <div class="session-card assign-card">
         <div class="session-header">
           <div>
             <div class="s-date" style="color:var(--rose)">Due: ${new Date(e.due_date).toLocaleDateString("si-LK")}</div>
             <div class="s-title">${e.title}</div>
-            <div style="font-size:0.9rem;color:var(--text-muted);margin-top:0.5rem">${v}</div>
+            <div style="font-size:0.9rem;color:var(--text-muted);margin-top:0.5rem">${f}</div>
           </div>
         </div>
         <div class="s-actions">
           <button class="btn btn-sm btn-outline" style="border-color:var(--teal);color:var(--teal)" onclick="openAssignUpload('${e.id}', '${e.title.replace(/'/g,"\\'")}', ${u})">පිළිතුරු Upload කරන්න (Max ${u}MB)</button>
         </div>
       </div>
-      `}).join(""));const x=await M(l),A=new Date,f=x.filter(e=>{const d=e.status==="published",u=!e.publish_at||new Date(e.publish_at)<=A;return d&&u}),B=document.getElementById("quiz-list");f&&f.length>0&&(B.innerHTML=f.map(e=>`
+      `}).join(""));const x=await M(l),A=new Date,v=x.filter(e=>{const d=e.status==="published",u=!e.publish_at||new Date(e.publish_at)<=A;return d&&u}),B=document.getElementById("quiz-list");v&&v.length>0&&(B.innerHTML=v.map(e=>`
       <div class="session-card">
         <div class="session-header">
           <div><div class="s-title">${e.title}</div></div>
