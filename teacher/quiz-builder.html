@@ -157,13 +157,26 @@ if (preselect) courseSelect.value = preselect;
 
 let questionCount = 0;
 
+function escapeHTML(str) {
+  if (typeof str !== 'string') return str;
+  return str.replace(/[&<>'"]/g, 
+    tag => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      "'": '&#39;',
+      '"': '&quot;'
+    }[tag] || tag)
+  );
+}
+
 function createQuestionElement(index, data = null) {
   const div = document.createElement('div');
   div.className = 'q-card';
   div.id = `q-card-${index}`;
   
-  const text = data ? data.text : "";
-  const options = data ? data.options : ["", "", "", ""];
+  const text = data ? escapeHTML(data.text) : "";
+  const options = data ? data.options.map(o => escapeHTML(o)) : ["", "", "", ""];
   const correct = data ? data.correct : 0;
   
   // Ensure we have at least 4 slots in UI, but show 5 if data has 5 OR if 5th is correct
