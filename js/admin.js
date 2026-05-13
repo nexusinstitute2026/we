@@ -315,8 +315,8 @@ export async function syncCourseSheet(courseId, courseMonthId, sheetUrl) {
     const sessionsToUpsert = [];
     const sheetDates = new Set();
 
-    // Start from index 1 (Row 2)
-    for (let i = 1; i < rows.length; i++) {
+    // Start from index 0 because Google Visualization API moves headers to 'cols'
+    for (let i = 0; i < rows.length; i++) {
       const c = rows[i].c;
       if (!c || !c[1] || (!c[1].v && !c[1].f)) continue; // Skip if 'Start Time' column is empty
       
