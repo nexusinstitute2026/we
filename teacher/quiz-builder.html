@@ -249,9 +249,25 @@ addQuestion();
 
 // Google Sheet Import Logic
 function sheetUrlToCsv(url) {
-  const match = url.match(/\/d\/([^/]+)/);
-  if (!match) throw new Error('වැරදි Google Sheet URL එකක්. කරුණාකර නිවැරදි URL එක ඇතුළත් කරන්න.');
-  const sheetId = match[1];
+  console.log('[QuizBuilder] Parsing URL:', url);
+  
+  let sheetId = '';
+  if (url.includes('/d/')) {
+    const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+    if (match) sheetId = match[1];
+  } else if (url.includes('docs.google.com/spreadsheets/')) {
+    // Try to find the ID even if /d/ is missing (unlikely but possible)
+    const parts = url.split('/');
+    const spreadIdx = parts.indexOf('spreadsheets');
+    if (spreadIdx !== -1 && parts[spreadIdx + 1]) {
+      sheetId = parts[spreadIdx + 1];
+    }
+  }
+
+  if (!sheetId) {
+    throw new Error('වැරදි Google Sheet URL එකක්. කරුණාකර නිවැරදි URL එකක් ලබා දෙන්න (e.g. docs.google.com/spreadsheets/d/ID/...).');
+  }
+
   let exportUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
   
   // Support specific sheet (tab) using gid
@@ -259,6 +275,8 @@ function sheetUrlToCsv(url) {
   if (gidMatch) {
     exportUrl += `&gid=${gidMatch[1]}`;
   }
+  
+  console.log('[QuizBuilder] Generated Export URL:', exportUrl);
   return exportUrl;
 }
 
