@@ -105,7 +105,15 @@ function renderPayments() {
     return;
   }
 
-  container.innerHTML = filtered.map(p => `
+  const monthsSi = {
+    1: 'ජනවාරි', 2: 'පෙබරවාරි', 3: 'මාර්තු', 4: 'අප්‍රේල්', 5: 'මැයි', 6: 'ජූනි',
+    7: 'ජූලි', 8: 'අගෝස්තු', 9: 'සැප්තැම්බර්', 10: 'ඔක්තෝබර්', 11: 'නොවැම්බර්', 12: 'දෙසැම්බර්'
+  };
+
+  container.innerHTML = filtered.map(p => {
+    const coursesText = p.payment_courses?.map(pc => pc.course?.name).filter(Boolean).join(', ') || '—';
+    const monthText = p.paid_month ? `${p.paid_year || ''} ${monthsSi[p.paid_month] || p.paid_month}` : '—';
+    return `
     <div class="payment-card">
       <div style="flex-shrink:0">
         ${p.slip_drive_link ? `<img src="${p.slip_drive_link}" class="slip-preview" alt="Slip" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" onclick="window.open('${p.slip_drive_link}','_blank')">
@@ -116,6 +124,8 @@ function renderPayments() {
         <h4>${p.student?.full_name || '—'}</h4>
         <div class="pc-meta">
           <strong>WhatsApp:</strong> ${p.student?.whatsapp_number || '—'}<br>
+          <strong>ගෙවූ මාසය:</strong> ${monthText}<br>
+          <strong>විෂයයන්:</strong> ${coursesText}<br>
           <strong>මුදල:</strong> රු. ${p.amount || '0.00'}<br>
           <strong>දිනය:</strong> ${new Date(p.created_at).toLocaleDateString('si-LK', { year:'numeric', month:'long', day:'numeric' })}<br>
           ${statusBadge(p.status)}
@@ -130,7 +140,7 @@ function renderPayments() {
         `}
       </div>
     </div>
-  `).join('');
+  `; }).join('');
 }
 
 // Filter tabs
