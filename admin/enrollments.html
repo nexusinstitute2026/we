@@ -147,18 +147,42 @@ function renderTable(data) {
     </div>`;
     return;
   }
-  container.innerHTML = data.map(e => `
-    <div class="enrollment-card">
-      <div class="ec-info">
-        <h4>${e.student?.full_name || '—'}</h4>
-        <div class="ec-meta">
-          <strong>WhatsApp:</strong> <span class="eng">${e.student?.whatsapp_number || '—'}</span><br>
-          <strong>පාඨමාලාව:</strong> ${e.course?.name || '—'}
+
+  const grouped = {};
+  data.forEach(e => {
+    if (!e.student) return;
+    const sid = e.student_id;
+    if (!grouped[sid]) {
+      grouped[sid] = { student: e.student, enrollments: [] };
+    }
+    grouped[sid].enrollments.push(e);
+  });
+  
+  const students = Object.values(grouped);
+
+  container.innerHTML = students.map(s => `
+    <div class="enrollment-card" style="flex-direction:column; align-items:stretch; gap:1rem">
+      <div class="ec-info" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #f1f5f9; padding-bottom:0.75rem">
+        <div>
+          <h4 style="font-size:1.2rem; color:var(--teal)">${s.student?.full_name || '—'}</h4>
+          <div class="ec-meta">
+            <strong>WhatsApp:</strong> <span class="eng">${s.student?.whatsapp_number || '—'}</span>
+          </div>
         </div>
       </div>
-      <div class="ec-actions">
-        <button class="btn btn-sm btn-teal" onclick="openMonthsModal('${e.student_id}', '${e.course_id}', '${e.student?.full_name}', '${e.course?.name}')">🗓️ මාස</button>
-        <button class="btn btn-sm btn-rose" onclick="removeEnroll('${e.id}')">මකන්න</button>
+      <div class="ec-courses">
+        <h5 style="font-size:0.85rem; font-weight:700; color:var(--dark3); margin-bottom:0.75rem; text-transform:uppercase; letter-spacing:0.5px">ලියාපදිංචි පාඨමාලා</h5>
+        <div style="display:flex; flex-direction:column; gap:0.5rem">
+          ${s.enrollments.map(e => `
+            <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:0.75rem 1rem; border-radius:var(--radius-md); border:1px solid #e2e8f0; flex-wrap:wrap; gap:0.5rem">
+              <div style="font-weight:700; color:var(--dark); font-size:0.95rem">${e.course?.name || '—'}</div>
+              <div class="ec-actions" style="margin:0">
+                <button class="btn btn-sm btn-teal" onclick="openMonthsModal('${e.student_id}', '${e.course_id}', '${s.student?.full_name}', '${e.course?.name}')">🗓️ මාස</button>
+                <button class="btn btn-sm btn-rose" onclick="removeEnroll('${e.id}')">මකන්න</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
       </div>
     </div>
   `).join('');
