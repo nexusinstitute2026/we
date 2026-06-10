@@ -12,6 +12,15 @@
 .filter-bar select, .filter-bar input { padding: 0.6rem 1rem; border: 1.5px solid #e2e8f0; border-radius: var(--radius-md); font-size: 0.85rem; outline: none; font-family: inherit; }
 .filter-bar select:focus, .filter-bar input:focus { border-color: var(--teal); }
 
+/* Enrollment Cards */
+.enrollment-card { background: #fff; border: 1px solid #e2e8f0; border-radius: var(--radius-xl); padding: 1.5rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; transition: all 0.3s; }
+.enrollment-card:hover { box-shadow: var(--shadow-md); border-color: var(--teal2); }
+.ec-info h4 { font-weight: 800; font-size: 1.1rem; margin-bottom: 0.25rem; color: var(--dark); }
+.ec-meta { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+.ec-meta strong { color: var(--dark3); }
+.ec-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end; }
+@media(max-width: 640px) { .enrollment-card { flex-direction: column; align-items: flex-start; } .ec-actions { width: 100%; justify-content: flex-start; margin-top:0.5rem; } }
+
 /* Modal Styles */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
 .modal-overlay.active { display: flex; }
@@ -63,16 +72,8 @@
         <input type="text" id="filter-search" placeholder="🔍 සිසුවාගේ නම සෙවීම...">
       </div>
 
-      <div class="table-wrap">
-        <table class="data-table">
-          <thead><tr>
-            <th>සිසුවා</th>
-            <th>WhatsApp</th>
-            <th>Course</th>
-            <th>ක්‍රියාව</th>
-          </tr></thead>
-          <tbody id="enroll-table"></tbody>
-        </table>
+      <div id="enroll-list-container">
+        <div class="skeleton" style="height:120px;border-radius:1rem;margin-bottom:1rem"></div>
       </div>
     </main>
   </div>
@@ -139,21 +140,27 @@ async function loadEnrollments() {
 }
 
 function renderTable(data) {
-  const tbody = document.getElementById('enroll-table');
+  const container = document.getElementById('enroll-list-container');
   if (!data.length) {
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:2rem">ලියාපදිංචි නොමැත.</td></tr>`;
+    container.innerHTML = `<div style="text-align:center;padding:3rem;background:#fff;border-radius:var(--radius-xl);border:1px dashed #cbd5e1">
+      <h3 style="color:var(--text-muted);font-size:1rem">ලියාපදිංචි කිසිවක් හමු නොවීය.</h3>
+    </div>`;
     return;
   }
-  tbody.innerHTML = data.map(e => `
-    <tr>
-      <td><strong>${e.student?.full_name || '—'}</strong></td>
-      <td class="eng">${e.student?.whatsapp_number || '—'}</td>
-      <td>${e.course?.name || '—'}</td>
-      <td>
+  container.innerHTML = data.map(e => `
+    <div class="enrollment-card">
+      <div class="ec-info">
+        <h4>${e.student?.full_name || '—'}</h4>
+        <div class="ec-meta">
+          <strong>WhatsApp:</strong> <span class="eng">${e.student?.whatsapp_number || '—'}</span><br>
+          <strong>පාඨමාලාව:</strong> ${e.course?.name || '—'}
+        </div>
+      </div>
+      <div class="ec-actions">
         <button class="btn btn-sm btn-teal" onclick="openMonthsModal('${e.student_id}', '${e.course_id}', '${e.student?.full_name}', '${e.course?.name}')">🗓️ මාස</button>
         <button class="btn btn-sm btn-rose" onclick="removeEnroll('${e.id}')">මකන්න</button>
-      </td>
-    </tr>
+      </div>
+    </div>
   `).join('');
 }
 
