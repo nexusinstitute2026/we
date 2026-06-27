@@ -248,7 +248,7 @@
                 // Fetch course info
                 const { data: course, error: courseError } = await supabase
                     .from('courses')
-                    .select('name')
+                    .select('name, is_free')
                     .eq('id', courseId)
                     .single();
 
@@ -271,14 +271,14 @@
                 // Check Access
                 const access = await getStudentAccessDetails(profile.id, courseId);
 
-                renderMonthCards(months || [], courseId, access);
+                renderMonthCards(months || [], courseId, access, course || {});
             } catch (err) {
                 console.error('Error loading course:', err);
                 document.getElementById('courseTitle').textContent = 'Error loading data';
             }
         }
 
-        function renderMonthCards(months, courseId, access) {
+        function renderMonthCards(months, courseId, access, course = {}) {
             const grid = document.getElementById('cardsGrid');
             const currentMonth = new Date().getMonth() + 1;
             const currentYear = new Date().getFullYear();
@@ -290,7 +290,7 @@
                 return;
             }
 
-            if (!access.hasCurrentAccess) {
+            if (!access.hasCurrentAccess && !course.is_free) {
                 const banner = document.createElement('div');
                 banner.style = "grid-column: 1/-1; background: #ffebee; color: #c62828; padding: 20px; border-radius: 12px; border: 2px solid #ef9a9a; text-align: center; font-weight: 700; margin-bottom: 20px; font-size: 1.1em;";
                 banner.innerHTML = '⚠️ ඔබ වත්මන් මාසය සඳහා ගෙවීම් කර නොමැති බැවින් සියලුම පන්ති සඳහා ප්‍රවේශය තාවකාලිකව අත්හිටුවා ඇත. කරුණාකර ගෙවීම් සම්පූර්ණ කරන්න.';
@@ -303,9 +303,9 @@
                 const isCovered = monthValue <= access.maxAccessibleValue;
                 const isExplicitlyPaid = access.paidMonths.some(p => p.year === month.year && p.month === month.month_number);
                 
-                // They can access if it's FREE, or if they have CurrentAccess AND it's covered by their payment,
+                // They can access if the course is FREE, or if the month itself is FREE, or if they have CurrentAccess AND it's covered by their payment,
                 // OR if they explicitly paid for this specific future/past month.
-                const canAccess = month.is_free || (access.hasCurrentAccess && isCovered) || isExplicitlyPaid;
+                const canAccess = course.is_free || month.is_free || (access.hasCurrentAccess && isCovered) || isExplicitlyPaid;
 
                 const card = document.createElement('div');
                 card.className = `month-card ${canAccess && month.year === currentYear && month.month_number === currentMonth ? 'current-month' : ''}`;

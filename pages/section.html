@@ -70,7 +70,7 @@ async function loadSection() {
     const enrollments = await getMyEnrollments(user.id);
 
     const { data: section, error } = await supabase.from('sections')
-      .select('name, categories(id, name, subjects(id, name, teacher:profiles(full_name, address), courses(id, name)))')
+      .select('name, categories(id, name, subjects(id, name, teacher:profiles(full_name, address), courses(id, name, is_free)))')
       .eq('id', sectionId).single();
 
     if (error) throw error;
@@ -102,18 +102,32 @@ async function loadSection() {
               <div class="courses-list">
                 ${(sub.courses && sub.courses.length > 0) ? sub.courses.map(c => {
                   const isEnrolled = enrollments.some(e => e.course_id === c.id);
-                  const link = isEnrolled ? `../pages/course-months.html?id=${c.id}` : `../pages/payment.html?course_id=${c.id}`;
-                  const icon = isEnrolled ? `<polyline points="9 18 15 12 9 6"/>` : `<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>`;
-                  const text = isEnrolled ? 'පන්ති නරඹන්න' : 'Register / Pay';
+                  let link, icon, text, color;
+                  if (isEnrolled) {
+                    link = `../pages/course-months.html?id=${c.id}`;
+                    icon = `<polyline points="9 18 15 12 9 6"/>`;
+                    text = 'පන්ති නරඹන්න';
+                    color = 'var(--teal)';
+                  } else if (c.is_free) {
+                    link = `javascript:enrollFreeAndRedirect('${c.id}')`;
+                    icon = `<polyline points="9 18 15 12 9 6"/>`;
+                    text = 'නොමිලේ සම්බන්ධ වන්න';
+                    color = 'var(--teal)';
+                  } else {
+                    link = `../pages/payment.html?course_id=${c.id}`;
+                    icon = `<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>`;
+                    text = 'Register / Pay';
+                    color = 'var(--rose)';
+                  }
                   return `
                   <a href="${link}" class="course-btn">
                     <img src="https://picsum.photos/300/160?random=${c.id}" class="c-img" alt="${c.name}">
                     <div class="c-body">
                       <div style="display:flex;flex-direction:column;gap:0.3rem">
                         <span class="c-name">${c.name}</span>
-                        <span style="font-size:0.85rem;color:${isEnrolled ? 'var(--teal)' : 'var(--rose)'};font-weight:700">${text}</span>
+                        <span style="font-size:0.85rem;color:${color};font-weight:700">${text}</span>
                       </div>
-                      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="${isEnrolled ? 'var(--teal)' : 'var(--rose)'}" stroke-width="2">${icon}</svg>
+                      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="${color}" stroke-width="2">${icon}</svg>
                     </div>
                   </a>
                 `}).join('') : '<p style="font-size:0.85rem;color:var(--text-muted)">පන්ති (Courses) තවම ඇතුළත් කර නැත.</p>'}
@@ -132,6 +146,26 @@ async function loadSection() {
     window.location.href = '../dashboard/student.html';
   }
 }
+
+window.enrollFreeAndRedirect = async (courseId) => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('ලොග් වී නොමැත.');
+    
+    // Enroll the student in the free course
+    const { error } = await supabase.from('enrollments').upsert([
+      { student_id: user.id, course_id: courseId }
+    ], { onConflict: 'student_id,course_id' });
+    
+    if (error) throw error;
+    
+    // Redirect directly to course months
+    window.location.href = `../pages/course-months.html?id=${courseId}`;
+  } catch (err) {
+    console.error(err);
+    alert('සම්බන්ධ වීමට නොහැකි විය: ' + err.message);
+  }
+};
 
 loadSection();
 </script>
