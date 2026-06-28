@@ -4,12 +4,58 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nexus LMS | Premium Quiz</title>
 <link rel="icon" type="image/png" href="/we/assets/logo-CSwFls7j.png">
-  <script type="module" crossorigin src="/we/assets/quiz-d9m6wLMP.js"></script>
+<style>
+  /* ── QUIZ PAGE HARD OVERRIDES ── */
+  body.quiz-page { background: #0a1628 !important; }
+
+  /* Kill all blobs */
+  body.quiz-page .blobs { background: #0a1628 !important; }
+  body.quiz-page .blob  { display: none !important; }
+
+  /* Solid card */
+  .q-card-premium {
+    background: #0f1d35 !important;
+    backdrop-filter: none !important;
+    border: 1px solid rgba(255,255,255,0.14) !important;
+  }
+
+  /* Readable options */
+  .opt-btn-premium {
+    background: #1a2d4a !important;
+    border: 1.5px solid rgba(255,255,255,0.18) !important;
+    color: #dce8f8 !important;
+  }
+  .opt-btn-premium:hover {
+    background: #1e3a5c !important;
+    border-color: rgba(45,212,191,0.5) !important;
+    color: #fff !important;
+  }
+  .opt-btn-premium.selected {
+    background: #0c3b36 !important;
+    border: 2px solid #0d9488 !important;
+    color: #fff !important;
+    box-shadow: 0 0 0 3px rgba(13,148,136,0.25) !important;
+  }
+  .opt-label-premium {
+    background: rgba(255,255,255,0.1) !important;
+    color: #c0d4f0 !important;
+    border: 1.5px solid rgba(255,255,255,0.22) !important;
+  }
+  .opt-btn-premium.selected .opt-label-premium {
+    background: #0d9488 !important;
+    color: #fff !important;
+    border-color: #0d9488 !important;
+  }
+
+  /* Progress bar visible */
+  .progress-bar { background: rgba(255,255,255,0.1) !important; }
+</style>
+  <script type="module" crossorigin src="/we/assets/quiz-ewan3xGp.js"></script>
   <link rel="modulepreload" crossorigin href="/we/assets/ui-BjnYUZX8.js">
-  <link rel="modulepreload" crossorigin href="/we/assets/quiz-CmKH8o2R.js">
+  <link rel="modulepreload" crossorigin href="/we/assets/quiz-DUCl9VTO.js">
   <link rel="stylesheet" crossorigin href="/we/assets/ui-BK4U8q2_.css">
   <link rel="stylesheet" crossorigin href="/we/assets/fonts-C8iiRjZX.css">
-  <link rel="stylesheet" crossorigin href="/we/assets/course-BJa9aU_d.css">
+  <link rel="stylesheet" crossorigin href="/we/assets/course-CwUKA_ag.css">
 </head>
 <body class="quiz-page">
 
@@ -26,18 +72,19 @@
   </div>
 </header>
 
-<div class="quiz-container">
-  <div class="progress-label" style="margin-bottom:0.5rem">
-    <span id="progress-text" class="eng">Question 1 of X</span>
-  </div>
-  <div class="progress-bar" style="margin-bottom:2.5rem; height:6px">
-    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
-  </div>
+  <div class="quiz-container">
+    <div class="progress-label" style="margin-bottom:0.5rem">
+      <span id="progress-text" class="eng" style="color:rgba(255,255,255,0.6);font-size:0.85rem;font-weight:600">Question 1 of X</span>
+      <span id="answered-text" class="eng" style="color:var(--teal2);font-size:0.8rem;font-weight:700"></span>
+    </div>
+    <div class="progress-bar" style="margin-bottom:1.75rem; height:5px">
+      <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+    </div>
 
-  <div class="q-card-premium" id="question-card">
-    <div class="skeleton" style="height:300px; border-radius:1.5rem"></div>
+    <div class="q-card-premium" id="question-card">
+      <div class="skeleton" style="height:260px; border-radius:1.5rem"></div>
+    </div>
   </div>
-</div>
 
 <div id="toast-container" class="toast-container"></div>
 
