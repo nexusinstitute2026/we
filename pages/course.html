@@ -85,7 +85,7 @@ async function loadCourseData() {
 
   // 1. Fetch Course Info
   const { data: course } = await supabase.from('courses')
-    .select('name, subject:subjects(name, teacher:profiles(full_name))')
+    .select('name, is_free, subject:subjects(name, teacher:profiles(full_name))')
     .eq('id', courseId).single();
 
   if (course) {
@@ -108,7 +108,7 @@ async function loadCourseData() {
         const isCovered = monthValue <= access.maxAccessibleValue;
         const isExplicitlyPaid = access.paidMonths.some(p => p.year === monthData.year && p.month === monthData.month_number);
         
-        const canAccess = monthData.is_free || (access.hasCurrentAccess && isCovered) || isExplicitlyPaid;
+        const canAccess = course?.is_free || monthData.is_free || (access.hasCurrentAccess && isCovered) || isExplicitlyPaid;
         
         if (!canAccess) {
           document.querySelector('main').innerHTML = `

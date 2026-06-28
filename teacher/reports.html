@@ -56,7 +56,10 @@
       <div class="table-wrap" id="report-table-wrap" style="display:none">
         <div style="padding:1.5rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0">
           <h2 style="font-size:1.1rem;font-weight:800">Leaderboard</h2>
-          <button class="btn btn-sm btn-outline" id="export-csv">Export CSV</button>
+          <div style="display:flex; gap:0.75rem; align-items:center">
+            <button class="btn btn-sm btn-teal" id="approve-answers-btn" style="display:none">පිළිතුරු අනුමත කරන්න</button>
+            <button class="btn btn-sm btn-outline" id="export-csv">Export CSV</button>
+          </div>
         </div>
         <table class="data-table">
           <thead><tr><th>Rank</th><th>සිසුවා</th><th>WhatsApp</th><th>ලකුණු</th><th>ප්‍රතිශතය</th><th>කාලය</th></tr></thead>
@@ -71,7 +74,7 @@
 <script type="module">
 import { requireAuth, logout, populateUserChip } from '../js/auth.js';
 import { getTeacherCourses } from '../js/admin.js';
-import { getTeacherQuizzes, getQuizReport, getQuiz } from '../js/quiz.js';
+import { getTeacherQuizzes, getQuizReport, getQuiz, updateQuiz } from '../js/quiz.js';
 import { initSidebar, showToast, fmtTime } from '../js/ui.js';
 
 const profile = await requireAuth(['teacher']);
@@ -126,6 +129,20 @@ async function loadReport() {
     document.getElementById('report-stats').style.display = 'grid';
     document.getElementById('report-table-wrap').style.display = 'block';
 
+    const approveBtn = document.getElementById('approve-answers-btn');
+    if (approveBtn) {
+      approveBtn.style.display = 'inline-flex';
+      if (quizData.answers_released) {
+        approveBtn.textContent = 'පිළිතුරු අනුමත කර ඇත ✅';
+        approveBtn.disabled = true;
+        approveBtn.className = 'btn btn-sm btn-outline';
+      } else {
+        approveBtn.textContent = 'පිළිතුරු අනුමත කරන්න';
+        approveBtn.disabled = false;
+        approveBtn.className = 'btn btn-sm btn-teal';
+      }
+    }
+
     document.getElementById('stat-attempts').textContent = attempts.length;
     
     if(attempts.length > 0 && totalQ > 0) {
@@ -170,6 +187,26 @@ document.getElementById('export-csv').addEventListener('click', () => {
   a.href = url;
   a.download = `Report_${qTitle.replace(/\s+/g,'_')}.csv`;
   a.click();
+});
+
+document.getElementById('approve-answers-btn').addEventListener('click', async () => {
+  const qId = document.getElementById('quiz-select').value;
+  if (!qId) return;
+  const btn = document.getElementById('approve-answers-btn');
+  if(!confirm("මෙම Quiz එකෙහි පිළිතුරු සියලුම සිසුන්ට පෙන්වීමට ඔබට විශ්වාසද?")) return;
+  
+  btn.disabled = true;
+  btn.textContent = 'අනුමත කරමින්...';
+  try {
+    await updateQuiz(qId, { answers_released: true });
+    showToast('පිළිතුරු සාර්ථකව අනුමත කරන ලදී!', 'success');
+    btn.textContent = 'පිළිතුරු අනුමත කර ඇත ✅';
+    btn.className = 'btn btn-sm btn-outline';
+  } catch (err) {
+    showToast(err.message, 'error');
+    btn.disabled = false;
+    btn.textContent = 'පිළිතුරු අනුමත කරන්න';
+  }
 });
 
 loadInitial();
