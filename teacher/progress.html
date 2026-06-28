@@ -166,22 +166,56 @@ async function loadStudents() {
   container.innerHTML = '<div class="skeleton" style="height:80px;border-radius:.75rem;margin-bottom:.5rem"></div><div class="skeleton" style="height:80px;border-radius:.75rem"></div>';
   
   const curY = new Date().getFullYear(), curM = new Date().getMonth()+1;
-  const [enrollRes, payRes] = await Promise.all([
+  const [enrollRes, payRes, quizRes] = await Promise.all([
     supabase.from('enrollments').select('student_id, profiles!student_id(full_name,whatsapp_number)').eq('course_id', currentCourseId),
-    supabase.from('payment_courses').select('course_id, payments!inner(student_id,paid_year,paid_month,status)').eq('course_id', currentCourseId).eq('payments.paid_year', curY).eq('payments.paid_month', curM).eq('payments.status','approved')
+    supabase.from('payment_courses').select('course_id, payments!inner(student_id,paid_year,paid_month,status)').eq('course_id', currentCourseId).eq('payments.paid_year', curY).eq('payments.paid_month', curM).eq('payments.status','approved'),
+    supabase.from('quizzes').select('id, questions, quiz_attempts(student_id, score)').eq('course_id', currentCourseId)
   ]);
   
-  const students = (enrollRes.data||[]).map(e=>({ id:e.student_id, name:e.profiles?.full_name, wa:e.profiles?.whatsapp_number }));
+  const quizzes = quizRes.data || [];
+  const studentQuizStats = {};
+  quizzes.forEach(q => {
+    const totalQ = q.questions?.length || 1;
+    if (q.quiz_attempts) {
+      q.quiz_attempts.forEach(a => {
+        if (!studentQuizStats[a.student_id]) studentQuizStats[a.student_id] = { sumPct: 0, count: 0 };
+        studentQuizStats[a.student_id].sumPct += (a.score / totalQ) * 100;
+        studentQuizStats[a.student_id].count++;
+      });
+    }
+  });
+
+  const students = (enrollRes.data||[]).map(e => {
+    const stats = studentQuizStats[e.student_id];
+    const quizAvg = stats && stats.count > 0 ? Math.round(stats.sumPct / stats.count) : 0;
+    return { 
+      id: e.student_id, 
+      name: e.profiles?.full_name, 
+      wa: e.profiles?.whatsapp_number,
+      quizAvg: quizAvg
+    };
+  });
+  
+  // Sort students by Quiz Avg (descending)
+  students.sort((a, b) => b.quizAvg - a.quizAvg);
+
   const paidIds = new Set((payRes.data||[]).map(p=>p.payments?.student_id));
   
   if (!students.length) { container.innerHTML='<p style="text-align:center;padding:3rem;color:var(--text-muted)">ලියාපදිංචි සිසුන් නොමැත.</p>'; return; }
   
   container.innerHTML = `<div style="margin-bottom:1rem;color:var(--text-muted);font-size:.9rem">සිසුන් ${students.length} ක් — Click කර detail බලන්න</div>` +
-    students.map(st => {
+    students.map((st, index) => {
       const paid = paidIds.has(st.id);
+      const rank = index + 1;
+      const rankColor = rank === 1 ? 'var(--gold)' : rank === 2 ? '#94a3b8' : rank === 3 ? '#b45309' : 'var(--teal)';
       return `<div class="student-list-item" onclick="openStudent('${st.id}','${esc(st.name)}','${st.wa||''}',${paid})">
+        <div style="width:34px;font-weight:900;color:${rankColor};font-size:1.1rem;text-align:center">#${rank}</div>
         <div class="student-avatar">${st.name?.charAt(0)||'?'}</div>
         <div style="flex:1"><div style="font-weight:700">${st.name}</div><div style="font-size:.82rem;color:var(--text-muted)">${st.wa||'—'}</div></div>
+        <div style="text-align:center;margin-right:1rem">
+          <div style="font-size:1.15rem;font-weight:900;color:var(--rose)">${st.quizAvg}%</div>
+          <div style="font-size:.7rem;color:var(--text-muted);font-weight:700;text-transform:uppercase">Quiz Avg</div>
+        </div>
         ${paid ? '<span class="pill pill-green">✅ ගෙවා ඇත</span>' : '<span class="pill pill-rose">❌ ගෙවා නැත</span>'}
         <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" width="18"><polyline points="9 18 15 12 9 6"/></svg>
       </div>`;
