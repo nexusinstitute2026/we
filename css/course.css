@@ -307,7 +307,9 @@
 
 .quiz-page .blob,
 .results-page .blob {
-  mix-blend-mode: screen;
+  mix-blend-mode: normal;
+  opacity: 1;
+  filter: none;
   opacity: 10;
   filter: blur(120px);
 }
@@ -316,7 +318,8 @@
   height: 80px;
   padding: 0 5%;
   background: rgba(2, 6, 23, 0.8);
-  backdrop-filter: blur(20px);
+  background: rgba(2, 6, 23, 0.8);
+  /* backdrop-filter removed */
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   align-items: center;
@@ -330,9 +333,7 @@
   font-family: 'Outfit', sans-serif;
   font-weight: 800;
   font-size: 1.25rem;
-  background: var(--g-rainbow);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #000;
 }
 
 .quiz-timer {
@@ -346,10 +347,13 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  transition: all 0.3s;
+  transition: none;
 }
 
 .quiz-timer.urgent {
+  color: var(--rose);
+  border-color: var(--rose);
+}
   color: var(--rose);
   border-color: var(--rose);
   box-shadow: 0 0 20px rgba(244, 63, 94, 0.2);
@@ -414,13 +418,13 @@
   font-size: 0.85rem;
 }
 
-.q-text-premium {
-  font-size: 1.5rem;
-  font-weight: 700;
-  line-height: 1.5;
-  margin-bottom: 2.5rem;
-  color: #f8fafc;
-}
+  .q-text-premium {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.5;
+    margin-bottom: 2.5rem;
+    color: #000;
+  }
 
 .options-list-premium {
   display: grid;
@@ -435,14 +439,18 @@
   display: flex;
   align-items: center;
   gap: 1.25rem;
-  color: #cbd5e1;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #000;
+  transition: none;
   text-align: left;
   font-size: 1.05rem;
   cursor: pointer;
 }
 
 .opt-btn-premium:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: none;
+}
   background: rgba(255, 255, 255, 0.07);
   border-color: rgba(255, 255, 255, 0.2);
   transform: translateX(10px);
@@ -452,7 +460,7 @@
   background: rgba(13, 148, 136, 0.15);
   border-color: var(--teal);
   color: #fff;
-  box-shadow: 0 0 30px rgba(13, 148, 136, 0.15);
+  /* box-shadow removed for static UI */
 }
 
 .opt-label-premium {
@@ -468,7 +476,7 @@
   font-size: 0.9rem;
   color: #94a3b8;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.3s;
+  transition: none;
 }
 
 .opt-btn-premium.selected .opt-label-premium {
