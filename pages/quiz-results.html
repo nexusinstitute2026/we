@@ -113,6 +113,8 @@ try {
   document.getElementById('stat-time').textContent = fmtTime(attempt.time_taken);
   document.getElementById('stat-correct').textContent = score;
 
+  const showCorrectAnswers = quizData.answers_released === true;
+
   const reviewHTML = quizData.questions.map((q, i) => {
     const studentAns = attempt.answers[i];
     const isCorrect = studentAns === q.correct;
@@ -124,13 +126,19 @@ try {
           ${studentAns !== null && !isCorrect ? `
             <div class="rev-ans-box wrong">
               <div class="rev-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
-              <div><strong>ඔබේ පිළිතුර:</strong> ${q.options[studentAns]}</div>
+              <div><strong>ඔබේ පිළිතුර (වැරදියි):</strong> ${q.options[studentAns]}</div>
             </div>
           ` : ''}
+          ${(isCorrect || showCorrectAnswers) ? `
           <div class="rev-ans-box correct">
             <div class="rev-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
             <div><strong>නිවැරදි පිළිතුර:</strong> ${q.options[q.correct]}</div>
           </div>
+          ` : `
+          <div class="rev-ans-box pending" style="background:rgba(255,255,255,0.05); color:var(--text-muted); border: 1px dashed rgba(255,255,255,0.15)">
+            <div><em>ගුරුවරයා අනුමත කළ පසු නිවැරදි පිළිතුර දිස්වනු ඇත.</em></div>
+          </div>
+          `}
         </div>
       </div>
     `;
