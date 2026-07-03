@@ -1,5 +1,33 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
+import fs from 'fs';
+import path from 'path';
+
+// Automatically find all HTML files to include in the build
+function getHtmlInputs() {
+  const inputs = {};
+  const walkSync = (dir, filelist = []) => {
+    const files = fs.readdirSync(dir);
+    for (const file of files) {
+      const dirFile = path.join(dir, file);
+      const isDir = fs.statSync(dirFile).isDirectory();
+      if (isDir) {
+        // Exclude common non-source directories
+        if (!['node_modules', 'dist', '.git', 'supabase', 'we', 'images', 'fonts', 'css', 'js', 'scratch', 'public', '.github', 'scripts'].includes(file)) {
+          walkSync(dirFile, filelist);
+        }
+      } else {
+        if (file.endsWith('.html')) {
+          let name = path.relative(__dirname, dirFile).replace(/\\/g, '/').replace('.html', '').replace(/\//g, '_');
+          if (name === 'index') name = 'main';
+          inputs[name] = resolve(__dirname, dirFile);
+        }
+      }
+    }
+  };
+  walkSync(__dirname);
+  return inputs;
+}
 
 export default defineConfig({
   base: '/we/',
@@ -7,25 +35,7 @@ export default defineConfig({
     target: 'esnext',
     outDir: 'dist',
     rollupOptions: {
-      input: {
-        main: resolve(__dirname, 'index.html'),
-        login: resolve(__dirname, 'login.html'),
-        al: resolve(__dirname, 'al.html'),
-        prachina: resolve(__dirname, 'prachina.html'),
-        register: resolve(__dirname, 'register.html'),
-        studentDash: resolve(__dirname, 'dashboard/student.html'),
-        teacherDash: resolve(__dirname, 'dashboard/teacher.html'),
-        adminDash: resolve(__dirname, 'dashboard/admin.html'),
-        course: resolve(__dirname, 'pages/course.html'),
-        quiz: resolve(__dirname, 'pages/quiz.html'),
-        quizResults: resolve(__dirname, 'pages/quiz-results.html'),
-        payment: resolve(__dirname, 'pages/payment.html'),
-        adminUsers: resolve(__dirname, 'admin/users.html'),
-        adminCourses: resolve(__dirname, 'admin/courses.html'),
-        adminPayments: resolve(__dirname, 'admin/payments.html'),
-        teacherQuizBuilder: resolve(__dirname, 'teacher/quiz-builder.html'),
-        teacherReports: resolve(__dirname, 'teacher/reports.html'),
-      }
+      input: getHtmlInputs()
     }
   }
 });
