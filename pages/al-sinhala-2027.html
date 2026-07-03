@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="si">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="2026 සංස්කෘත අධිපුණරීක්ෂණ පන්ති">
+    <title>සිංහල 2027 සිද්ධාන්ත</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Sinhala:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4A148C;
+            --primary-light: #7B1FA2;
+            --accent: #FFD54F;
+            --success: #00695C;
+            --success-hover: #004D40;
+            --bg-light: #F3E5F5;
+            --text-dark: #212121;
+            --border-radius: 16px;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Noto Serif Sinhala', serif;
+            background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 50px 30px;
+            background: #FFFFFF;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border-bottom: 6px solid var(--primary);
+            animation: slideInDown 0.7s ease-out;
+        }
+
+        h1 {
+            font-size: 2.8em;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            display: inline-block;
+            font-size: 1.2em;
+            color: var(--primary-light);
+            background: var(--bg-light);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .header-desc {
+            font-size: 1em;
+            color: #555;
+            max-width: 800px;
+            margin: 20px auto 0;
+            line-height: 1.8;
+        }
+
+        /* ===== CARDS GRID ===== */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 60px;
+        }
+
+        .month-card {
+            background: #FFFFFF;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: scaleIn 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .month-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .month-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .month-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .month-card:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .month-card:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+
+        .month-card:nth-child(6) {
+            animation-delay: 0.6s;
+        }
+
+        .month-card:nth-child(7) {
+            animation-delay: 0.7s;
+        }
+
+        .month-card:nth-child(8) {
+            animation-delay: 0.8s;
+        }
+
+        .month-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(74, 20, 140, 0.25);
+        }
+
+        .month-card.current-month {
+            border: 3px solid var(--primary);
+            box-shadow: 0 0 20px rgba(74, 20, 140, 0.4), var(--shadow);
+            transform: scale(1.05);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.4s ease-out;
+        }
+
+        .month-card:hover .card-image {
+            transform: scale(1.1);
+        }
+
+        .card-content {
+            padding: 25px;
+            text-align: center;
+        }
+
+        .month-name {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .month-name::after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 3px;
+            background: var(--primary);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .card-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, var(--success), var(--success-hover));
+            color: #FFFFFF;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 105, 92, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+
+        .card-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 105, 92, 0.4);
+            filter: brightness(1.1);
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            header {
+                padding: 30px 20px;
+                margin-bottom: 40px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .cards-grid {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 15px;
+            }
+
+            .card-content {
+                padding: 15px;
+            }
+
+            .month-name {
+                font-size: 1.4em;
+            }
+
+            .card-btn {
+                font-size: 0.95em;
+                padding: 12px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <header>
+            <h1>සිංහල 2027 සිද්ධාන්ත</h1>
+            <span class="subtitle">☸ පුනරීක්ෂණ වැඩසටහන ☸</span>
+            <p class="header-desc">
+                පහත ලින්ක් ඔස්සේ පංති සඳහා සම්භන්ධ විය හැක්කෙ සෑම මසකම 14 වන දිනට පෙර නියමිත පංති ගාස්තු ගෙවන අයට පමණි.
+                ඉතින් ඔබ සුපුරුදු ඔබේ පිළිවෙත සිටින සිටින එක සිකුරාදා පංතිවලට සම්බන්ධ වන්න.
+            </p>
+        </header>
+
+        <!-- CARDS GRID -->
+        <div class="cards-grid" id="cardsGrid">
+            <!-- Cards will be generated by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // ===== MONTHS DATA =====
+        const MONTHS_DATA = [
+            {
+                id: 1,
+                name: 'ජනවාරි',
+                file: 'january.html',
+                image: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=300&auto=format&fit=crop'
+            },
+            {
+                id: 2,
+                name: 'පෙබරවාරි',
+                file: 'february.html',
+                image: 'https://images.unsplash.com/photo-1562919356-8367d4f9380f?q=80&w=300&auto=format&fit=crop'
+            },
+            {
+                id: 3,
+                name: 'මාර්තු',
+                file: 'march.html',
+                image: 'https://images.unsplash.com/photo-1567591414240-e18e11a3028c?q=80&w=300&auto=format&fit=crop'
+            },
+            {
+                id: 4,
+                name: 'අප්‍රේල්',
+                file: 'april.html',
+                image: 'https://images.unsplash.com/photo-1516008685128-494b59c40277?auto=format&fit=crop&w=300&h=200&q=80'
+            },
+            {
+                id: 5,
+                name: 'මැයි',
+                file: 'may.html',
+                image: 'https://images.unsplash.com/photo-1509021436665-8f07dbf5bf1d?auto=format&fit=crop&w=300&h=200&q=80'
+            },
+            {
+                id: 6,
+                name: 'ජූනි',
+                file: 'june.html',
+                image: 'https://images.unsplash.com/photo-1532153975070-2e9ab71f1b14?auto=format&fit=crop&w=300&h=200&q=80'
+            },
+            {
+                id: 7,
+                name: 'ජූලි',
+                file: 'july.html',
+                image: 'https://images.unsplash.com/photo-1628135896269-1c995578f724?auto=format&fit=crop&w=300&h=200&q=80'
+            },
+            {
+                id: 8,
+                name: 'අගෝස්තු',
+                file: 'august.html',
+                image: 'https://images.unsplash.com/photo-1528319725582-ddc096101511?auto=format&fit=crop&w=300&h=200&q=80'
+            }
+        ];
+
+        // ===== DOM INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMonthCards();
+        });
+
+        // ===== RENDER MONTH CARDS =====
+        function renderMonthCards() {
+            const grid = document.getElementById('cardsGrid');
+            const currentMonth = new Date().getMonth() + 1;
+
+            MONTHS_DATA.forEach(month => {
+                const card = document.createElement('div');
+                card.className = `month-card ${month.id === currentMonth ? 'current-month' : ''}`;
+
+                card.innerHTML = `
+          <img src="${month.image}" alt="${month.name}" class="card-image" onerror="this.src='https://picsum.photos/300/200?random=${month.id}'">
+          <div class="card-content">
+            <h3 class="month-name">${month.name}</h3>
+            <a href="${month.file}" class="card-btn">
+              පංති බලන්න →
+            </a>
+          </div>
+        `;
+
+                grid.appendChild(card);
+            });
+
+            // Auto-scroll to current month
+            setTimeout(() => {
+                const currentCard = document.querySelector('.month-card.current-month');
+                if (currentCard) {
+                    currentCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+
+</html>

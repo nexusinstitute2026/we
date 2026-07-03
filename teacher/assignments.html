@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus LMS | Assignment Builder</title>
+<link rel="icon" type="image/png" href="/we/assets/logo-CSwFls7j.png">
+<style>
+.assign-card { background:#fff;border:1px solid #e2e8f0;border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1rem;transition:box-shadow .2s; }
+.assign-card:hover { box-shadow:0 8px 25px rgba(0,0,0,.08); }
+.assign-meta { display:flex;gap:1rem;flex-wrap:wrap;margin-top:.5rem;font-size:.82rem;color:var(--text-muted); }
+.assign-meta span { display:flex;align-items:center;gap:.3rem; }
+.badge-assign { display:inline-block;padding:.25rem .6rem;border-radius:1rem;font-size:.72rem;font-weight:700; }
+.badge-open { background:rgba(13,148,136,.12);color:var(--teal); }
+.badge-closed { background:rgba(244,63,94,.1);color:var(--rose); }
+.badge-upcoming { background:rgba(245,158,11,.12);color:var(--gold); }
+.modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px); }
+.modal-overlay.active { display:flex; }
+.modal-box { background:#fff;width:90%;max-width:620px;border-radius:var(--radius-xl);padding:2rem;box-shadow:0 20px 60px rgba(0,0,0,.15);max-height:90vh;overflow-y:auto; }
+.form-row { display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem; }
+@media(max-width:600px){ .form-row { grid-template-columns:1fr; } }
+.sub-row { display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;border:1px solid #e2e8f0;border-radius:.75rem;margin-bottom:.5rem;flex-wrap:wrap;gap:.5rem; }
+.grade-input { width:80px;padding:.35rem .5rem;border:1.5px solid #e2e8f0;border-radius:.5rem;font-size:.9rem;text-align:center; }
+.grade-input:focus { border-color:var(--teal);outline:none; }
+</style>
+  <script type="module" crossorigin src="/we/assets/teacher_assignments-sYSE7jtc.js"></script>
+  <link rel="modulepreload" crossorigin href="/we/assets/auth-qdlMy9e7.js">
+  <link rel="modulepreload" crossorigin href="/we/assets/preload-helper-BKjL65nl.js">
+  <link rel="modulepreload" crossorigin href="/we/assets/admin-BW6SJvAW.js">
+  <link rel="modulepreload" crossorigin href="/we/assets/ui-CfSCUwhT.js">
+  <link rel="modulepreload" crossorigin href="/we/assets/leaderboard-P9WSWk3A.js">
+  <link rel="stylesheet" crossorigin href="/we/assets/fonts-C8iiRjZX.css">
+  <link rel="stylesheet" crossorigin href="/we/assets/base-BK4U8q2_.css">
+  <link rel="stylesheet" crossorigin href="/we/assets/dashboard-DM8ofIC3.css">
+</head>
+<body>
+<div class="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div class="dash-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand"><a href="../dashboard/teacher.html"><img src="/we/assets/logo-CSwFls7j.png" alt="Nexus"><div><div class="brand-name eng">NEXUS</div><div class="brand-sub">LMS</div></div></a></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="../dashboard/teacher.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a>
+      <a class="nav-item active" href="../teacher/assignments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Assignments</a>
+      <a class="nav-item" href="../teacher/quiz-builder.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Quiz Builder</a>
+      <a class="nav-item" href="../teacher/activity.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Activity Marks</a>
+      <a class="nav-item" href="../teacher/progress.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Student Progress</a>
+      <a class="nav-item" href="../teacher/reports.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Quiz Reports</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-chip" id="logout-btn"><div class="user-avatar" id="user-avatar">T</div><div class="user-info"><div class="user-name" id="user-name">Loading...</div><div class="user-role" id="user-role">ගුරුවරයා</div></div></div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="dash-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <h1 class="page-title">Assignment <span>Builder</span></h1>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-teal btn-sm" onclick="openAddModal()">+ නව Assignment</button>
+      </div>
+    </header>
+    <main class="dash-content">
+      <div class="card-flat" style="margin-bottom:1.5rem;display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap">
+        <div class="form-group" style="margin:0;min-width:250px;flex:1">
+          <label class="form-label">පාඨමාලාව</label>
+          <select id="course-select" class="form-input"></select>
+        </div>
+        <div class="form-group" style="margin:0;min-width:200px">
+          <label class="form-label">මාසය</label>
+          <select id="month-select" class="form-input"><option value="">-- සියල්ල --</option></select>
+        </div>
+      </div>
+      <div id="assignments-list"><div class="skeleton" style="height:120px;border-radius:1rem;margin-bottom:1rem"></div><div class="skeleton" style="height:120px;border-radius:1rem"></div></div>
+    </main>
+  </div>
+</div>
+
+<!-- Add / Edit Modal -->
+<div class="modal-overlay" id="assign-modal">
+  <div class="modal-box">
+    <h2 style="font-size:1.2rem;font-weight:800;margin-bottom:1.5rem;color:var(--dark)" id="modal-title">නව Assignment</h2>
+    <input type="hidden" id="edit-id">
+    <div class="form-group">
+      <label class="form-label">Title *</label>
+      <input type="text" id="a-title" class="form-input" placeholder="Assignment title">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description / Instructions</label>
+      <textarea id="a-desc" class="form-input" rows="3" placeholder="Instructions for students..."></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Start Date</label>
+        <input type="datetime-local" id="a-start" class="form-input">
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Deadline (Due Date) *</label>
+        <input type="datetime-local" id="a-due" class="form-input">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Max Marks</label>
+        <input type="number" id="a-marks" class="form-input" value="100" min="1">
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Month (Optional)</label>
+        <select id="a-month" class="form-input"><option value="">-- All Months --</option></select>
+      </div>
+      <div class="form-group" style="margin:0; grid-column: 1 / -1">
+        <label class="form-label">Max File Size (MB)</label>
+        <input type="number" id="a-maxmb" class="form-input" value="10" min="1">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Reference File URL (Optional)</label>
+      <input type="url" id="a-file" class="form-input" placeholder="e.g. Google Drive link for assignment sheet">
+    </div>
+    <div style="display:flex;gap:1rem;margin-top:1.5rem">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-teal btn-lg" style="flex:1" onclick="saveAssignment()">සුරකින්න ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- Submissions Modal -->
+<div class="modal-overlay" id="subs-modal">
+  <div class="modal-box" style="max-width:760px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+      <h2 style="font-size:1.15rem;font-weight:800;color:var(--dark)" id="subs-title">Submissions</h2>
+      <button onclick="closeSubsModal()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--text-muted)">✕</button>
+    </div>
+    <div id="subs-list"></div>
+  </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+</body>
+</html>

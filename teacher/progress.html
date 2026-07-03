@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus LMS | Student Progress</title>
+<link rel="icon" type="image/png" href="/we/assets/logo-CSwFls7j.png">
+<style>
+.student-list-item{display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;border:2px solid #e2e8f0;border-radius:var(--radius-md);cursor:pointer;transition:all .2s;margin-bottom:.6rem;background:#fff}
+.student-list-item:hover,.student-list-item.selected{border-color:var(--teal);background:rgba(13,148,136,.04)}
+.student-avatar{width:44px;height:44px;border-radius:50%;background:var(--g-teal);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;flex-shrink:0}
+.pill{display:inline-block;padding:.2rem .65rem;border-radius:1rem;font-size:.75rem;font-weight:700}
+.pill-green{background:rgba(13,148,136,.12);color:var(--teal)}
+.pill-gold{background:rgba(245,158,11,.12);color:var(--gold)}
+.pill-rose{background:rgba(244,63,94,.1);color:var(--rose)}
+.pill-gray{background:#f1f5f9;color:var(--text-muted)}
+.section-box{background:#fff;border:1px solid #e2e8f0;border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.25rem}
+.session-row{display:flex;align-items:center;justify-content:space-between;padding:.7rem 1rem;border:1px solid #e2e8f0;border-radius:.75rem;margin-bottom:.5rem;gap:1rem;flex-wrap:wrap}
+.toggle-btn{padding:.35rem 1rem;border-radius:2rem;font-size:.82rem;font-weight:700;border:none;cursor:pointer;transition:all .2s}
+.toggle-present{background:rgba(13,148,136,.12);color:var(--teal)}
+.toggle-present:hover{background:var(--g-teal);color:#fff}
+.toggle-absent{background:rgba(244,63,94,.08);color:var(--rose)}
+.toggle-absent:hover{background:rgba(244,63,94,.2)}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:700px){.detail-grid{grid-template-columns:1fr}}
+.pbar{background:#f1f5f9;border-radius:1rem;height:10px;overflow:hidden;flex:1}
+.pfill{height:100%;border-radius:1rem;background:var(--g-teal);transition:width .5s}
+.back-btn{display:inline-flex;align-items:center;gap:.4rem;color:var(--teal);font-weight:700;cursor:pointer;padding:.4rem 0;font-size:.95rem}
+</style>
+  <script type="module" crossorigin src="/we/assets/teacher_progress-Bslps8NU.js"></script>
+  <link rel="modulepreload" crossorigin href="/we/assets/auth-qdlMy9e7.js">
+  <link rel="modulepreload" crossorigin href="/we/assets/preload-helper-BKjL65nl.js">
+  <link rel="modulepreload" crossorigin href="/we/assets/admin-BW6SJvAW.js">
+  <link rel="modulepreload" crossorigin href="/we/assets/ui-CfSCUwhT.js">
+  <link rel="stylesheet" crossorigin href="/we/assets/fonts-C8iiRjZX.css">
+  <link rel="stylesheet" crossorigin href="/we/assets/base-BK4U8q2_.css">
+  <link rel="stylesheet" crossorigin href="/we/assets/dashboard-DM8ofIC3.css">
+</head>
+<body>
+<div class="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div class="dash-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand"><a href="../dashboard/teacher.html"><img src="/we/assets/logo-CSwFls7j.png" alt="Nexus"><div><div class="brand-name eng">NEXUS</div><div class="brand-sub">LMS</div></div></a></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="../dashboard/teacher.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a>
+      <a class="nav-item" href="../teacher/assignments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Assignments</a>
+      <a class="nav-item" href="../teacher/quiz-builder.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Quiz Builder</a>
+      <a class="nav-item" href="../teacher/activity.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Activity Marks</a>
+      <a class="nav-item active" href="../teacher/progress.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Student Progress</a>
+      <a class="nav-item" href="../teacher/reports.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Quiz Reports</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-chip" id="logout-btn"><div class="user-avatar" id="user-avatar">T</div><div class="user-info"><div class="user-name" id="user-name">Loading...</div><div class="user-role" id="user-role">ගුරුවරයා</div></div></div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="dash-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <h1 class="page-title" id="page-title">Student <span>Progress</span></h1>
+      </div>
+    </header>
+    <main class="dash-content">
+
+      <!-- View: Select Course -->
+      <div id="view-course">
+        <div class="card-flat" style="margin-bottom:1.5rem">
+          <div class="form-group" style="margin:0">
+            <label class="form-label">පාඨමාලාව තෝරන්න</label>
+            <select id="course-select" class="form-input" style="max-width:420px"></select>
+          </div>
+        </div>
+        <div id="student-list-container"><p style="color:var(--text-muted);text-align:center;padding:3rem">පාඨමාලාවක් තෝරන්න.</p></div>
+      </div>
+
+      <!-- View: Student Detail -->
+      <div id="view-detail" style="display:none">
+        <div class="back-btn" onclick="showCourseView()" style="margin-bottom:1.5rem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><polyline points="15 18 9 12 15 6"/></svg>
+          සිසුන් ලැයිස්තුවට
+        </div>
+
+        <!-- Student Header -->
+        <div class="section-box" style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap">
+          <div class="student-avatar" id="det-avatar" style="width:64px;height:64px;font-size:1.5rem">S</div>
+          <div style="flex:1">
+            <h2 id="det-name" style="font-size:1.4rem;font-weight:800;margin-bottom:.3rem"></h2>
+            <div id="det-wa" style="color:var(--text-muted);font-size:.9rem"></div>
+          </div>
+          <div id="det-paid-badge"></div>
+        </div>
+
+        <!-- Summary Stats -->
+        <div class="detail-grid" style="margin-bottom:1.25rem">
+          <div class="section-box">
+            <div style="font-size:.85rem;color:var(--text-muted);font-weight:700;margin-bottom:.75rem">✅ Attendance</div>
+            <div style="display:flex;align-items:center;gap.75rem;gap:.75rem">
+              <div class="pbar"><div class="pfill" id="det-attend-bar" style="width:0%"></div></div>
+              <div style="font-size:1.3rem;font-weight:900;color:var(--teal)" id="det-attend-pct">0%</div>
+            </div>
+            <div style="font-size:.82rem;color:var(--text-muted);margin-top:.4rem" id="det-attend-label">0 / 0 sessions</div>
+          </div>
+          <div class="section-box">
+            <div style="font-size:.85rem;color:var(--text-muted);font-weight:700;margin-bottom:.5rem">📺 Recording Views</div>
+            <div style="font-size:1.8rem;font-weight:900;color:var(--gold)" id="det-views">0</div>
+            <div style="font-size:.82rem;color:var(--text-muted)">total recording watches</div>
+          </div>
+          <div class="section-box">
+            <div style="font-size:.85rem;color:var(--text-muted);font-weight:700;margin-bottom:.5rem">📝 Assignment Avg</div>
+            <div style="font-size:1.8rem;font-weight:900;color:var(--purple)" id="det-assign-avg">—</div>
+          </div>
+          <div class="section-box">
+            <div style="font-size:.85rem;color:var(--text-muted);font-weight:700;margin-bottom:.5rem">🏆 Quiz Avg</div>
+            <div style="font-size:1.8rem;font-weight:900;color:var(--rose)" id="det-quiz-avg">—</div>
+          </div>
+        </div>
+
+        <!-- Attendance per Session -->
+        <div class="section-box">
+          <h3 style="font-weight:800;margin-bottom:1rem;font-size:1rem">✅ Attendance — Session by Session <span style="font-size:.8rem;color:var(--teal);font-weight:500">(Real-time marking)</span></h3>
+          <div id="det-sessions"><p style="color:var(--text-muted)">Loading...</p></div>
+        </div>
+
+        <!-- Assignment Marks -->
+        <div class="section-box">
+          <h3 style="font-weight:800;margin-bottom:1rem;font-size:1rem">📝 Assignment Marks</h3>
+          <div id="det-assignments"><p style="color:var(--text-muted)">Loading...</p></div>
+        </div>
+
+        <!-- Quiz Scores -->
+        <div class="section-box">
+          <h3 style="font-weight:800;margin-bottom:1rem;font-size:1rem">🏆 Quiz Scores</h3>
+          <div id="det-quizzes"><p style="color:var(--text-muted)">Loading...</p></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+<div id="toast-container" class="toast-container"></div>
+</body>
+</html>
