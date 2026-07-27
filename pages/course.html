@@ -192,10 +192,15 @@ async function loadCourseData() {
     qList.innerHTML = quizzes.map(q => `
       <div class="session-card">
         <div class="session-header">
-          <div><div class="s-title">${q.title}</div></div>
+          <div>
+            <div class="s-title">${q.title}</div>
+            ${q.is_closed ? '<div style="font-size:0.85rem;color:var(--rose);margin-top:0.3rem;font-weight:600">පිළිතුරු භාරගැනීම නතර කර ඇත (Closed)</div>' : ''}
+          </div>
         </div>
         <div class="s-actions">
-          <a href="../pages/quiz.html?id=${q.id}" class="btn btn-sm btn-gold">Quiz එක ආරම්භ කරන්න</a>
+          ${q.is_closed 
+            ? `<a href="../pages/quiz-results.html?quiz=${q.id}" class="btn btn-sm btn-outline">ප්‍රතිඵල බලන්න</a>` 
+            : `<a href="../pages/quiz.html?id=${q.id}" class="btn btn-sm btn-gold">Quiz එක ආරම්භ කරන්න</a>`}
         </div>
       </div>
     `).join('');

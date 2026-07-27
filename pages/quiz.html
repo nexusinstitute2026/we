@@ -114,6 +114,9 @@ try {
   if (!quizData || !quizData.questions || quizData.questions.length === 0) {
     throw new Error('Invalid quiz data');
   }
+  if (quizData.is_closed) {
+    throw new Error('මෙම ප්‍රශ්න පත්‍රයට පිළිතුරු භාරගැනීම නතර කර ඇත.');
+  }
 
   // Handle Shuffling
   displayedQuestions = quizData.questions.map((q, i) => {

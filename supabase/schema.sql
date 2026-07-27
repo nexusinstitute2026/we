@@ -42,6 +42,7 @@ CREATE TABLE sections (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   name TEXT NOT NULL UNIQUE,
   description TEXT,
+  is_hidden BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -51,6 +52,7 @@ CREATE TABLE categories (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   section_id UUID REFERENCES sections(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
+  is_hidden BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -60,6 +62,7 @@ CREATE TABLE subjects (
   category_id UUID REFERENCES categories(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
   teacher_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
+  is_hidden BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -68,6 +71,8 @@ CREATE TABLE courses (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   subject_id UUID REFERENCES subjects(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
+  is_hidden BOOLEAN DEFAULT false,
+  payments_paused BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -147,6 +152,7 @@ CREATE TABLE quizzes (
   shuffle_answers BOOLEAN DEFAULT false,
   status TEXT DEFAULT 'published' CHECK (status IN ('draft', 'published')),
   publish_at TIMESTAMPTZ,
+  is_closed BOOLEAN DEFAULT false,
   created_by UUID REFERENCES profiles(id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );

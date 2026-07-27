@@ -7,14 +7,14 @@ export async function getFullHierarchy() {
   const { data, error } = await supabase
     .from('sections')
     .select(`
-      id, name, description,
+      id, name, description, is_hidden,
       categories (
-        id, name,
+        id, name, is_hidden,
         subjects (
-          id, name,
+          id, name, is_hidden,
           teacher:profiles(id, full_name),
           courses (
-            id, name, fee, is_free,
+            id, name, fee, is_free, is_hidden, payments_paused,
             course_months (
               id, year, month_number, name, google_sheet_url, image_url
             )
@@ -49,6 +49,11 @@ export async function deleteSection(id) {
   if (error) throw error;
 }
 
+export async function toggleSectionVisibility(id, isHidden) {
+  const { error } = await supabase.from('sections').update({ is_hidden: isHidden }).eq('id', id);
+  if (error) throw error;
+}
+
 // ── Categories ──
 export async function createCategory(sectionId, name) {
   const { data, error } = await supabase.from('categories').insert({ section_id: sectionId, name }).select().single();
@@ -66,6 +71,11 @@ export async function deleteCategory(id) {
   if (error) throw error;
 }
 
+export async function toggleCategoryVisibility(id, isHidden) {
+  const { error } = await supabase.from('categories').update({ is_hidden: isHidden }).eq('id', id);
+  if (error) throw error;
+}
+
 // ── Subjects ──
 export async function createSubject(categoryId, name, teacherId) {
   const { data, error } = await supabase.from('subjects').insert({ category_id: categoryId, name, teacher_id: teacherId || null }).select().single();
@@ -80,6 +90,11 @@ export async function updateSubject(id, name, teacherId) {
 
 export async function deleteSubject(id) {
   const { error } = await supabase.from('subjects').delete().eq('id', id);
+  if (error) throw error;
+}
+
+export async function toggleSubjectVisibility(id, isHidden) {
+  const { error } = await supabase.from('subjects').update({ is_hidden: isHidden }).eq('id', id);
   if (error) throw error;
 }
 
@@ -126,6 +141,16 @@ export async function updateCourse(id, name, fee = 2500, isFree = false) {
 
 export async function deleteCourse(id) {
   const { error } = await supabase.from('courses').delete().eq('id', id);
+  if (error) throw error;
+}
+
+export async function toggleCourseVisibility(id, isHidden) {
+  const { error } = await supabase.from('courses').update({ is_hidden: isHidden }).eq('id', id);
+  if (error) throw error;
+}
+
+export async function toggleCoursePayments(id, paused) {
+  const { error } = await supabase.from('courses').update({ payments_paused: paused }).eq('id', id);
   if (error) throw error;
 }
 

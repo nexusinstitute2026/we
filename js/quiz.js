@@ -37,6 +37,12 @@ export async function getMyAttempt(quizId, studentId) {
 
 // Submit quiz attempt
 export async function submitAttempt({ quizId, studentId, answers, questions, timeTaken }) {
+  // Check if quiz is closed
+  const { data: quizMeta } = await supabase.from('quizzes').select('is_closed').eq('id', quizId).single();
+  if (quizMeta?.is_closed) {
+    throw new Error('මෙම ප්‍රශ්න පත්‍රයට පිළිතුරු භාරගැනීම නතර කර ඇත. (This quiz is no longer accepting answers)');
+  }
+
   // 1. Double check if already attempted to prevent race conditions
   const { data: existing } = await supabase
     .from('quiz_attempts')
@@ -103,7 +109,7 @@ export async function getLeaderboard(quizId) {
 export async function getQuizReport(quizId) {
   const { data, error } = await supabase
     .from('quiz_attempts')
-    .select('*, student:profiles(full_name, whatsapp_number), quiz:quizzes(title, time_limit)')
+    .select('*, student:profiles(full_name, whatsapp_number), quiz:quizzes(title, time_limit, questions)')
     .eq('quiz_id', quizId)
     .order('rank', { ascending: true });
   if (error) throw error;

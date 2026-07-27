@@ -54,9 +54,14 @@
       </div>
 
       <div class="table-wrap" id="report-table-wrap" style="display:none">
-        <div style="padding:1.5rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0">
-          <h2 style="font-size:1.1rem;font-weight:800">Leaderboard</h2>
-          <div style="display:flex; gap:0.75rem; align-items:center">
+        <div style="padding:1.5rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0;flex-wrap:wrap;gap:1rem">
+          <h2 style="font-size:1.1rem;font-weight:800;display:flex;align-items:center;gap:0.5rem">
+            Leaderboard 
+            <span id="quiz-status-badge"></span>
+          </h2>
+          <div style="display:flex; gap:0.75rem; align-items:center;flex-wrap:wrap">
+            <button class="btn btn-sm btn-outline" id="toggle-close-btn" style="display:none;color:var(--rose);border-color:var(--rose)">Close Quiz</button>
+            <button class="btn btn-sm btn-outline" id="del-quiz-btn" style="display:none;color:var(--rose);border-color:var(--rose)">Delete</button>
             <button class="btn btn-sm btn-teal" id="approve-answers-btn" style="display:none">පිළිතුරු අනුමත කරන්න</button>
             <button class="btn btn-sm btn-outline" id="export-csv">Export CSV</button>
           </div>
@@ -74,7 +79,7 @@
 <script type="module">
 import { requireAuth, logout, populateUserChip } from '../js/auth.js';
 import { getTeacherCourses } from '../js/admin.js';
-import { getTeacherQuizzes, getQuizReport, getQuiz, updateQuiz } from '../js/quiz.js';
+import { getTeacherQuizzes, getQuizReport, getQuiz, updateQuiz, deleteQuiz } from '../js/quiz.js';
 import { initSidebar, showToast, fmtTime } from '../js/ui.js';
 
 const profile = await requireAuth(['teacher']);
@@ -84,6 +89,7 @@ document.getElementById('logout-btn').addEventListener('click', logout);
 let allCourses = [];
 let allQuizzes = [];
 let currentAttempts = [];
+let currentQuizData = null;
 
 async function loadInitial() {
   [allCourses, allQuizzes] = await Promise.all([
@@ -123,11 +129,27 @@ async function loadReport() {
     const [quizData, attempts] = await Promise.all([
       getQuiz(qId), getQuizReport(qId)
     ]);
+    currentQuizData = quizData;
     currentAttempts = attempts;
+    window.currentQuizQuestions = quizData.questions || [];
+    
     const totalQ = quizData.questions?.length || 0;
 
     document.getElementById('report-stats').style.display = 'grid';
     document.getElementById('report-table-wrap').style.display = 'block';
+
+    const statusBadge = document.getElementById('quiz-status-badge');
+    statusBadge.innerHTML = quizData.is_closed 
+      ? '<span style="font-size:0.7rem;background:#fee2e2;color:#ef4444;padding:2px 6px;border-radius:4px;vertical-align:middle;margin-left:0.5rem">Closed</span>' 
+      : '<span style="font-size:0.7rem;background:#dcfce7;color:#22c55e;padding:2px 6px;border-radius:4px;vertical-align:middle;margin-left:0.5rem">Open</span>';
+
+    const closeBtn = document.getElementById('toggle-close-btn');
+    closeBtn.style.display = 'inline-flex';
+    closeBtn.textContent = quizData.is_closed ? 'Open Quiz' : 'Close Quiz';
+    closeBtn.style.color = quizData.is_closed ? 'var(--teal)' : 'var(--rose)';
+    closeBtn.style.borderColor = quizData.is_closed ? 'var(--teal)' : 'var(--rose)';
+    
+    document.getElementById('del-quiz-btn').style.display = 'inline-flex';
 
     const approveBtn = document.getElementById('approve-answers-btn');
     if (approveBtn) {
@@ -157,20 +179,76 @@ async function loadReport() {
     if(!attempts.length) {
       tBody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted)">සිසුන් කිසිවෙකු තවම පිළිතුරු දී නොමැත.</td></tr>`;
     } else {
-      tBody.innerHTML = attempts.map(a => `
-        <tr>
+      tBody.innerHTML = attempts.map((a, idx) => `
+        <tr onclick="toggleAnswers(${idx})" style="cursor:pointer" title="පිළිතුරු විස්තර බැලීමට Click කරන්න">
           <td><strong style="color:var(--teal)">#${a.rank || '-'}</strong></td>
-          <td>${a.student?.full_name}</td>
+          <td>${a.student?.full_name} <br><span style="font-size:0.75rem;color:var(--text-muted)">(Click to view answers)</span></td>
           <td class="eng">${a.student?.whatsapp_number}</td>
           <td class="eng">${a.score} / ${totalQ}</td>
           <td class="eng">${Math.round((a.score/totalQ)*100)}%</td>
           <td class="eng">${fmtTime(a.time_taken)}</td>
+        </tr>
+        <tr id="answers-row-${idx}" style="display:none;background:#f8fafc">
+          <td colspan="6" style="padding:1.5rem">
+            ${renderStudentAnswers(a.answers, window.currentQuizQuestions)}
+          </td>
         </tr>
       `).join('');
     }
 
   } catch(err) { showToast(err.message, 'error'); }
 }
+
+window.toggleAnswers = (idx) => {
+  const row = document.getElementById(`answers-row-${idx}`);
+  if(row) row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
+};
+
+function renderStudentAnswers(studentAnswers, questions) {
+  if (!studentAnswers || !questions) return '<div style="color:var(--text-muted)">පිළිතුරු නොමැත.</div>';
+  return `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem">` +
+    questions.map((q, i) => {
+      const sAnsIdx = studentAnswers[i];
+      const correctIdx = q.correct_option;
+      const isCorrect = sAnsIdx === correctIdx;
+      return `
+        <div style="background:#fff;border:1px solid ${isCorrect ? '#a7f3d0' : '#fecdd3'};border-radius:0.5rem;padding:0.75rem">
+          <div style="font-size:0.8rem;font-weight:700;color:var(--dark);margin-bottom:0.5rem">Q${i+1}: ${q.text}</div>
+          <div style="font-size:0.85rem">
+            <span style="color:${isCorrect ? 'var(--teal2)' : 'var(--rose)'};font-weight:600">
+              ${isCorrect ? '✅' : '❌'} ${sAnsIdx !== null && sAnsIdx !== undefined && q.options[sAnsIdx] ? q.options[sAnsIdx] : 'Skipped'}
+            </span>
+            ${!isCorrect ? `<br><span style="color:var(--text-muted);font-size:0.75rem">Correct: ${q.options[correctIdx]}</span>` : ''}
+          </div>
+        </div>
+      `;
+    }).join('') +
+  `</div>`;
+}
+
+document.getElementById('toggle-close-btn').addEventListener('click', async () => {
+  if (!currentQuizData) return;
+  const isClosed = !currentQuizData.is_closed;
+  if(!confirm(`මෙම ප්‍රශ්න පත්‍රයට පිළිතුරු භාරගැනීම ${isClosed ? 'නතර' : 'නැවත ආරම්භ'} කිරීමට ඔබට විශ්වාසද?`)) return;
+  try {
+    await updateQuiz(currentQuizData.id, { is_closed: isClosed });
+    showToast('යාවත්කාලීන කරන ලදී', 'success');
+    loadReport(); // refresh
+  } catch (err) { showToast(err.message, 'error'); }
+});
+
+document.getElementById('del-quiz-btn').addEventListener('click', async () => {
+  if (!currentQuizData) return;
+  if(!confirm("මෙම ප්‍රශ්න පත්‍රය සහ ඒ ආශ්‍රිත සියලුම ප්‍රතිඵල මකා දැමිය යුතුද?\n\nමෙය ආපසු හැරවිය නොහැක!")) return;
+  try {
+    await deleteQuiz(currentQuizData.id);
+    showToast('Quiz එක මකා දමන ලදී', 'success');
+    document.getElementById('quiz-select').value = '';
+    // reload quizzes dropdown
+    await loadInitial();
+    loadReport();
+  } catch (err) { showToast(err.message, 'error'); }
+});
 
 document.getElementById('export-csv').addEventListener('click', () => {
   if(!currentAttempts.length) return;

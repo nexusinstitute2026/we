@@ -170,9 +170,14 @@ document.getElementById('paid-month').value = today.getMonth() + 1;
 const coursesList = document.getElementById('courses-list');
 let html = '';
 hierarchy.forEach(sec => {
+  if (sec.is_hidden) return;
   sec.categories.forEach(cat => {
+    if (cat.is_hidden) return;
     cat.subjects.forEach(sub => {
-      if (sub.courses && sub.courses.length > 0) {
+      if (sub.is_hidden) return;
+      const visibleCourses = (sub.courses || []).filter(c => !c.is_hidden && !c.payments_paused);
+      
+      if (visibleCourses.length > 0) {
         const blockId = `block-${sub.id}`;
         html += `<div class="category-block collapsed" id="${blockId}" style="margin-bottom:1rem;background:#f8fafc;padding:1rem;border-radius:0.75rem;border:1px solid #e2e8f0;transition:all 0.3s;">
           <div class="category-header" onclick="expandBlock('${blockId}')" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
@@ -181,7 +186,7 @@ hierarchy.forEach(sec => {
           </div>
           <div class="category-content" style="margin-top:0;">`;
         
-        sub.courses.forEach(c => {
+        visibleCourses.forEach(c => {
           courseFeesMap[c.id] = c.is_free ? 0 : (c.fee || 2500);
           const isEnrolled = enrollments.some(e => e.course_id === c.id);
           const isChecked = isEnrolled || preselectCourseId === c.id;

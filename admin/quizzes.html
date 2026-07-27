@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus LMS | Quiz Management</title>
+<link rel="icon" type="image/png" href="../images/logo.png">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+<div class="dash-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand"><a href="../dashboard/admin.html"><img src="../images/logo.png" alt="Nexus"><div><div class="brand-name eng">NEXUS</div><div class="brand-sub">Admin</div></div></a></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="../dashboard/admin.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a>
+      <a class="nav-item" href="../admin/payments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>ගෙවීම්</a>
+      <a class="nav-item" href="../admin/users.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>පරිශීලකයන්</a>
+      <a class="nav-item" href="../admin/courses.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>පාඨමාලා</a>
+      <a class="nav-item" href="../admin/enrollments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>ලියාපදිංචි</a>
+      <a class="nav-item active" href="../admin/quizzes.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Quizzes</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-chip" id="logout-btn"><div class="user-avatar">A</div><div class="user-info"><div class="user-name">Admin</div><div class="user-role">පරිපාලක</div></div></div>
+    </div>
+  </aside>
+
+  <div class="dash-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <h1 class="page-title">Quiz <span>කළමනාකරණය</span></h1>
+      </div>
+    </header>
+    <main class="dash-content">
+      
+      <div class="table-wrap">
+        <div style="padding:1.5rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0">
+          <h2 style="font-size:1.1rem;font-weight:800">සියලුම Quizzes</h2>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>පාඨමාලාව</th>
+              <th>Quiz නම</th>
+              <th>ගුරුවරයා</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="quizzes-table">
+            <tr><td colspan="5" style="text-align:center">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script type="module">
+import { requireAuth, logout, populateUserChip } from '../js/auth.js';
+import { initSidebar, showToast } from '../js/ui.js';
+import supabase from '../js/supabase.js';
+import { updateQuiz, deleteQuiz } from '../js/quiz.js';
+
+const profile = await requireAuth(['admin']);
+populateUserChip(profile); initSidebar();
+document.getElementById('logout-btn').addEventListener('click', logout);
+
+async function loadQuizzes() {
+  try {
+    const { data, error } = await supabase
+      .from('quizzes')
+      .select('*, course:courses(name, subject:subjects(name)), creator:profiles(full_name)')
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    
+    const tbody = document.getElementById('quizzes-table');
+    if (!data.length) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">Quizzes නොමැත.</td></tr>';
+      return;
+    }
+    
+    tbody.innerHTML = data.map(q => `
+      <tr>
+        <td>${q.course?.subject?.name || ''} - ${q.course?.name || ''}</td>
+        <td><strong>${q.title}</strong></td>
+        <td>${q.creator?.full_name || '-'}</td>
+        <td>
+          ${q.is_closed 
+            ? '<span class="status-badge" style="background:#fee2e2;color:#ef4444">Closed (No Answers)</span>' 
+            : '<span class="status-badge" style="background:#dcfce7;color:#22c55e">Accepting Answers</span>'}
+        </td>
+        <td>
+          <button class="btn btn-sm ${q.is_closed ? 'btn-teal' : 'btn-rose'}" onclick="toggleClosed('${q.id}', ${!q.is_closed})">
+            ${q.is_closed ? 'Open Quiz' : 'Close Quiz'}
+          </button>
+          <button class="btn btn-sm btn-outline" style="color:var(--rose);border-color:var(--rose);margin-left:0.5rem" onclick="delQuiz('${q.id}', '${q.title.replace(/'/g, "\\'")}')">
+            Delete
+          </button>
+        </td>
+      </tr>
+    `).join('');
+  } catch (e) {
+    showToast(e.message, 'error');
+  }
+}
+
+window.toggleClosed = async (id, isClosed) => {
+  try {
+    await updateQuiz(id, { is_closed: isClosed });
+    showToast('යාවත්කාලීන කරන ලදී', 'success');
+    loadQuizzes();
+  } catch(e) {
+    showToast(e.message, 'error');
+  }
+};
+
+window.delQuiz = async (id, title) => {
+  if (!confirm(`"${title}" Quiz එක සහ ඒ ආශ්‍රිත සියලුම ප්‍රතිඵල මකා දැමිය යුතුද?\n\nමෙය ආපසු හැරවිය නොහැක!`)) return;
+  try {
+    await deleteQuiz(id);
+    showToast('Quiz එක මකා දමන ලදී', 'success');
+    loadQuizzes();
+  } catch(e) {
+    showToast(e.message, 'error');
+  }
+};
+
+loadQuizzes();
+</script>
+</body>
+</html>
