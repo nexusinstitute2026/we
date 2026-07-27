@@ -1,0 +1,19 @@
+{
+  "name": "nexus-lms",
+  "version": "1.0.0",
+  "description": "Nexus Institute Learning Management System",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.4",
+    "canvas-confetti": "^1.6.0"
+  },
+  "devDependencies": {
+    "vite": "^6.3.3",
+    "dotenv": "^16.4.5"
+  }
+}
