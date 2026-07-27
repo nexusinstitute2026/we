@@ -86,30 +86,67 @@
           </label>
           <small style="color:var(--text-muted);display:block;margin-top:0.3rem">මෙය සක්‍රීය කළහොත් සෑම ශිෂ්‍යයෙකුටම ප්‍රශ්න පෙනෙන්නේ අහඹු පිළිවෙලකටය.</small>
         </div>
+        <div class="form-group" style="margin-top:1rem">
+          <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer">
+            <input type="checkbox" id="q-shuffle-answers" style="width:20px;height:20px;accent-color:var(--teal)">
+            <span style="font-weight:700">පිළිතුරු අහඹු ලෙස පෙන්වන්න (Shuffle Answers)</span>
+          </label>
+          <small style="color:var(--text-muted);display:block;margin-top:0.3rem">මෙය සක්‍රීය කළහොත් සෑම ප්‍රශ්නයකම පිළිතුරු අහඹු පිළිවෙලකට ශිෂ්‍යයාට දර්ශනය වේ.</small>
+        </div>
       </div>
 
-      <!-- Import Section -->
-      <div class="qb-card" style="background:rgba(13,148,136,0.05); border:1px dashed var(--teal)">
-        <h2 style="font-size:1.1rem;font-weight:800;margin-bottom:1rem;color:var(--teal)">Google Sheet එකෙන් Import කරන්න</h2>
-        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem">
-          ඔබේ Google Sheet එක "Anyone with the link can view" ලෙස සකසා එහි URL එක මෙහි පේස්ට් කරන්න. <br>
-          පේළි සැකසුම: <b>ප්‍රශ්නය | පිළිතුරු 1-5 | නිවැරදි පිළිතුරේ අංකය (1-5)</b>
-        </p>
-        <div style="display:grid;grid-template-columns: 2fr 1fr; gap:1rem; margin-bottom:1rem">
-          <div class="form-group" style="margin:0">
-            <label class="form-label" style="font-size:0.8rem">Google Sheet URL</label>
-            <input type="text" id="sheet-url" class="form-input" placeholder="https://docs.google.com/spreadsheets/d/.../edit#gid=0">
+      <!-- Import Section Grid -->
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap:1.5rem; margin-bottom:2rem">
+        <!-- Import from Google Sheet -->
+        <div class="qb-card" style="background:rgba(13,148,136,0.05); border:1px dashed var(--teal); margin:0; display:flex; flex-direction:column; justify-content:space-between">
+          <div>
+            <h2 style="font-size:1.1rem;font-weight:800;margin-bottom:1rem;color:var(--teal)">Google Sheet එකෙන් Import කරන්න</h2>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem">
+              ඔබේ Google Sheet එක "Anyone with the link can view" ලෙස සකසා එහි URL එක මෙහි පේස්ට් කරන්න. <br>
+              පේළි සැකසුම: <b>ප්‍රශ්නය | පිළිතුරු 1-5 | නිවැරදි පිළිතුරේ අංකය (1-5)</b>
+            </p>
+            <div style="display:grid;grid-template-columns: 2fr 1fr; gap:1rem; margin-bottom:1rem">
+              <div class="form-group" style="margin:0">
+                <label class="form-label" style="font-size:0.8rem">Google Sheet URL</label>
+                <input type="text" id="sheet-url" class="form-input" placeholder="https://docs.google.com/spreadsheets/d/.../edit#gid=0">
+              </div>
+              <div class="form-group" style="margin:0">
+                <label class="form-label" style="font-size:0.8rem">Correct Answer Column</label>
+                <select id="correct-col" class="form-input">
+                  <option value="4">Column E (ප්‍රශ්නය + පිළිතුරු 3)</option>
+                  <option value="5" selected>Column F (ප්‍රශ්නය + පිළිතුරු 4)</option>
+                  <option value="6">Column G (ප්‍රශ්නය + පිළිතුරු 5)</option>
+                </select>
+              </div>
+            </div>
           </div>
-          <div class="form-group" style="margin:0">
-            <label class="form-label" style="font-size:0.8rem">Correct Answer Column</label>
-            <select id="correct-col" class="form-input">
-              <option value="4">Column E (ප්‍රශ්නය + පිළිතුරු 3)</option>
-              <option value="5" selected>Column F (ප්‍රශ්නය + පිළිතුරු 4)</option>
-              <option value="6">Column G (ප්‍රශ්නය + පිළිතුරු 5)</option>
-            </select>
-          </div>
+          <button class="btn btn-teal" id="import-sheet-btn" type="button" style="width:100%; margin-top:1rem">ප්‍රශ්න පූරණය කරන්න (Import)</button>
         </div>
-        <button class="btn btn-teal" id="import-sheet-btn" type="button" style="width:100%">ප්‍රශ්න පූරණය කරන්න (Import)</button>
+
+        <!-- Import from Other Course/Quiz -->
+        <div class="qb-card" style="background:rgba(217,119,6,0.05); border:1px dashed var(--gold); margin:0; display:flex; flex-direction:column; justify-content:space-between">
+          <div>
+            <h2 style="font-size:1.1rem;font-weight:800;margin-bottom:1rem;color:var(--gold)">වෙනත් පාඨමාලාවකින් Import කරන්න</h2>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem">
+              ඔබ මීට පෙර සාදන ලද වෙනත් පාඨමාලාවක ප්‍රශ්න පත්‍රයකින් ප්‍රශ්න ලබා ගැනීමට පහත තොරතුරු තෝරන්න.
+            </p>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem; margin-bottom:1rem">
+              <div class="form-group" style="margin:0">
+                <label class="form-label" style="font-size:0.8rem">පාඨමාලාව තෝරන්න</label>
+                <select id="import-course" class="form-input">
+                  <option value="">-- තෝරන්න --</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin:0">
+                <label class="form-label" style="font-size:0.8rem">Quiz එක තෝරන්න</label>
+                <select id="import-quiz" class="form-input" disabled>
+                  <option value="">-- ප්‍රථමයෙන් පාඨමාලාව තෝරන්න --</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-gold" id="import-quiz-btn" type="button" style="width:100%; margin-top:1rem" disabled>ප්‍රශ්න පූරණය කරන්න (Import)</button>
+        </div>
       </div>
 
       <!-- Questions List -->
@@ -407,6 +444,74 @@ async function importFromSheet() {
 
 document.getElementById('import-sheet-btn').addEventListener('click', importFromSheet);
 
+// Populate the import course dropdown
+const importCourseSelect = document.getElementById('import-course');
+const importQuizSelect = document.getElementById('import-quiz');
+const importQuizBtn = document.getElementById('import-quiz-btn');
+
+importCourseSelect.innerHTML = '<option value="">-- තෝරන්න --</option>' + courses.map(c => `<option value="${c.id}">${escapeHTML(c.title)}</option>`).join('');
+
+importCourseSelect.addEventListener('change', async () => {
+  const courseId = importCourseSelect.value;
+  if (!courseId) {
+    importQuizSelect.innerHTML = '<option value="">-- ප්‍රථමයෙන් පාඨමාලාව තෝරන්න --</option>';
+    importQuizSelect.disabled = true;
+    importQuizBtn.disabled = true;
+    return;
+  }
+  
+  importQuizSelect.innerHTML = '<option value="">ලෝඩ් වෙමින්...</option>';
+  importQuizSelect.disabled = true;
+  importQuizBtn.disabled = true;
+
+  try {
+    const { data: quizzes, error } = await supabase
+      .from('quizzes')
+      .select('id, title, questions')
+      .eq('course_id', courseId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    if (!quizzes || quizzes.length === 0) {
+      importQuizSelect.innerHTML = '<option value="">ප්‍රශ්න පත්‍ර කිසිවක් හමු නොවීය</option>';
+      return;
+    }
+
+    importQuizSelect.innerHTML = '<option value="">-- Quiz එක තෝරන්න --</option>' + quizzes.map(q => `<option value="${q.id}">${escapeHTML(q.title)} (${q.questions.length} Qs)</option>`).join('');
+    importQuizSelect.disabled = false;
+    
+    importQuizSelect.quizzesData = quizzes;
+  } catch (err) {
+    console.error(err);
+    showToast('ප්‍රශ්න පත්‍ර ලෝඩ් කිරීම අසාර්ථකයි', 'error');
+    importQuizSelect.innerHTML = '<option value="">දෝෂයක් සිදුවිය</option>';
+  }
+});
+
+importQuizSelect.addEventListener('change', () => {
+  importQuizBtn.disabled = !importQuizSelect.value;
+});
+
+importQuizBtn.addEventListener('click', () => {
+  const quizId = importQuizSelect.value;
+  const quizzes = importQuizSelect.quizzesData;
+  if (!quizId || !quizzes) return;
+
+  const selectedQuiz = quizzes.find(q => q.id === quizId);
+  if (!selectedQuiz || !selectedQuiz.questions || selectedQuiz.questions.length === 0) {
+    showToast('තෝරාගත් ප්‍රශ්න පත්‍රයේ ප්‍රශ්න නොමැත', 'warning');
+    return;
+  }
+
+  if (confirm(`තෝරාගත් ප්‍රශ්න පත්‍රයේ ඇති ප්‍රශ්න ${selectedQuiz.questions.length} ම මෙහි පූරණය කිරීමට අවශ්‍යද? (දැනට පවතින ප්‍රශ්න ඉවත් නොවී අලුතෙන් එකතු වේ)`)) {
+    selectedQuiz.questions.forEach(q => {
+      window.addQuestion(q);
+    });
+    showToast(`ප්‍රශ්න ${selectedQuiz.questions.length} ක් සාර්ථකව Import කරන ලදී!`, 'success');
+  }
+});
+
 document.getElementById('save-quiz-btn').addEventListener('click', async () => {
   const courseId = courseSelect.value;
   const title = document.getElementById('q-title').value.trim();
@@ -415,6 +520,7 @@ document.getElementById('save-quiz-btn').addEventListener('click', async () => {
   const status = document.getElementById('q-status').value;
   const publishAt = document.getElementById('q-publish-at').value || null;
   const shuffle = document.getElementById('q-shuffle').checked;
+  const shuffleAnswers = document.getElementById('q-shuffle-answers').checked;
 
   if (!courseId || !title) { showToast('මාතෘකාව සහ පාඨමාලාව තෝරන්න', 'warning'); return; }
 
@@ -451,7 +557,9 @@ document.getElementById('save-quiz-btn').addEventListener('click', async () => {
       questions, 
       createdBy: profile.id,
       status,
-      publishAt
+      publishAt,
+      shuffle,
+      shuffle_answers: shuffleAnswers
     });
     
     showToast(status === 'draft' ? 'Draft එකක් ලෙස සුරකින ලදී! 💾' : 'Quiz එක සාර්ථකව Publish කරන ලදී! ✅', 'success');

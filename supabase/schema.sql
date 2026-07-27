@@ -143,11 +143,14 @@ CREATE TABLE quizzes (
   title TEXT NOT NULL,
   time_limit INTEGER,
   questions JSONB NOT NULL,
+  shuffle BOOLEAN DEFAULT false,
+  shuffle_answers BOOLEAN DEFAULT false,
   status TEXT DEFAULT 'published' CHECK (status IN ('draft', 'published')),
   publish_at TIMESTAMPTZ,
   created_by UUID REFERENCES profiles(id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
 
 CREATE TABLE quiz_attempts (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
