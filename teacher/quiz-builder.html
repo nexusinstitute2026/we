@@ -22,12 +22,12 @@
 .add-q-btn { width: 100%; padding: 1.5rem; border: 2px dashed #cbd5e1; background: #f8fafc; color: var(--text-muted); border-radius: var(--radius-lg); font-weight: 700; cursor: pointer; transition: all 0.2s; margin-bottom: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
 .add-q-btn:hover { border-color: var(--teal); color: var(--teal); background: rgba(13,148,136,0.05); }
 </style>
-  <script type="module" crossorigin src="/we/assets/teacher_quiz-builder-Bq32LGDB.js"></script>
+  <script type="module" crossorigin src="/we/assets/teacher_quiz-builder-Bvsx0WCD.js"></script>
   <link rel="modulepreload" crossorigin href="/we/assets/auth-qdlMy9e7.js">
   <link rel="modulepreload" crossorigin href="/we/assets/preload-helper-BKjL65nl.js">
   <link rel="modulepreload" crossorigin href="/we/assets/admin-BW6SJvAW.js">
   <link rel="modulepreload" crossorigin href="/we/assets/leaderboard-P9WSWk3A.js">
-  <link rel="modulepreload" crossorigin href="/we/assets/quiz-BxfecA8q.js">
+  <link rel="modulepreload" crossorigin href="/we/assets/quiz-DljAmzDX.js">
   <link rel="modulepreload" crossorigin href="/we/assets/ui-CfSCUwhT.js">
   <link rel="stylesheet" crossorigin href="/we/assets/fonts-C8iiRjZX.css">
   <link rel="stylesheet" crossorigin href="/we/assets/base-BK4U8q2_.css">
@@ -93,30 +93,67 @@
           </label>
           <small style="color:var(--text-muted);display:block;margin-top:0.3rem">මෙය සක්‍රීය කළහොත් සෑම ශිෂ්‍යයෙකුටම ප්‍රශ්න පෙනෙන්නේ අහඹු පිළිවෙලකටය.</small>
         </div>
+        <div class="form-group" style="margin-top:1rem">
+          <label style="display:flex;align-items:center;gap:0.75rem;cursor:pointer">
+            <input type="checkbox" id="q-shuffle-answers" style="width:20px;height:20px;accent-color:var(--teal)">
+            <span style="font-weight:700">පිළිතුරු අහඹු ලෙස පෙන්වන්න (Shuffle Answers)</span>
+          </label>
+          <small style="color:var(--text-muted);display:block;margin-top:0.3rem">මෙය සක්‍රීය කළහොත් සෑම ප්‍රශ්නයකම පිළිතුරු අහඹු පිළිවෙලකට ශිෂ්‍යයාට දර්ශනය වේ.</small>
+        </div>
       </div>
 
-      <!-- Import Section -->
-      <div class="qb-card" style="background:rgba(13,148,136,0.05); border:1px dashed var(--teal)">
-        <h2 style="font-size:1.1rem;font-weight:800;margin-bottom:1rem;color:var(--teal)">Google Sheet එකෙන් Import කරන්න</h2>
-        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem">
-          ඔබේ Google Sheet එක "Anyone with the link can view" ලෙස සකසා එහි URL එක මෙහි පේස්ට් කරන්න. <br>
-          පේළි සැකසුම: <b>ප්‍රශ්නය | පිළිතුරු 1-5 | නිවැරදි පිළිතුරේ අංකය (1-5)</b>
-        </p>
-        <div style="display:grid;grid-template-columns: 2fr 1fr; gap:1rem; margin-bottom:1rem">
-          <div class="form-group" style="margin:0">
-            <label class="form-label" style="font-size:0.8rem">Google Sheet URL</label>
-            <input type="text" id="sheet-url" class="form-input" placeholder="https://docs.google.com/spreadsheets/d/.../edit#gid=0">
+      <!-- Import Section Grid -->
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap:1.5rem; margin-bottom:2rem">
+        <!-- Import from Google Sheet -->
+        <div class="qb-card" style="background:rgba(13,148,136,0.05); border:1px dashed var(--teal); margin:0; display:flex; flex-direction:column; justify-content:space-between">
+          <div>
+            <h2 style="font-size:1.1rem;font-weight:800;margin-bottom:1rem;color:var(--teal)">Google Sheet එකෙන් Import කරන්න</h2>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem">
+              ඔබේ Google Sheet එක "Anyone with the link can view" ලෙස සකසා එහි URL එක මෙහි පේස්ට් කරන්න. <br>
+              පේළි සැකසුම: <b>ප්‍රශ්නය | පිළිතුරු 1-5 | නිවැරදි පිළිතුරේ අංකය (1-5)</b>
+            </p>
+            <div style="display:grid;grid-template-columns: 2fr 1fr; gap:1rem; margin-bottom:1rem">
+              <div class="form-group" style="margin:0">
+                <label class="form-label" style="font-size:0.8rem">Google Sheet URL</label>
+                <input type="text" id="sheet-url" class="form-input" placeholder="https://docs.google.com/spreadsheets/d/.../edit#gid=0">
+              </div>
+              <div class="form-group" style="margin:0">
+                <label class="form-label" style="font-size:0.8rem">Correct Answer Column</label>
+                <select id="correct-col" class="form-input">
+                  <option value="4">Column E (ප්‍රශ්නය + පිළිතුරු 3)</option>
+                  <option value="5" selected>Column F (ප්‍රශ්නය + පිළිතුරු 4)</option>
+                  <option value="6">Column G (ප්‍රශ්නය + පිළිතුරු 5)</option>
+                </select>
+              </div>
+            </div>
           </div>
-          <div class="form-group" style="margin:0">
-            <label class="form-label" style="font-size:0.8rem">Correct Answer Column</label>
-            <select id="correct-col" class="form-input">
-              <option value="4">Column E (ප්‍රශ්නය + පිළිතුරු 3)</option>
-              <option value="5" selected>Column F (ප්‍රශ්නය + පිළිතුරු 4)</option>
-              <option value="6">Column G (ප්‍රශ්නය + පිළිතුරු 5)</option>
-            </select>
-          </div>
+          <button class="btn btn-teal" id="import-sheet-btn" type="button" style="width:100%; margin-top:1rem">ප්‍රශ්න පූරණය කරන්න (Import)</button>
         </div>
-        <button class="btn btn-teal" id="import-sheet-btn" type="button" style="width:100%">ප්‍රශ්න පූරණය කරන්න (Import)</button>
+
+        <!-- Import from Other Course/Quiz -->
+        <div class="qb-card" style="background:rgba(217,119,6,0.05); border:1px dashed var(--gold); margin:0; display:flex; flex-direction:column; justify-content:space-between">
+          <div>
+            <h2 style="font-size:1.1rem;font-weight:800;margin-bottom:1rem;color:var(--gold)">වෙනත් පාඨමාලාවකින් Import කරන්න</h2>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem">
+              ඔබ මීට පෙර සාදන ලද වෙනත් පාඨමාලාවක ප්‍රශ්න පත්‍රයකින් ප්‍රශ්න ලබා ගැනීමට පහත තොරතුරු තෝරන්න.
+            </p>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem; margin-bottom:1rem">
+              <div class="form-group" style="margin:0">
+                <label class="form-label" style="font-size:0.8rem">පාඨමාලාව තෝරන්න</label>
+                <select id="import-course" class="form-input">
+                  <option value="">-- තෝරන්න --</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin:0">
+                <label class="form-label" style="font-size:0.8rem">Quiz එක තෝරන්න</label>
+                <select id="import-quiz" class="form-input" disabled>
+                  <option value="">-- ප්‍රථමයෙන් පාඨමාලාව තෝරන්න --</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-gold" id="import-quiz-btn" type="button" style="width:100%; margin-top:1rem" disabled>ප්‍රශ්න පූරණය කරන්න (Import)</button>
+        </div>
       </div>
 
       <!-- Questions List -->
