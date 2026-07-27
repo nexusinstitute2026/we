@@ -4,6 +4,7 @@ import supabase from './supabase.js';
 // ── Hierarchy Data Fetching ──
 
 export async function getFullHierarchy() {
+  // Try with visibility columns first; fall back if they don't exist yet
   const { data, error } = await supabase
     .from('sections')
     .select(`
@@ -22,8 +23,31 @@ export async function getFullHierarchy() {
         )
       )
     `);
-  if (error) throw error;
-  return data || [];
+  
+  if (!error) return data || [];
+
+  // Fallback: columns don't exist yet, query without them
+  console.warn('[getFullHierarchy] Falling back to query without visibility columns:', error.message);
+  const { data: fallback, error: fbError } = await supabase
+    .from('sections')
+    .select(`
+      id, name, description,
+      categories (
+        id, name,
+        subjects (
+          id, name,
+          teacher:profiles(id, full_name),
+          courses (
+            id, name, fee, is_free,
+            course_months (
+              id, year, month_number, name, google_sheet_url, image_url
+            )
+          )
+        )
+      )
+    `);
+  if (fbError) throw fbError;
+  return fallback || [];
 }
 
 // ── Sections ──
@@ -51,7 +75,10 @@ export async function deleteSection(id) {
 
 export async function toggleSectionVisibility(id, isHidden) {
   const { error } = await supabase.from('sections').update({ is_hidden: isHidden }).eq('id', id);
-  if (error) throw error;
+  if (error) {
+    if (error.message?.includes('column') || error.code === '42703') throw new Error('is_hidden column එක database එකේ නොමැත. කරුණාකර SQL migration එක ක්‍රියාත්මක කරන්න.');
+    throw error;
+  }
 }
 
 // ── Categories ──
@@ -73,7 +100,10 @@ export async function deleteCategory(id) {
 
 export async function toggleCategoryVisibility(id, isHidden) {
   const { error } = await supabase.from('categories').update({ is_hidden: isHidden }).eq('id', id);
-  if (error) throw error;
+  if (error) {
+    if (error.message?.includes('column') || error.code === '42703') throw new Error('is_hidden column එක database එකේ නොමැත. කරුණාකර SQL migration එක ක්‍රියාත්මක කරන්න.');
+    throw error;
+  }
 }
 
 // ── Subjects ──
@@ -95,7 +125,10 @@ export async function deleteSubject(id) {
 
 export async function toggleSubjectVisibility(id, isHidden) {
   const { error } = await supabase.from('subjects').update({ is_hidden: isHidden }).eq('id', id);
-  if (error) throw error;
+  if (error) {
+    if (error.message?.includes('column') || error.code === '42703') throw new Error('is_hidden column එක database එකේ නොමැත. කරුණාකර SQL migration එක ක්‍රියාත්මක කරන්න.');
+    throw error;
+  }
 }
 
 // ── Courses ──
@@ -146,12 +179,18 @@ export async function deleteCourse(id) {
 
 export async function toggleCourseVisibility(id, isHidden) {
   const { error } = await supabase.from('courses').update({ is_hidden: isHidden }).eq('id', id);
-  if (error) throw error;
+  if (error) {
+    if (error.message?.includes('column') || error.code === '42703') throw new Error('is_hidden column එක database එකේ නොමැත. කරුණාකර SQL migration එක ක්‍රියාත්මක කරන්න.');
+    throw error;
+  }
 }
 
 export async function toggleCoursePayments(id, paused) {
   const { error } = await supabase.from('courses').update({ payments_paused: paused }).eq('id', id);
-  if (error) throw error;
+  if (error) {
+    if (error.message?.includes('column') || error.code === '42703') throw new Error('payments_paused column එක database එකේ නොමැත. කරුණාකර SQL migration එක ක්‍රියාත්මක කරන්න.');
+    throw error;
+  }
 }
 
 // ── Course Months ──

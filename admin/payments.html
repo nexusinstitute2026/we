@@ -97,10 +97,40 @@ async function loadPayments() {
 
 function renderPayments() {
   const container = document.getElementById('payments-container');
+  const monthsSi = { 1: 'ජනවාරි', 2: 'පෙබරවාරි', 3: 'මාර්තු', 4: 'අප්‍රේල්', 5: 'මැයි', 6: 'ජූනි', 7: 'ජූලි', 8: 'අගෝස්තු', 9: 'සැප්තැම්බර්', 10: 'ඔක්තෝබර්', 11: 'නොවැම්බර්', 12: 'දෙසැම්බර්' };
 
   if (currentFilter === 'manual') {
+    const manualPayments = allPayments.filter(p => p.slip_drive_link === 'manual_assign');
+    let listHtml = '';
+    if (!manualPayments.length) {
+      listHtml = `<div style="text-align:center;padding:2rem;color:var(--text-muted)">අතින් ලබා දුන් ප්‍රවේශයන් නොමැත.</div>`;
+    } else {
+      listHtml = manualPayments.map(p => {
+        const coursesText = p.payment_courses?.map(pc => pc.course?.name).filter(Boolean).join(', ') || '—';
+        const monthText = p.paid_month ? `${p.paid_year || ''} ${monthsSi[p.paid_month] || p.paid_month}` : '—';
+        return `
+        <div class="payment-card" style="margin-top:1rem;background:#f8fafc">
+          <div style="flex-shrink:0">
+            <div style="width:80px;height:80px;background:#e2e8f0;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;color:var(--teal);font-size:2rem">👤</div>
+          </div>
+          <div class="pc-info">
+            <h4>${p.student?.full_name || '—'}</h4>
+            <div class="pc-meta">
+              <strong>WhatsApp:</strong> ${p.student?.whatsapp_number || '—'}<br>
+              <strong>මාසය:</strong> ${monthText}<br>
+              <strong>විෂයයන්:</strong> ${coursesText}<br>
+              <strong>දිනය:</strong> ${new Date(p.created_at).toLocaleDateString('si-LK', { year:'numeric', month:'long', day:'numeric' })}
+            </div>
+          </div>
+          <div class="pc-actions">
+            <span style="font-size:0.85rem;background:#dcfce7;color:#22c55e;padding:0.3rem 0.8rem;border-radius:1rem;font-weight:700">Manual Access ✅</span>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
     container.innerHTML = `
-      <div style="background:#fff;border-radius:var(--radius-xl);border:1px solid #e2e8f0;padding:2rem;max-width:600px;margin:0 auto">
+      <div style="background:#fff;border-radius:var(--radius-xl);border:1px solid #e2e8f0;padding:2rem;max-width:600px;margin:0 auto 2rem auto">
         <h3 style="margin-bottom:1.5rem;color:var(--teal)">අතින් ප්‍රවේශය ලබාදීම (Manual Assign)</h3>
         <div style="margin-bottom:1rem">
           <label style="display:block;font-weight:700;margin-bottom:0.4rem">ශිෂ්‍යයා තෝරන්න</label>
@@ -112,13 +142,16 @@ function renderPayments() {
         </div>
         <button class="btn btn-teal" style="width:100%" onclick="submitManualAssign()">ලබා දෙන්න</button>
       </div>
+
+      <h3 style="margin-bottom:1rem;font-size:1.1rem;font-weight:800;color:var(--dark)">දැනට ලබා දී ඇති ප්‍රවේශයන්</h3>
+      ${listHtml}
     `;
     return;
   }
 
-  let filtered = allPayments;
+  let filtered = allPayments.filter(p => p.slip_drive_link !== 'manual_assign');
   if (currentFilter !== 'all') {
-    filtered = allPayments.filter(p => p.status === currentFilter);
+    filtered = filtered.filter(p => p.status === currentFilter);
   }
 
   if (!filtered.length) {
@@ -128,11 +161,6 @@ function renderPayments() {
     </div>`;
     return;
   }
-
-  const monthsSi = {
-    1: 'ජනවාරි', 2: 'පෙබරවාරි', 3: 'මාර්තු', 4: 'අප්‍රේල්', 5: 'මැයි', 6: 'ජූනි',
-    7: 'ජූලි', 8: 'අගෝස්තු', 9: 'සැප්තැම්බර්', 10: 'ඔක්තෝබර්', 11: 'නොවැම්බර්', 12: 'දෙසැම්බර්'
-  };
 
   container.innerHTML = filtered.map(p => {
     const coursesText = p.payment_courses?.map(pc => pc.course?.name).filter(Boolean).join(', ') || '—';
