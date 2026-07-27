@@ -70,10 +70,10 @@
 .modal-add-form input { flex: 1; min-width: 120px; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; outline: none; font-family: inherit;}
 .modal-add-form input:focus { border-color: var(--teal); }
 </style>
-  <script type="module" crossorigin src="/we/assets/admin_courses-DsuSmQnd.js"></script>
-  <link rel="modulepreload" crossorigin href="/we/assets/auth-qdlMy9e7.js">
+  <script type="module" crossorigin src="/we/assets/admin_courses-Dyv-2gHx.js"></script>
+  <link rel="modulepreload" crossorigin href="/we/assets/auth-CsePVUDx.js">
   <link rel="modulepreload" crossorigin href="/we/assets/preload-helper-BKjL65nl.js">
-  <link rel="modulepreload" crossorigin href="/we/assets/admin-DslfRaT8.js">
+  <link rel="modulepreload" crossorigin href="/we/assets/admin-CdQ6s5cl.js">
   <link rel="modulepreload" crossorigin href="/we/assets/ui-CfSCUwhT.js">
   <link rel="stylesheet" crossorigin href="/we/assets/fonts-C8iiRjZX.css">
   <link rel="stylesheet" crossorigin href="/we/assets/base-BK4U8q2_.css">
@@ -146,6 +146,27 @@
         </label>
       </div>
       <button class="btn btn-teal" style="width:100%;margin-top:0.5rem;border:none;border-radius:0.5rem;padding:0.6rem;font-weight:700;cursor:pointer" onclick="saveNewMonth()">මාසය එකතු කරන්න</button>
+    </div>
+  </div>
+</div>
+
+<!-- Move Course Modal -->
+<div class="modal-overlay" id="move-modal">
+  <div class="modal-content" style="max-width:480px">
+    <div class="modal-header">
+      <div class="modal-title" id="move-modal-title">Course Move කරන්න</div>
+      <button class="modal-close" onclick="closeMoveModal()">✕</button>
+    </div>
+    <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:1.5rem">Course එක වෙනත් Subject / Teacher / Section එකට move කරන්න. Course data (months, quizzes) යාවත්කාලීනව ම ඉතිරි වේ.</p>
+    <div style="margin-bottom:1.5rem">
+      <label style="display:block;font-weight:700;margin-bottom:0.5rem;font-size:0.9rem">නව Subject තෝරන්න</label>
+      <select id="move-subject-select" style="width:100%;padding:0.65rem;border:1.5px solid #e2e8f0;border-radius:var(--radius-md);font-family:inherit;font-size:0.9rem;outline:none">
+        <option value="">— Subject තෝරන්න —</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:0.75rem">
+      <button class="btn btn-outline" onclick="closeMoveModal()" style="flex:1">අවලංගු කරන්න</button>
+      <button class="btn btn-teal" onclick="submitMove()" style="flex:1">🔀 Move කරන්න</button>
     </div>
   </div>
 </div>
