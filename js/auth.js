@@ -105,6 +105,18 @@ export async function getProfile() {
   return data;
 }
 
+// Update teacher/user profile photo URL (stored in address field as avatar)
+export async function updateProfilePhoto(userId, photoUrl) {
+  const { error } = await supabase.from('profiles').update({ address: photoUrl }).eq('id', userId);
+  if (error) throw error;
+}
+
+// Delete teacher profile photo (clears the address field)
+export async function deleteProfilePhoto(userId) {
+  const { error } = await supabase.from('profiles').update({ address: null }).eq('id', userId);
+  if (error) throw error;
+}
+
 // Role-based route guard — call at top of each page
 export async function requireAuth(allowedRoles = []) {
   const session = await getSession();

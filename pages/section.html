@@ -54,7 +54,7 @@ import { requireAuth, logout } from '../js/auth.js';
 import { getMyEnrollments } from '../js/payment.js';
 import supabase from '../js/supabase.js';
 
-await requireAuth(['student']);
+const profile = await requireAuth(['student']);
 document.getElementById('logout-btn').addEventListener('click', logout);
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -69,57 +69,95 @@ async function loadSection() {
 
     const enrollments = await getMyEnrollments(user.id);
 
+    // Fetch with visibility and payment flags at all levels
     const { data: section, error } = await supabase.from('sections')
-      .select('name, categories(id, name, subjects(id, name, teacher:profiles(full_name, address), courses(id, name, is_free)))')
+      .select(`name, is_hidden,
+        categories(id, name, is_hidden,
+          subjects(id, name, is_hidden,
+            teacher:profiles(full_name, address),
+            courses(id, name, is_free, is_hidden, payments_paused, fee)
+          )
+        )`)
       .eq('id', sectionId).single();
 
     if (error) throw error;
     if (!section) throw new Error('පන්ති මාලාව හමු නොවීය.');
 
+    // If the whole section is hidden, redirect
+    if (section.is_hidden) throw new Error('මෙම පන්ති මාලාව දැනට ලබා ගත නොහැකිය.');
+
     document.getElementById('page-title').innerHTML = `${section.name} <span>පන්ති</span>`;
 
+    // Filter hidden categories
+    const visibleCategories = (section.categories || []).filter(cat => !cat.is_hidden);
+
     let html = '';
-    if (!section.categories || section.categories.length === 0) {
+    if (!visibleCategories.length) {
       html = '<div class="empty-state"><h3>පන්ති තවම ඇතුළත් කර නොමැත.</h3><p>පරිපාලක විසින් ඉක්මනින් පන්ති එකතු කරනු ඇත.</p></div>';
     } else {
-      for (const cat of section.categories) {
+      for (const cat of visibleCategories) {
         html += `<div class="cat-wrap">
           <div class="cat-title">${cat.name}</div>`;
-        
-        if (!cat.subjects || cat.subjects.length === 0) {
+
+        // Filter hidden subjects
+        const visibleSubjects = (cat.subjects || []).filter(sub => !sub.is_hidden);
+
+        if (!visibleSubjects.length) {
           html += '<p style="color:var(--text-muted);padding:0 1rem">විෂයයන් තවම ඇතුළත් කර නොමැත.</p>';
         } else {
-          for (const sub of cat.subjects) {
+          for (const sub of visibleSubjects) {
             const tImg = sub.teacher?.address || '../images/default_avatar.png';
             html += `<div class="sub-wrap">
               <div class="sub-title">
-                ${sub.name} 
+                ${sub.name}
                 <span class="sub-teacher">
-                  <img src="${tImg}" class="t-img" alt="Teacher"> 
+                  <img src="${tImg}" class="t-img" alt="Teacher" onerror="this.src='../images/default_avatar.png'">
                   ${sub.teacher?.full_name || 'Teacher TBD'}
                 </span>
               </div>
-              <div class="courses-list">
-                ${(sub.courses && sub.courses.length > 0) ? sub.courses.map(c => {
-                  const isEnrolled = enrollments.some(e => e.course_id === c.id);
-                  let link, icon, text, color;
-                  if (isEnrolled) {
-                    link = `../pages/course-months.html?id=${c.id}`;
-                    icon = `<polyline points="9 18 15 12 9 6"/>`;
-                    text = 'පන්ති නරඹන්න';
-                    color = 'var(--teal)';
-                  } else if (c.is_free) {
-                    link = `javascript:enrollFreeAndRedirect('${c.id}')`;
-                    icon = `<polyline points="9 18 15 12 9 6"/>`;
-                    text = 'නොමිලේ සම්බන්ධ වන්න';
-                    color = 'var(--teal)';
-                  } else {
-                    link = `../pages/payment.html?course_id=${c.id}`;
-                    icon = `<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>`;
-                    text = 'Register / Pay';
-                    color = 'var(--rose)';
-                  }
+              <div class="courses-list">`;
+
+            // Filter hidden courses
+            const visibleCourses = (sub.courses || []).filter(c => !c.is_hidden);
+
+            if (!visibleCourses.length) {
+              html += '<p style="font-size:0.85rem;color:var(--text-muted)">පන්ති (Courses) තවම ඇතුළත් කර නැත.</p>';
+            } else {
+              html += visibleCourses.map(c => {
+                const isEnrolled = enrollments.some(e => e.course_id === c.id);
+                let link, icon, text, color;
+
+                if (isEnrolled) {
+                  link = `../pages/course-months.html?id=${c.id}`;
+                  icon = `<polyline points="9 18 15 12 9 6"/>`;
+                  text = 'පන්ති නරඹන්න';
+                  color = 'var(--teal)';
+                } else if (c.is_free) {
+                  link = `javascript:enrollFreeAndRedirect('${c.id}')`;
+                  icon = `<polyline points="9 18 15 12 9 6"/>`;
+                  text = 'නොමිලේ සම්බන්ධ වන්න';
+                  color = 'var(--teal)';
+                } else if (c.payments_paused) {
+                  // Payments paused — show info card, not a payment link
                   return `
+                    <div class="course-btn" style="opacity:0.7;cursor:default;pointer-events:none">
+                      <img src="https://picsum.photos/300/160?random=${c.id}" class="c-img" alt="${c.name}">
+                      <div class="c-body">
+                        <div style="display:flex;flex-direction:column;gap:0.3rem">
+                          <span class="c-name">${c.name}</span>
+                          <span style="font-size:0.78rem;color:var(--gold);font-weight:700">⏸ ගෙවීම් තාවකාලිකව නවතා ඇත</span>
+                        </div>
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="var(--gold)" stroke-width="2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                      </div>
+                    </div>`;
+                } else {
+                  link = `../pages/payment.html?course_id=${c.id}`;
+                  icon = `<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>`;
+                  text = 'Register / Pay';
+                  color = 'var(--rose)';
+                }
+
+                return `
                   <a href="${link}" class="course-btn">
                     <img src="https://picsum.photos/300/160?random=${c.id}" class="c-img" alt="${c.name}">
                     <div class="c-body">
@@ -129,10 +167,11 @@ async function loadSection() {
                       </div>
                       <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="${color}" stroke-width="2">${icon}</svg>
                     </div>
-                  </a>
-                `}).join('') : '<p style="font-size:0.85rem;color:var(--text-muted)">පන්ති (Courses) තවම ඇතුළත් කර නැත.</p>'}
-              </div>
-            </div>`;
+                  </a>`;
+              }).join('');
+            }
+
+            html += `</div></div>`;
           }
         }
         html += `</div>`;
@@ -152,14 +191,11 @@ window.enrollFreeAndRedirect = async (courseId) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('ලොග් වී නොමැත.');
     
-    // Enroll the student in the free course
     const { error } = await supabase.from('enrollments').upsert([
       { student_id: user.id, course_id: courseId }
     ], { onConflict: 'student_id,course_id' });
     
     if (error) throw error;
-    
-    // Redirect directly to course months
     window.location.href = `../pages/course-months.html?id=${courseId}`;
   } catch (err) {
     console.error(err);

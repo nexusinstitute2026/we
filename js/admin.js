@@ -172,6 +172,12 @@ export async function updateCourse(id, name, fee = 2500, isFree = false) {
   if (error) throw error;
 }
 
+// Move a course to a different subject (changes teacher/section implicitly)
+export async function moveCourse(courseId, newSubjectId) {
+  const { error } = await supabase.from('courses').update({ subject_id: newSubjectId }).eq('id', courseId);
+  if (error) throw error;
+}
+
 export async function deleteCourse(id) {
   const { error } = await supabase.from('courses').delete().eq('id', id);
   if (error) throw error;

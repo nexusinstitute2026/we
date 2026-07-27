@@ -145,6 +145,27 @@
   </div>
 </div>
 
+<!-- Move Course Modal -->
+<div class="modal-overlay" id="move-modal">
+  <div class="modal-content" style="max-width:480px">
+    <div class="modal-header">
+      <div class="modal-title" id="move-modal-title">Course Move කරන්න</div>
+      <button class="modal-close" onclick="closeMoveModal()">✕</button>
+    </div>
+    <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:1.5rem">Course එක වෙනත් Subject / Teacher / Section එකට move කරන්න. Course data (months, quizzes) යාවත්කාලීනව ම ඉතිරි වේ.</p>
+    <div style="margin-bottom:1.5rem">
+      <label style="display:block;font-weight:700;margin-bottom:0.5rem;font-size:0.9rem">නව Subject තෝරන්න</label>
+      <select id="move-subject-select" style="width:100%;padding:0.65rem;border:1.5px solid #e2e8f0;border-radius:var(--radius-md);font-family:inherit;font-size:0.9rem;outline:none">
+        <option value="">— Subject තෝරන්න —</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:0.75rem">
+      <button class="btn btn-outline" onclick="closeMoveModal()" style="flex:1">අවලංගු කරන්න</button>
+      <button class="btn btn-teal" onclick="submitMove()" style="flex:1">🔀 Move කරන්න</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast-container" class="toast-container"></div>
 
 <script type="module">
@@ -154,7 +175,7 @@ import {
   createSection, updateSection, deleteSection, toggleSectionVisibility,
   createCategory, updateCategory, deleteCategory, toggleCategoryVisibility,
   createSubject, updateSubject, deleteSubject, toggleSubjectVisibility,
-  createCourse, updateCourse, deleteCourse, toggleCourseVisibility, toggleCoursePayments,
+  createCourse, updateCourse, moveCourse, deleteCourse, toggleCourseVisibility, toggleCoursePayments,
   updateCourseMonth, deleteCourseMonth
 } from '../js/admin.js';
 import { initSidebar, showToast } from '../js/ui.js';
@@ -243,6 +264,7 @@ function renderHierarchy(sections) {
                         <span class="chip-edit" onclick="toggleCourseVis('${c.id}', ${!c.is_hidden})" title="Toggle Visibility">${c.is_hidden ? '👁️‍🗨️' : '👁️'}</span>
                         <span class="chip-edit" onclick="toggleCoursePay('${c.id}', ${!c.payments_paused})" title="Toggle Payments">${c.payments_paused ? '▶️' : '⏸️'}</span>
                         <span class="chip-edit" onclick="editCourse('${c.id}','${esc(c.name)}', ${c.fee || 2500}, ${c.is_free || false})">✏️</span>
+                        <span class="chip-edit" onclick="openMoveModal('${c.id}','${esc(c.name)}')" title="Move to another subject/teacher/section">🔀</span>
                         <span class="chip-del" onclick="delCourse('${c.id}','${esc(c.name)}')">✕</span>
                         <button style="margin-left:0.5rem;background:var(--g-purple);color:white;border:none;border-radius:1rem;padding:0.2rem 0.6rem;font-size:0.7rem;cursor:pointer;font-weight:700;text-decoration:none" onclick='openMonthModal(${JSON.stringify(c).replace(/'/g, "&apos;")})'>🗓️ මාස කළමනාකරණය (${c.course_months?.length || 0})</button>
                       </div>
@@ -454,6 +476,73 @@ window.toggleCourseVis = async (id, isHidden) => {
 window.toggleCoursePay = async (id, isPaused) => {
   try { await toggleCoursePayments(id, isPaused); showToast('යාවත්කාලීන කරන ලදී', 'success'); loadHierarchy(); } catch(e) { showToast(e.message, 'error'); }
 };
+
+// ── Move Course Modal ──
+let moveCourseId = null;
+
+window.openMoveModal = (courseId, courseName) => {
+  moveCourseId = courseId;
+  document.getElementById('move-modal-title').textContent = `"${courseName}" Move කරන්න`;
+
+  // Build subject dropdown from already-loaded hierarchy
+  const select = document.getElementById('move-subject-select');
+  select.innerHTML = '<option value="">— Subject තෝරන්න —</option>';
+
+  // We need to re-fetch hierarchy data from the DOM since it's already rendered
+  // We'll use the global sections data if available, else re-fetch
+  const container = document.getElementById('hierarchy-container');
+  const sectionEls = container.querySelectorAll('[data-section-id]');
+
+  // Build options from all subject blocks currently visible in the DOM
+  sectionEls.forEach(secEl => {
+    const secId = secEl.dataset.sectionId;
+    const secName = secEl.querySelector('.h-header h3')?.childNodes[1]?.textContent?.trim() ||
+                    secEl.querySelector('.h-header h3')?.textContent?.trim() || secId;
+
+    const subBlocks = secEl.querySelectorAll('.sub-block');
+    subBlocks.forEach(subEl => {
+      const subId = subEl.closest('[data-cat-id]')?.closest('.cat-block')?.dataset.catId; // not ideal
+      const subNameEl = subEl.querySelector('.sub-name');
+      const subName = subNameEl?.childNodes[0]?.textContent?.trim() || '';
+      const teacherEl = subEl.querySelector('.sub-teacher');
+      const teacher = teacherEl?.textContent?.replace('👤','').trim() || '';
+
+      // Find the subject add-course button to get sub.id
+      const addCourseBtn = subEl.querySelector('[id^="add-course-"]');
+      if (addCourseBtn) {
+        const subjectId = addCourseBtn.id.replace('add-course-', '');
+        const optgroup = `${secName} › ${subName} (${teacher})`;
+        const opt = document.createElement('option');
+        opt.value = subjectId;
+        opt.textContent = optgroup;
+        select.appendChild(opt);
+      }
+    });
+  });
+
+  document.getElementById('move-modal').classList.add('active');
+};
+
+window.closeMoveModal = () => {
+  document.getElementById('move-modal').classList.remove('active');
+  moveCourseId = null;
+};
+
+window.submitMove = async () => {
+  const newSubjectId = document.getElementById('move-subject-select').value;
+  if (!newSubjectId) return showToast('Subject එකක් තෝරන්න', 'warning');
+  if (!moveCourseId) return;
+  try {
+    await moveCourse(moveCourseId, newSubjectId);
+    showToast('Course සාර්ථකව Move කරන ලදී ✅', 'success');
+    closeMoveModal();
+    loadHierarchy();
+  } catch(e) { showToast(e.message, 'error'); }
+};
+
+document.getElementById('move-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'move-modal') closeMoveModal();
+});
 
 // ── Month Modal Logic ──
 let currentCourseForModal = null;

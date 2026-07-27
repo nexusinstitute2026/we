@@ -34,11 +34,11 @@
       <a class="nav-item" href="#" id="notif-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>දැනුම්දීම් <span class="nav-badge hidden" id="nav-notif-badge">0</span></a>
     </nav>
     <div class="sidebar-footer">
-      <div class="user-chip" id="logout-btn">
-        <div class="user-avatar" id="user-avatar">T</div>
+      <div class="user-chip" onclick="openProfileModal()">
+        <img src="../images/default_avatar.png" id="user-avatar-img" alt="Avatar" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
         <div class="user-info"><div class="user-name" id="user-name">Loading...</div><div class="user-role" id="user-role">ගුරුවරයා</div></div>
-        <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2" width="18" height="18"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
       </div>
+      <button id="logout-btn" style="background:none;border:none;color:rgba(255,255,255,0.7);cursor:pointer;margin-top:0.5rem;width:100%;text-align:center;padding:0.5rem;border-radius:0.5rem;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='none'">Logout</button>
     </div>
   </aside>
   <div class="sidebar-overlay" id="sidebar-overlay"></div>
@@ -69,9 +69,30 @@
     <div class="notif-list" id="notif-list"></div>
   </div>
 </div>
+</div>
+
+<!-- Profile Modal -->
+<div class="modal-overlay" id="profile-modal">
+  <div class="modal-content" style="max-width:400px;text-align:center">
+    <div class="modal-header">
+      <div class="modal-title">පැතිකඩ (Profile)</div>
+      <button class="modal-close" onclick="closeProfileModal()">✕</button>
+    </div>
+    <div style="margin-bottom:1.5rem">
+      <img id="profile-preview-img" src="../images/default_avatar.png" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid #e2e8f0;margin-bottom:1rem">
+      <p style="font-size:0.85rem;color:var(--text-muted)">Photo URL (Link)</p>
+      <input type="url" id="profile-photo-url" placeholder="https://example.com/photo.jpg" style="width:100%;padding:0.75rem;border:1.5px solid #e2e8f0;border-radius:var(--radius-md);margin-top:0.5rem;font-family:inherit;outline:none">
+    </div>
+    <div style="display:flex;gap:0.75rem">
+      <button class="btn btn-rose" onclick="deletePhoto()" style="flex:1">මකන්න</button>
+      <button class="btn btn-teal" onclick="saveProfilePhoto()" style="flex:2">Save කරන්න</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast-container" class="toast-container"></div>
 <script type="module">
-import { requireAuth, logout, populateUserChip } from '../js/auth.js';
+import { requireAuth, logout, populateUserChip, updateProfilePhoto, deleteProfilePhoto } from '../js/auth.js';
 import { getTeacherSubjects, syncCourseSheet } from '../js/admin.js?v=3';
 import { getTeacherQuizzes } from '../js/quiz.js';
 import { getNotifications, getUnreadCount, markAllRead, updateNotifBadge, renderNotifications, subscribeNotifications, initNotificationClicks } from '../js/notifications.js';
@@ -81,8 +102,47 @@ import supabase from '../js/supabase.js';
 const profile = await requireAuth(['teacher', 'admin']);
 if (!profile) throw new Error('Not authorized');
 populateUserChip(profile); initSidebar(); initNotifPanel(); initReveal(); initNotificationClicks('notif-list');
+
+// Set avatar image
+if (profile.address) {
+  const avatarImg = document.getElementById('user-avatar-img');
+  if (avatarImg) avatarImg.src = profile.address;
+}
+
 document.getElementById('logout-btn').addEventListener('click', logout);
 document.getElementById('notif-nav').addEventListener('click', e => { e.preventDefault(); document.getElementById('notif-panel').classList.toggle('active'); });
+
+// Profile Modal Functions
+window.openProfileModal = () => {
+  document.getElementById('profile-photo-url').value = profile.address || '';
+  document.getElementById('profile-preview-img').src = profile.address || '../images/default_avatar.png';
+  document.getElementById('profile-modal').classList.add('active');
+};
+window.closeProfileModal = () => document.getElementById('profile-modal').classList.remove('active');
+
+window.saveProfilePhoto = async () => {
+  const url = document.getElementById('profile-photo-url').value.trim();
+  if (!url) return showToast('කරුණාකර URL එකක් ලබා දෙන්න', 'warning');
+  try {
+    await updateProfilePhoto(profile.id, url);
+    showToast('පැතිකඩ යාවත්කාලීන කරන ලදී', 'success');
+    profile.address = url; // Update local
+    document.getElementById('user-avatar-img').src = url;
+    closeProfileModal();
+  } catch (err) { showToast(err.message, 'error'); }
+};
+
+window.deletePhoto = async () => {
+  if (!confirm('ඔබේ ඡායාරූපය මකා දැමීමට අවශ්‍යද?')) return;
+  try {
+    await deleteProfilePhoto(profile.id);
+    showToast('ඡායාරූපය ඉවත් කරන ලදී', 'success');
+    profile.address = null;
+    document.getElementById('user-avatar-img').src = '../images/default_avatar.png';
+    closeProfileModal();
+  } catch (err) { showToast(err.message, 'error'); }
+};
+
 
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
