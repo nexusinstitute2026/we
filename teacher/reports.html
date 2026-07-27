@@ -4,12 +4,12 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nexus LMS | Quiz Reports</title>
 <link rel="icon" type="image/png" href="/we/assets/logo-CSwFls7j.png">
-  <script type="module" crossorigin src="/we/assets/teacher_reports-0_rCG-m5.js"></script>
+  <script type="module" crossorigin src="/we/assets/teacher_reports-C_pyVSL9.js"></script>
   <link rel="modulepreload" crossorigin href="/we/assets/auth-qdlMy9e7.js">
   <link rel="modulepreload" crossorigin href="/we/assets/preload-helper-BKjL65nl.js">
-  <link rel="modulepreload" crossorigin href="/we/assets/admin-BW6SJvAW.js">
+  <link rel="modulepreload" crossorigin href="/we/assets/admin-D5CFCs7U.js">
   <link rel="modulepreload" crossorigin href="/we/assets/leaderboard-P9WSWk3A.js">
-  <link rel="modulepreload" crossorigin href="/we/assets/quiz-DljAmzDX.js">
+  <link rel="modulepreload" crossorigin href="/we/assets/quiz-CdZykAFh.js">
   <link rel="modulepreload" crossorigin href="/we/assets/ui-CfSCUwhT.js">
   <link rel="stylesheet" crossorigin href="/we/assets/fonts-C8iiRjZX.css">
   <link rel="stylesheet" crossorigin href="/we/assets/base-BK4U8q2_.css">
@@ -61,9 +61,14 @@
       </div>
 
       <div class="table-wrap" id="report-table-wrap" style="display:none">
-        <div style="padding:1.5rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0">
-          <h2 style="font-size:1.1rem;font-weight:800">Leaderboard</h2>
-          <div style="display:flex; gap:0.75rem; align-items:center">
+        <div style="padding:1.5rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0;flex-wrap:wrap;gap:1rem">
+          <h2 style="font-size:1.1rem;font-weight:800;display:flex;align-items:center;gap:0.5rem">
+            Leaderboard 
+            <span id="quiz-status-badge"></span>
+          </h2>
+          <div style="display:flex; gap:0.75rem; align-items:center;flex-wrap:wrap">
+            <button class="btn btn-sm btn-outline" id="toggle-close-btn" style="display:none;color:var(--rose);border-color:var(--rose)">Close Quiz</button>
+            <button class="btn btn-sm btn-outline" id="del-quiz-btn" style="display:none;color:var(--rose);border-color:var(--rose)">Delete</button>
             <button class="btn btn-sm btn-teal" id="approve-answers-btn" style="display:none">පිළිතුරු අනුමත කරන්න</button>
             <button class="btn btn-sm btn-outline" id="export-csv">Export CSV</button>
           </div>
