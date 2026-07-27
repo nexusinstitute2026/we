@@ -96,26 +96,64 @@ const urlParams = new URLSearchParams(window.location.search);
 const quizId = urlParams.get('id');
 if (!quizId) window.location.href = '../dashboard/student.html';
 
+// ─── localStorage helpers ───────────────────────────────────────────────────
+const PROGRESS_KEY = `quiz_progress_${quizId}_${profile.id}`;
+
+function saveProgress() {
+  const progress = {
+    answers: userAnswers,
+    currentQIndex,
+    startTime,
+    timeRemaining,
+    isReopenedAttempt,
+    savedAt: Date.now(),
+  };
+  try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress)); } catch(e) {}
+}
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(PROGRESS_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) { return null; }
+}
+
+function clearProgress() {
+  try { localStorage.removeItem(PROGRESS_KEY); } catch(e) {}
+}
+// ────────────────────────────────────────────────────────────────────────────
+
 let quizData = null;
 let currentQIndex = 0;
 let userAnswers = {};
 let startTime = 0;
 let timerInterval = null;
 let timeRemaining = 0;
-let displayedQuestions = []; // Array of { q, originalIdx }
+let displayedQuestions = []; // Array of { q, originalIdx, shuffledOptions }
+let isReopenedAttempt = false; // true = local-only retake (no DB upload)
 
 try {
-  const attempt = await getMyAttempt(quizId, profile.id);
-  if (attempt) {
-    window.location.href = '../pages/quiz-results.html?quiz=' + quizId;
-  }
-
   quizData = await getQuiz(quizId);
   if (!quizData || !quizData.questions || quizData.questions.length === 0) {
     throw new Error('Invalid quiz data');
   }
+
+  const attempt = await getMyAttempt(quizId, profile.id);
+
   if (quizData.is_closed) {
+    // Quiz is fully closed — no one can answer
     throw new Error('මෙම ප්‍රශ්න පත්‍රයට පිළිතුරු භාරගැනීම නතර කර ඇත.');
+  }
+
+  if (quizData.is_reopened && attempt) {
+    // Admin reopened the quiz — student can retake, results saved locally only
+    isReopenedAttempt = true;
+    showToast('📢 Quiz නැවත විවෘත කර ඇත. ඔබේ නව පිළිතුරු ඔබේ browser හි සුරැකෙනු ඇත.', 'info');
+  } else if (!quizData.is_reopened && attempt) {
+    // Normal closed quiz — student already submitted, redirect to results
+    window.location.href = '../pages/quiz-results.html?quiz=' + quizId;
+    // (stop further execution)
+    throw new Error('__REDIRECT__');
   }
 
   // Handle Shuffling
@@ -137,25 +175,52 @@ try {
     }
   }
 
+  // ── Restore saved progress ───────────────────────────────────────────────
+  const saved = loadProgress();
+  if (saved && saved.isReopenedAttempt === isReopenedAttempt) {
+    const ageMs = Date.now() - (saved.savedAt || 0);
+    const maxAge = (quizData.time_limit || 10800) * 1000; // default 3h
+    if (ageMs < maxAge) {
+      userAnswers = saved.answers || {};
+      currentQIndex = Math.min(saved.currentQIndex || 0, displayedQuestions.length - 1);
+      startTime = saved.startTime || Date.now();
+      if (quizData.time_limit) {
+        // Subtract elapsed time since save
+        const elapsedSinceSave = Math.floor(ageMs / 1000);
+        timeRemaining = Math.max(0, (saved.timeRemaining || quizData.time_limit) - elapsedSinceSave);
+      }
+    } else {
+      clearProgress();
+      startTime = Date.now();
+      if (quizData.time_limit) timeRemaining = quizData.time_limit;
+    }
+  } else {
+    startTime = Date.now();
+    if (quizData.time_limit) timeRemaining = quizData.time_limit;
+  }
+  // ────────────────────────────────────────────────────────────────────────
+
   if (quizData.time_limit) {
-    timeRemaining = quizData.time_limit;
     document.getElementById('timer-text').textContent = fmtTime(timeRemaining);
     startTimer();
   } else {
     document.getElementById('timer-text').textContent = 'No Limit';
   }
 
-  startTime = Date.now();
   renderQuestion();
 
 } catch (error) {
-  console.error("CRITICAL:", error);
-  document.getElementById('question-card').innerHTML = `
-    <div style="text-align:center;padding:2rem;">
-      <h3 style="margin-bottom:1rem">දෝෂයක් සිදුවිය</h3>
-      <p style="color:var(--text-muted);margin-bottom:2rem">${error.message}</p>
-      <button class="btn btn-teal" onclick="location.reload()">නැවත උත්සාහ කරන්න</button>
-    </div>`;
+  if (error.message === '__REDIRECT__') {
+    // Redirect already triggered
+  } else {
+    console.error("CRITICAL:", error);
+    document.getElementById('question-card').innerHTML = `
+      <div style="text-align:center;padding:2rem;">
+        <h3 style="margin-bottom:1rem">දෝෂයක් සිදුවිය</h3>
+        <p style="color:var(--text-muted);margin-bottom:2rem">${error.message}</p>
+        <button class="btn btn-teal" onclick="location.reload()">නැවත උත්සාහ කරන්න</button>
+      </div>`;
+  }
 }
 
 function startTimer() {
@@ -163,6 +228,7 @@ function startTimer() {
   const timerText = document.getElementById('timer-text');
   timerInterval = setInterval(() => {
     timeRemaining--;
+    saveProgress(); // auto-save every second
     if (timeRemaining <= 0) {
       clearInterval(timerInterval);
       timeRemaining = 0;
@@ -185,10 +251,17 @@ function renderQuestion() {
   document.getElementById('progress-fill').style.width = `${((currentQIndex + 1) / total) * 100}%`;
   document.getElementById('answered-text').textContent = `${answeredCount}/${total} Answered`;
 
+  const reopenedBadge = isReopenedAttempt
+    ? `<span style="background:rgba(234,179,8,0.15);color:#fbbf24;font-size:0.72rem;font-weight:700;padding:0.2rem 0.6rem;border-radius:99px;border:1px solid rgba(251,191,36,0.3);font-family:'Outfit',sans-serif">📱 Browser Save Only</span>`
+    : '';
+
   const qHTML = `
     <div class="q-meta">
       <span class="q-index">Question ${currentQIndex + 1}</span>
-      ${userAnswers[currentQIndex] !== undefined ? `<span style="color:var(--teal2);font-size:0.78rem;font-weight:700;font-family:'Outfit',sans-serif">✓ Answered</span>` : `<span style="color:rgba(255,255,255,0.3);font-size:0.78rem;font-weight:700;font-family:'Outfit',sans-serif">Not Answered</span>`}
+      <div style="display:flex;align-items:center;gap:0.5rem">
+        ${reopenedBadge}
+        ${userAnswers[currentQIndex] !== undefined ? `<span style="color:var(--teal2);font-size:0.78rem;font-weight:700;font-family:'Outfit',sans-serif">✓ Answered</span>` : `<span style="color:rgba(255,255,255,0.3);font-size:0.78rem;font-weight:700;font-family:'Outfit',sans-serif">Not Answered</span>`}
+      </div>
     </div>
     <div class="q-text-premium">${q.text}</div>
     <div class="options-list-premium">
@@ -216,11 +289,12 @@ function renderQuestion() {
 
 window.selectOption = (idx) => {
   userAnswers[currentQIndex] = idx;
+  saveProgress(); // save on every answer
   renderQuestion();
 };
 
-window.prevQuestion = () => { if (currentQIndex > 0) { currentQIndex--; renderQuestion(); } };
-window.nextQuestion = () => { if (currentQIndex < displayedQuestions.length - 1) { currentQIndex++; renderQuestion(); } };
+window.prevQuestion = () => { if (currentQIndex > 0) { currentQIndex--; saveProgress(); renderQuestion(); } };
+window.nextQuestion = () => { if (currentQIndex < displayedQuestions.length - 1) { currentQIndex++; saveProgress(); renderQuestion(); } };
 
 document.getElementById('submit-btn').addEventListener('click', () => {
   const answered = Object.keys(userAnswers).length;
@@ -235,7 +309,7 @@ async function submitQuiz() {
   const btn = document.getElementById('submit-btn');
   btn.disabled = true; btn.textContent = 'Submitting...';
 
-  // Map answers back to original indices for consistent DB storage
+  // Map answers back to original question indices
   const originalCount = quizData.questions.length;
   const answersArr = new Array(originalCount).fill(null);
   
@@ -248,14 +322,44 @@ async function submitQuiz() {
 
   const timeTaken = Math.floor((Date.now() - startTime) / 1000);
 
+  if (isReopenedAttempt) {
+    // ── Reopened quiz: score locally, save to localStorage, show results page ──
+    let score = 0;
+    quizData.questions.forEach((q, i) => {
+      if (answersArr[i] === q.correct) score++;
+    });
+
+    const localResult = {
+      quizId: quizData.id,
+      quizTitle: quizData.title,
+      score,
+      total: quizData.questions.length,
+      answers: answersArr,
+      timeTaken,
+      submittedAt: new Date().toISOString(),
+      isLocal: true,
+    };
+
+    try {
+      localStorage.setItem(`quiz_local_result_${quizData.id}_${profile.id}`, JSON.stringify(localResult));
+    } catch(e) {}
+
+    clearProgress();
+    // Redirect to results page with local flag
+    window.location.href = `../pages/quiz-results.html?quiz=${quizData.id}&local=1`;
+    return;
+  }
+
+  // ── Normal submit to database ────────────────────────────────────────────
   try {
     await submitAttempt({
       quizId: quizData.id,
       studentId: profile.id,
       answers: answersArr,
-      questions: quizData.questions, // Pass original questions
+      questions: quizData.questions,
       timeTaken: timeTaken
     });
+    clearProgress(); // clear saved progress on successful submit
     window.location.href = '../pages/quiz-results.html?quiz=' + quizData.id;
   } catch (error) {
     console.error(error);

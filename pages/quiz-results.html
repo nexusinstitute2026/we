@@ -72,21 +72,49 @@ import { fmtTime } from '../js/ui.js';
 const profile = await requireAuth(['student']);
 const urlParams = new URLSearchParams(window.location.search);
 const quizId = urlParams.get('quiz');
+const isLocal = urlParams.get('local') === '1';
 if (!quizId) window.location.href = '../dashboard/student.html';
 
 try {
-  const [quizData, attempt] = await Promise.all([
-    getQuiz(quizId),
-    getMyAttempt(quizId, profile.id)
-  ]);
+  const quizData = await getQuiz(quizId);
 
-  if (!attempt) {
-    window.location.href = '../pages/quiz.html?id=' + quizId;
+  let score, total, percentage, answers, timeTaken, rank = null;
+
+  if (isLocal) {
+    // ── Reopened quiz: load results from localStorage ────────────────────
+    const LOCAL_KEY = `quiz_local_result_${quizId}_${profile.id}`;
+    const raw = localStorage.getItem(LOCAL_KEY);
+    if (!raw) {
+      window.location.href = '../pages/quiz.html?id=' + quizId;
+      throw new Error('__REDIRECT__');
+    }
+    const localResult = JSON.parse(raw);
+    score    = localResult.score;
+    total    = localResult.total;
+    answers  = localResult.answers;
+    timeTaken = localResult.timeTaken;
+    percentage = Math.round((score / total) * 100);
+
+    // Show browser-only banner
+    const banner = document.createElement('div');
+    banner.style.cssText = 'background:rgba(234,179,8,0.15);border:1px solid rgba(251,191,36,0.3);color:#fbbf24;padding:0.75rem 1.25rem;border-radius:0.75rem;text-align:center;margin-bottom:1.5rem;font-family:Outfit,sans-serif;font-size:0.9rem;font-weight:600';
+    banner.innerHTML = '📱 මෙම ප්‍රතිඵල ඔබේ browser හි පමණක් සුරැකී ඇත. (Results saved in your browser only)';
+    document.querySelector('.container').prepend(banner);
+
+  } else {
+    // ── Normal DB attempt ────────────────────────────────────────────────
+    const attempt = await getMyAttempt(quizId, profile.id);
+    if (!attempt) {
+      window.location.href = '../pages/quiz.html?id=' + quizId;
+      throw new Error('__REDIRECT__');
+    }
+    score    = attempt.score;
+    total    = quizData.questions.length;
+    answers  = attempt.answers;
+    timeTaken = attempt.time_taken;
+    rank     = attempt.rank;
+    percentage = Math.round((score / total) * 100);
   }
-
-  const total = quizData.questions.length;
-  const score = attempt.score;
-  const percentage = Math.round((score / total) * 100);
 
   if (percentage >= 75) {
     confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#0d9488', '#f59e0b', '#7c3aed'] });
@@ -104,19 +132,19 @@ try {
   ringFill.style.transform = `rotate(${degree}deg)`;
   if (percentage < 50) ringFill.style.borderColor = 'var(--rose)';
 
-  if (attempt.rank) {
+  if (rank) {
     document.getElementById('rank-container').style.display = 'block';
-    document.getElementById('rank-num').textContent = `#${attempt.rank}`;
+    document.getElementById('rank-num').textContent = `#${rank}`;
   }
 
   document.getElementById('stat-percentage').textContent = `${percentage}%`;
-  document.getElementById('stat-time').textContent = fmtTime(attempt.time_taken);
+  document.getElementById('stat-time').textContent = fmtTime(timeTaken);
   document.getElementById('stat-correct').textContent = score;
 
   const showCorrectAnswers = quizData.answers_released === true;
 
   const reviewHTML = quizData.questions.map((q, i) => {
-    const studentAns = attempt.answers[i];
+    const studentAns = answers ? answers[i] : null;
     const isCorrect = studentAns === q.correct;
     
     return `
@@ -154,8 +182,9 @@ try {
   reveals.forEach(r => observer.observe(r));
 
 } catch (err) {
-  console.error(err);
-  showToast("Results පූරණය කිරීමේදී දෝෂයක්", "error");
+  if (err.message !== '__REDIRECT__') {
+    console.error(err);
+  }
 }
 </script>
 </body>

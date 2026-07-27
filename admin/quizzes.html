@@ -95,23 +95,51 @@ async function loadQuizzes() {
     for (const [cName, quizzes] of Object.entries(grouped)) {
       html += `<tr style="background:#f1f5f9"><td colspan="4" style="font-weight:800;color:var(--teal)">${cName}</td></tr>`;
       quizzes.forEach(q => {
+        // Determine status badge
+        let statusBadge;
+        let actionButtons;
+
+        if (q.is_closed) {
+          // Fully closed — show Reopen and Delete buttons
+          statusBadge = '<span class="status-badge" style="background:#fee2e2;color:#ef4444">Closed (No Answers)</span>';
+          actionButtons = `
+            <button class="btn btn-sm btn-teal" onclick="reopenQuiz('${q.id}')" title="Reopen so students can answer again (browser save only)">
+              🔓 Reopen Quiz
+            </button>
+            <button class="btn btn-sm btn-outline" style="color:var(--rose);border-color:var(--rose);margin-left:0.5rem" onclick="delQuiz('${q.id}', '${q.title.replace(/'/g, "\\'")}')">
+              Delete
+            </button>
+          `;
+        } else if (q.is_reopened) {
+          // Reopened — browser-only mode
+          statusBadge = '<span class="status-badge" style="background:#fef9c3;color:#ca8a04">Reopened (Browser Save)</span>';
+          actionButtons = `
+            <button class="btn btn-sm btn-rose" onclick="closeQuiz('${q.id}')">
+              🔒 Close Quiz
+            </button>
+            <button class="btn btn-sm btn-outline" style="color:var(--rose);border-color:var(--rose);margin-left:0.5rem" onclick="delQuiz('${q.id}', '${q.title.replace(/'/g, "\\'")}')">
+              Delete
+            </button>
+          `;
+        } else {
+          // Accepting answers normally
+          statusBadge = '<span class="status-badge" style="background:#dcfce7;color:#22c55e">Accepting Answers</span>';
+          actionButtons = `
+            <button class="btn btn-sm btn-rose" onclick="closeQuiz('${q.id}')">
+              🔒 Close Quiz
+            </button>
+            <button class="btn btn-sm btn-outline" style="color:var(--rose);border-color:var(--rose);margin-left:0.5rem" onclick="delQuiz('${q.id}', '${q.title.replace(/'/g, "\\'")}')">
+              Delete
+            </button>
+          `;
+        }
+
         html += `
           <tr>
             <td style="padding-left:2rem"><strong>${q.title}</strong></td>
             <td>${q.creator?.full_name || '-'}</td>
-            <td>
-              ${q.is_closed 
-                ? '<span class="status-badge" style="background:#fee2e2;color:#ef4444">Closed (No Answers)</span>' 
-                : '<span class="status-badge" style="background:#dcfce7;color:#22c55e">Accepting Answers</span>'}
-            </td>
-            <td>
-              <button class="btn btn-sm ${q.is_closed ? 'btn-teal' : 'btn-rose'}" onclick="toggleClosed('${q.id}', ${!q.is_closed})">
-                ${q.is_closed ? 'Open Quiz' : 'Close Quiz'}
-              </button>
-              <button class="btn btn-sm btn-outline" style="color:var(--rose);border-color:var(--rose);margin-left:0.5rem" onclick="delQuiz('${q.id}', '${q.title.replace(/'/g, "\\'")}')">
-                Delete
-              </button>
-            </td>
+            <td>${statusBadge}</td>
+            <td>${actionButtons}</td>
           </tr>
         `;
       });
@@ -122,10 +150,23 @@ async function loadQuizzes() {
   }
 }
 
-window.toggleClosed = async (id, isClosed) => {
+// Close a quiz (no more answers accepted)
+window.closeQuiz = async (id) => {
   try {
-    await updateQuiz(id, { is_closed: isClosed });
-    showToast('යාවත්කාලීන කරන ලදී', 'success');
+    await updateQuiz(id, { is_closed: true, is_reopened: false });
+    showToast('Quiz එක වසා දමන ලදී', 'success');
+    loadQuizzes();
+  } catch(e) {
+    showToast(e.message, 'error');
+  }
+};
+
+// Reopen a closed quiz (students can answer again, results stay in browser only)
+window.reopenQuiz = async (id) => {
+  if (!confirm('Quiz නැවත විවෘත කිරීමෙන් ශිෂ්‍යයන්ට නැවත පිළිතුරු දිය හැකිය.\n\nනව පිළිතුරු database වෙත upload නොවනු ඇත — ඒවා ශිෂ්‍යයාගේ browser හි පමණක් සුරැකෙයි.\n\nඑය ඉදිරියට යා යුතුද?')) return;
+  try {
+    await updateQuiz(id, { is_closed: false, is_reopened: true });
+    showToast('Quiz නැවත විවෘත කරන ලදී (Browser Save Mode)', 'success');
     loadQuizzes();
   } catch(e) {
     showToast(e.message, 'error');
