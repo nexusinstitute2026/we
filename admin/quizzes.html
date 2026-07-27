@@ -41,7 +41,6 @@
         <table class="data-table">
           <thead>
             <tr>
-              <th>පාඨමාලාව</th>
               <th>Quiz නම</th>
               <th>ගුරුවරයා</th>
               <th>Status</th>
@@ -49,7 +48,7 @@
             </tr>
           </thead>
           <tbody id="quizzes-table">
-            <tr><td colspan="5" style="text-align:center">Loading...</td></tr>
+            <tr><td colspan="4" style="text-align:center">Loading...</td></tr>
           </tbody>
         </table>
       </div>
@@ -81,30 +80,43 @@ async function loadQuizzes() {
     
     const tbody = document.getElementById('quizzes-table');
     if (!data.length) {
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">Quizzes නොමැත.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center">Quizzes නොමැත.</td></tr>';
       return;
     }
     
-    tbody.innerHTML = data.map(q => `
-      <tr>
-        <td>${q.course?.subject?.name || ''} - ${q.course?.name || ''}</td>
-        <td><strong>${q.title}</strong></td>
-        <td>${q.creator?.full_name || '-'}</td>
-        <td>
-          ${q.is_closed 
-            ? '<span class="status-badge" style="background:#fee2e2;color:#ef4444">Closed (No Answers)</span>' 
-            : '<span class="status-badge" style="background:#dcfce7;color:#22c55e">Accepting Answers</span>'}
-        </td>
-        <td>
-          <button class="btn btn-sm ${q.is_closed ? 'btn-teal' : 'btn-rose'}" onclick="toggleClosed('${q.id}', ${!q.is_closed})">
-            ${q.is_closed ? 'Open Quiz' : 'Close Quiz'}
-          </button>
-          <button class="btn btn-sm btn-outline" style="color:var(--rose);border-color:var(--rose);margin-left:0.5rem" onclick="delQuiz('${q.id}', '${q.title.replace(/'/g, "\\'")}')">
-            Delete
-          </button>
-        </td>
-      </tr>
-    `).join('');
+    const grouped = {};
+    data.forEach(q => {
+      const cName = `${q.course?.subject?.name || ''} - ${q.course?.name || 'Unknown Course'}`;
+      if (!grouped[cName]) grouped[cName] = [];
+      grouped[cName].push(q);
+    });
+
+    let html = '';
+    for (const [cName, quizzes] of Object.entries(grouped)) {
+      html += `<tr style="background:#f1f5f9"><td colspan="4" style="font-weight:800;color:var(--teal)">${cName}</td></tr>`;
+      quizzes.forEach(q => {
+        html += `
+          <tr>
+            <td style="padding-left:2rem"><strong>${q.title}</strong></td>
+            <td>${q.creator?.full_name || '-'}</td>
+            <td>
+              ${q.is_closed 
+                ? '<span class="status-badge" style="background:#fee2e2;color:#ef4444">Closed (No Answers)</span>' 
+                : '<span class="status-badge" style="background:#dcfce7;color:#22c55e">Accepting Answers</span>'}
+            </td>
+            <td>
+              <button class="btn btn-sm ${q.is_closed ? 'btn-teal' : 'btn-rose'}" onclick="toggleClosed('${q.id}', ${!q.is_closed})">
+                ${q.is_closed ? 'Open Quiz' : 'Close Quiz'}
+              </button>
+              <button class="btn btn-sm btn-outline" style="color:var(--rose);border-color:var(--rose);margin-left:0.5rem" onclick="delQuiz('${q.id}', '${q.title.replace(/'/g, "\\'")}')">
+                Delete
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+    tbody.innerHTML = html;
   } catch (e) {
     showToast(e.message, 'error');
   }

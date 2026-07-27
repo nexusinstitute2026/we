@@ -71,8 +71,18 @@
           <tbody id="report-table"></tbody>
         </table>
       </div>
-
     </main>
+  </div>
+</div>
+
+<!-- Answers Modal -->
+<div class="modal-overlay" id="answers-modal">
+  <div class="modal-content" style="max-width:800px; max-height:85vh; overflow-y:auto; display:flex; flex-direction:column;">
+    <div class="modal-header" style="position:sticky; top:0; background:#fff; z-index:10; padding-bottom:1rem;">
+      <div class="modal-title" id="answers-modal-title">සිසුවාගේ පිළිතුරු</div>
+      <button class="modal-close" onclick="closeAnswersModal()">✕</button>
+    </div>
+    <div id="answers-modal-content"></div>
   </div>
 </div>
 
@@ -180,7 +190,7 @@ async function loadReport() {
       tBody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted)">සිසුන් කිසිවෙකු තවම පිළිතුරු දී නොමැත.</td></tr>`;
     } else {
       tBody.innerHTML = attempts.map((a, idx) => `
-        <tr onclick="toggleAnswers(${idx})" style="cursor:pointer" title="පිළිතුරු විස්තර බැලීමට Click කරන්න">
+        <tr onclick="toggleAnswers(${idx}, '${a.student?.full_name?.replace(/'/g, "\\'")}')" style="cursor:pointer" title="පිළිතුරු විස්තර බැලීමට Click කරන්න">
           <td><strong style="color:var(--teal)">#${a.rank || '-'}</strong></td>
           <td>${a.student?.full_name} <br><span style="font-size:0.75rem;color:var(--text-muted)">(Click to view answers)</span></td>
           <td class="eng">${a.student?.whatsapp_number}</td>
@@ -188,42 +198,63 @@ async function loadReport() {
           <td class="eng">${Math.round((a.score/totalQ)*100)}%</td>
           <td class="eng">${fmtTime(a.time_taken)}</td>
         </tr>
-        <tr id="answers-row-${idx}" style="display:none;background:#f8fafc">
-          <td colspan="6" style="padding:1.5rem">
-            ${renderStudentAnswers(a.answers, window.currentQuizQuestions)}
-          </td>
-        </tr>
       `).join('');
     }
 
   } catch(err) { showToast(err.message, 'error'); }
 }
 
-window.toggleAnswers = (idx) => {
-  const row = document.getElementById(`answers-row-${idx}`);
-  if(row) row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
+window.toggleAnswers = (idx, studentName) => {
+  const attempt = currentAttempts[idx];
+  if (!attempt) return;
+  document.getElementById('answers-modal-title').textContent = `${studentName} - පිළිතුරු`;
+  document.getElementById('answers-modal-content').innerHTML = renderStudentAnswers(attempt.answers, window.currentQuizQuestions);
+  document.getElementById('answers-modal').classList.add('active');
+};
+
+window.closeAnswersModal = () => {
+  document.getElementById('answers-modal').classList.remove('active');
 };
 
 function renderStudentAnswers(studentAnswers, questions) {
   if (!studentAnswers || !questions) return '<div style="color:var(--text-muted)">පිළිතුරු නොමැත.</div>';
-  return `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem">` +
-    questions.map((q, i) => {
-      const sAnsIdx = studentAnswers[i];
-      const correctIdx = q.correct_option;
-      const isCorrect = sAnsIdx === correctIdx;
-      return `
-        <div style="background:#fff;border:1px solid ${isCorrect ? '#a7f3d0' : '#fecdd3'};border-radius:0.5rem;padding:0.75rem">
-          <div style="font-size:0.8rem;font-weight:700;color:var(--dark);margin-bottom:0.5rem">Q${i+1}: ${q.text}</div>
-          <div style="font-size:0.85rem">
-            <span style="color:${isCorrect ? 'var(--teal2)' : 'var(--rose)'};font-weight:600">
-              ${isCorrect ? '✅' : '❌'} ${sAnsIdx !== null && sAnsIdx !== undefined && q.options[sAnsIdx] ? q.options[sAnsIdx] : 'Skipped'}
-            </span>
-            ${!isCorrect ? `<br><span style="color:var(--text-muted);font-size:0.75rem">Correct: ${q.options[correctIdx]}</span>` : ''}
-          </div>
+  
+  let correctHtml = '';
+  let incorrectHtml = '';
+
+  questions.forEach((q, i) => {
+    const sAnsIdx = studentAnswers[i];
+    const correctIdx = q.correct;
+    const isCorrect = sAnsIdx === correctIdx;
+    
+    const block = `
+      <div style="background:#fff;border:1px solid ${isCorrect ? '#a7f3d0' : '#fecdd3'};border-radius:0.5rem;padding:0.75rem;margin-bottom:0.75rem;">
+        <div style="font-size:0.8rem;font-weight:700;color:var(--dark);margin-bottom:0.5rem">Q${i+1}: ${q.text}</div>
+        <div style="font-size:0.85rem">
+          <span style="color:${isCorrect ? 'var(--teal2)' : 'var(--rose)'};font-weight:600">
+            ${isCorrect ? '✅' : '❌'} ${sAnsIdx !== null && sAnsIdx !== undefined && q.options[sAnsIdx] ? q.options[sAnsIdx] : 'Skipped'}
+          </span>
+          ${!isCorrect ? `<br><span style="color:var(--text-muted);font-size:0.75rem">Correct: ${q.options[correctIdx]}</span>` : ''}
         </div>
-      `;
-    }).join('') +
-  `</div>`;
+      </div>
+    `;
+
+    if (isCorrect) correctHtml += block;
+    else incorrectHtml += block;
+  });
+
+  return `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start">
+      <div style="background:#f8fafc;padding:1rem;border-radius:0.5rem;border:1px solid #e2e8f0;">
+        <h4 style="color:var(--teal2);margin-bottom:1rem;font-weight:800;border-bottom:2px solid #a7f3d0;padding-bottom:0.5rem;">නිවැරදි පිළිතුරු</h4>
+        ${correctHtml || '<div style="color:var(--text-muted);font-size:0.85rem">නිවැරදි පිළිතුරු නැත.</div>'}
+      </div>
+      <div style="background:#f8fafc;padding:1rem;border-radius:0.5rem;border:1px solid #e2e8f0;">
+        <h4 style="color:var(--rose);margin-bottom:1rem;font-weight:800;border-bottom:2px solid #fecdd3;padding-bottom:0.5rem;">වැරදි පිළිතුරු</h4>
+        ${incorrectHtml || '<div style="color:var(--text-muted);font-size:0.85rem">වැරදි පිළිතුරු නැත.</div>'}
+      </div>
+    </div>
+  `;
 }
 
 document.getElementById('toggle-close-btn').addEventListener('click', async () => {

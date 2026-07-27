@@ -54,6 +54,7 @@
         <button class="filter-tab" data-status="approved">අනුමත</button>
         <button class="filter-tab" data-status="rejected">ප්‍රතික්ෂේප</button>
         <button class="filter-tab" data-status="all">සියල්ල</button>
+        <button class="filter-tab" data-status="manual">අතින් ලබාදීම</button>
       </div>
 
       <div id="payments-container">
@@ -68,6 +69,7 @@
 <script type="module">
 import { requireAuth, logout, populateUserChip } from '../js/auth.js';
 import { getPendingPayments, getAllPayments, approvePayment, rejectPayment } from '../js/payment.js';
+import { getUsersByRole, getFullHierarchy, createEnrollment } from '../js/admin.js';
 import { initSidebar, showToast, statusBadge } from '../js/ui.js';
 
 const profile = await requireAuth(['admin']);
@@ -76,6 +78,8 @@ document.getElementById('logout-btn').addEventListener('click', logout);
 
 let allPayments = [];
 let currentFilter = 'pending';
+let studentsHtml = '';
+let coursesHtml = '';
 
 // Safe fetch helper
 async function safeFetch(promise, fallback = []) {
@@ -93,6 +97,25 @@ async function loadPayments() {
 
 function renderPayments() {
   const container = document.getElementById('payments-container');
+
+  if (currentFilter === 'manual') {
+    container.innerHTML = `
+      <div style="background:#fff;border-radius:var(--radius-xl);border:1px solid #e2e8f0;padding:2rem;max-width:600px;margin:0 auto">
+        <h3 style="margin-bottom:1.5rem;color:var(--teal)">අතින් ප්‍රවේශය ලබාදීම (Manual Assign)</h3>
+        <div style="margin-bottom:1rem">
+          <label style="display:block;font-weight:700;margin-bottom:0.4rem">ශිෂ්‍යයා තෝරන්න</label>
+          <select id="manual-student-select" style="width:100%;padding:0.6rem;border-radius:0.5rem;border:1px solid #cbd5e1">${studentsHtml}</select>
+        </div>
+        <div style="margin-bottom:1.5rem">
+          <label style="display:block;font-weight:700;margin-bottom:0.4rem">පාඨමාලාව තෝරන්න</label>
+          <select id="manual-course-select" style="width:100%;padding:0.6rem;border-radius:0.5rem;border:1px solid #cbd5e1">${coursesHtml}</select>
+        </div>
+        <button class="btn btn-teal" style="width:100%" onclick="submitManualAssign()">ලබා දෙන්න</button>
+      </div>
+    `;
+    return;
+  }
+
   let filtered = allPayments;
   if (currentFilter !== 'all') {
     filtered = allPayments.filter(p => p.status === currentFilter);
@@ -145,14 +168,59 @@ function renderPayments() {
 }
 
 // Filter tabs
-document.getElementById('filter-tabs').addEventListener('click', (e) => {
+document.getElementById('filter-tabs').addEventListener('click', async (e) => {
   const tab = e.target.closest('.filter-tab');
   if (!tab) return;
   document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
   tab.classList.add('active');
   currentFilter = tab.dataset.status;
+  
+  if (currentFilter === 'manual') {
+    document.getElementById('payments-container').innerHTML = '<div style="text-align:center;padding:2rem">Loading...</div>';
+    await loadManualAssignData();
+  }
+  
   renderPayments();
 });
+
+async function loadManualAssignData() {
+  if (studentsHtml) return;
+  try {
+    const [students, hierarchy] = await Promise.all([
+      getUsersByRole('student'),
+      getFullHierarchy()
+    ]);
+    
+    studentsHtml = '<option value="">— තෝරන්න —</option>' + 
+      students.map(s => `<option value="${s.id}">${s.full_name} (${s.whatsapp_number})</option>`).join('');
+      
+    coursesHtml = '<option value="">— තෝරන්න —</option>';
+    hierarchy.forEach(sec => {
+      sec.categories.forEach(cat => {
+        cat.subjects.forEach(sub => {
+          sub.courses.forEach(c => {
+            coursesHtml += `<option value="${c.id}">${sec.name} - ${sub.name} - ${c.name}</option>`;
+          });
+        });
+      });
+    });
+  } catch(e) {
+    showToast(e.message, 'error');
+  }
+}
+
+window.submitManualAssign = async () => {
+  const sId = document.getElementById('manual-student-select').value;
+  const cId = document.getElementById('manual-course-select').value;
+  if (!sId || !cId) return showToast('ශිෂ්‍යයෙක් සහ පාඨමාලාවක් තෝරන්න', 'warning');
+  try {
+    await createEnrollment(sId, cId);
+    showToast('පාඨමාලාව සාර්ථකව ලබා දෙන ලදී ✅', 'success');
+    document.getElementById('manual-course-select').value = '';
+  } catch (e) {
+    showToast(e.message, 'error');
+  }
+};
 
 window.handleApprove = async (paymentId, studentId) => {
   if (!confirm('මෙම ගෙවීම අනුමත කිරීමට විශ්වාසද?')) return;
