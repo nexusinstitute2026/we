@@ -159,7 +159,12 @@ async function loadCourseData() {
     aList.innerHTML = assignments.map(a => {
       const descMatch = a.description?.match(/\[MAX_MB:(\d+)\]/);
       const maxMb = descMatch ? parseInt(descMatch[1]) : 10;
-      const cleanDesc = a.description?.replace(/\[MAX_MB:\d+\]/, '').trim() || '';
+      let cleanDesc = a.description?.replace(/\[MAX_MB:\d+\]/, '').trim() || '';
+      
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      cleanDesc = cleanDesc.replace(urlRegex, function(url) {
+        return `<a href="${url}" target="_blank" style="color:var(--teal);text-decoration:underline;word-break:break-all;">${url}</a>`;
+      });
       
       return `
       <div class="session-card assign-card">
@@ -171,6 +176,7 @@ async function loadCourseData() {
           </div>
         </div>
         <div class="s-actions">
+          ${a.file_url ? `<a href="${a.file_url}" target="_blank" class="btn btn-sm btn-outline" style="border-color:var(--rose);color:var(--rose)">📎 Reference File</a>` : ''}
           <button class="btn btn-sm btn-outline" style="border-color:var(--teal);color:var(--teal)" onclick="openAssignUpload('${a.id}', '${a.title.replace(/'/g, "\\'")}', ${maxMb})">පිළිතුරු Upload කරන්න (Max ${maxMb}MB)</button>
         </div>
       </div>

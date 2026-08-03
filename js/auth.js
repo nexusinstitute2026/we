@@ -177,7 +177,7 @@ export async function getStudentAccessDetails(studentId, courseId) {
     .eq('course_id', courseId)
     .eq('year', targetYear)
     .eq('month_number', targetMonth)
-    .single();
+    .maybeSingle();
 
   const deadline = currentMonthData?.payment_deadline_date || 14;
 
