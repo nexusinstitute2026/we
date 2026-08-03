@@ -279,95 +279,28 @@
         </div>
     </div>
 
+    <!-- Image එක පෙන්වන තැන -->
+    <img id="buddhaImage" src="" alt="Baby Buddha Statue"
+        style="width: 100%; max-width: 400px; height: auto; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+
     <script>
-        // ===== MONTHS DATA =====
-        const MONTHS_DATA = [
-            {
-                id: 1,
-                name: 'ජනවාරි',
-                file: 'january.html',
-                image: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=300&auto=format&fit=crop'
-            },
-            {
-                id: 2,
-                name: 'පෙබරවාරි',
-                file: 'february.html',
-                image: 'https://images.unsplash.com/photo-1562919356-8367d4f9380f?q=80&w=300&auto=format&fit=crop'
-            },
-            {
-                id: 3,
-                name: 'මාර්තු',
-                file: 'march.html',
-                image: 'https://images.unsplash.com/photo-1567591414240-e18e11a3028c?q=80&w=300&auto=format&fit=crop'
-            },
-            {
-                id: 4,
-                name: 'අප්‍රේල්',
-                file: 'april.html',
-                image: 'https://images.unsplash.com/photo-1516008685128-494b59c40277?auto=format&fit=crop&w=300&h=200&q=80'
-            },
-            {
-                id: 5,
-                name: 'මැයි',
-                file: 'may.html',
-                image: 'https://images.unsplash.com/photo-1509021436665-8f07dbf5bf1d?auto=format&fit=crop&w=300&h=200&q=80'
-            },
-            {
-                id: 6,
-                name: 'ජූනි',
-                file: 'june.html',
-                image: 'https://images.unsplash.com/photo-1532153975070-2e9ab71f1b14?auto=format&fit=crop&w=300&h=200&q=80'
-            },
-            {
-                id: 7,
-                name: 'ජූලි',
-                file: 'july.html',
-                image: 'https://images.unsplash.com/photo-1628135896269-1c995578f724?auto=format&fit=crop&w=300&h=200&q=80'
-            },
-            {
-                id: 8,
-                name: 'අගෝස්තු',
-                file: 'august.html',
-                image: 'https://images.unsplash.com/photo-1528319725582-ddc096101511?auto=format&fit=crop&w=300&h=200&q=80'
-            }
+        // ඔයා ලබා දුන් Image URLs 7
+        const buddhaImages = [
+            "https://www.jaipurcraftonline.com/cdn/shop/files/71QV028CiXL._SL1500.jpg",
+            "https://funkydecors.com/cdn/shop/files/baby-buddha-idol-statue-decorative-showpiece-for-home-and-office-decor-funkydecors-maroon-figurines-240.jpg?v=1713895175&width=1445",
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwwZf0Ha8XKOvCuYkSUckgB7xDn1zIExhD1Q&s",
+            "https://fabzie.in/cdn/shop/files/Baby_Buddha_Gold.jpg?v=1730790696&width=1946",
+            "https://5.imimg.com/data5/SELLER/Default/2023/3/ZS/TU/IS/24594283/81tc6smcmml-sl1500--500x500.jpg",
+            "https://cdn.moolwan.com/SB_Baby_Buddha_Orange__Baby%20Buddha%20Orange%20(1).jpg",
+            "https://images-cdn.ubuy.co.in/658544dd088ab0342f246305-kingzhuo-ceramic-tiny-cute-baby-buddha.jpg"
         ];
 
-        // ===== DOM INITIALIZATION =====
-        document.addEventListener('DOMContentLoaded', () => {
-            renderMonthCards();
-        });
-
-        // ===== RENDER MONTH CARDS =====
-        function renderMonthCards() {
-            const grid = document.getElementById('cardsGrid');
-            const currentMonth = new Date().getMonth() + 1;
-
-            MONTHS_DATA.forEach(month => {
-                const card = document.createElement('div');
-                card.className = `month-card ${month.id === currentMonth ? 'current-month' : ''}`;
-
-                card.innerHTML = `
-          <img src="${month.image}" alt="${month.name}" class="card-image" onerror="this.src='https://picsum.photos/300/200?random=${month.id}'">
-          <div class="card-content">
-            <h3 class="month-name">${month.name}</h3>
-            <a href="${month.file}" class="card-btn">
-              පංති බලන්න →
-            </a>
-          </div>
-        `;
-
-                grid.appendChild(card);
-            });
-
-            // Auto-scroll to current month
-            setTimeout(() => {
-                const currentCard = document.querySelector('.month-card.current-month');
-                if (currentCard) {
-                    currentCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }, 1000);
-        }
+        // Page එක load වෙන සෑම අවස්ථාවකම random image එකක් තෝරාගැනීම
+        const randomIndex = Math.floor(Math.random() * buddhaImages.length);
+        document.getElementById("buddhaImage").src = buddhaImages[randomIndex];
     </script>
+
+
 </body>
 
 </html>
