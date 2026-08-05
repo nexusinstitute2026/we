@@ -153,6 +153,7 @@ CREATE TABLE quizzes (
   status TEXT DEFAULT 'published' CHECK (status IN ('draft', 'published')),
   publish_at TIMESTAMPTZ,
   is_closed BOOLEAN DEFAULT false,
+  answers_released BOOLEAN DEFAULT false,
   created_by UUID REFERENCES profiles(id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );

@@ -147,6 +147,7 @@ CREATE TABLE quizzes (
   shuffle_answers BOOLEAN DEFAULT false,
   status TEXT DEFAULT 'published' CHECK (status IN ('draft', 'published')),
   publish_at TIMESTAMPTZ,
+  answers_released BOOLEAN DEFAULT false,
   created_by UUID REFERENCES profiles(id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
