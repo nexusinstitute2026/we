@@ -8,3 +8,4 @@ dist
 .DS_Store
 server/.env
 server/node_modules
+recovery-codes.txt
