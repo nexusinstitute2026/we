@@ -1,280 +1,441 @@
-# Nexus Institute LMS — Project Requirements & Implementation Plan
-
-> **ව්‍යාපෘති සාරාංශය**: Nexus Web (marketing site) → Nexus LMS (full Learning Management System).  
-> **Build Location**: `d:\Users\Nexus Institute\Documents\Nexus LMS\`  
-> **Tech Stack**: Vite + HTML/CSS/JS (Vanilla) + Supabase + Google Drive API + Google Sheets API
+# 🚀 LMS Automated Zoom & YouTube Live Integration Specification
+**Project Stack:** Node.js (Express), Supabase (PostgreSQL), Zoom Server-to-Server OAuth, YouTube Data API v3
 
 ---
 
-## 1. Business Requirements (ව්‍යාපාරික අවශ්‍යතා)
+## 📌 1. System Overview & Core Requirements
 
-### 1.1. පරිශීලක භූමිකාවන් (User Roles)
+මෙම System එක මගින් Tuition LMS / Web Application එකෙහි Classes Schedule කිරීමේ සම්පූර්ණ ක්‍රියාවලිය Automate කරනු ලබයි. Database එක ලෙස **Supabase (PostgreSQL)** භාවිත වේ.
 
-පද්ධතියේ ප්‍රධාන පරිශීලක භූමිකාවන් 3ක් ඇත.
-
-**Student (සිසුවා)**: පන්ති සඳහා ලියාපදිංචි වීම, ගෙවීම් කිරීම, පන්තිවලට සහභාගී වීම, සහ ප්‍රශ්න පත්‍ර (Quizzes) සඳහා පිළිතුරු සැපයීම.
-
-**Teacher (ගුරුවරයා)**: තම විෂයට අදාළ සිසුන්ගේ ගෙවීම් තත්ත්වය බැලීම, Zoom/YouTube ලින්ක් යාවත්කාලීන කිරීම, Quizzes සහ Assignments සැකසීම.
-
-**Admin (පරිපාලක)**: සියලුම සිසුන්, ගුරුවරුන්, සහ පාඨමාලා කළමනාකරණය කිරීම, ගෙවීම් අනුමත කිරීම (Payment Approvals), සහ පද්ධතියේ ගෝලීය සැකසුම් වෙනස් කිරීම.
-
----
-
-### 1.2. සිසුන් ලියාපදිංචි වීමේ ක්‍රියාවලිය (Registration & Login)
-
-**Registration** — සිසුවෙකු ලියාපදිංචි වීමේදී පහත විස්තර ලබා දිය යුතුය:
-- සම්පූර්ණ නම, පාසල, ලිපිනය, ජාතික හැඳුනුම්පත් අංකය (ID Number), සහ WhatsApp අංකය.
-
-**Login Credentials**:
-- Username: සිසුවාගේ WhatsApp අංකය.
-- Password: ජාතික හැඳුනුම්පත් අංකයේ පළමු ඉලක්කම් 4.
-
-**Remember Me**: එක් වරක් ලොග් වූ පසු බ්‍රව්සරය මගින් එය මතක තබා ගත යුතු අතර නැවත ලොග් වීමට අවශ්‍ය නොවේ.
+### Key Features Required:
+1. **Teacher Single Class Scheduling:** ගුරුවරයෙකුට තනි පන්තියක් Schedule කළ හැක. ගුරුවරයාට එකම වේලාවට පන්ති දෙකක් Schedule කිරීමට ඉඩ නොදේ (Teacher Overlap Validation).
+2. **Admin One-Click Monthly Scheduling:** Admin හට මාසයේ 1 වෙනිදා එක Click එකකින් මුළු මාසයේම පන්ති රුටීන් එක (Master Timetable) අදාල දිනයන්ට ස්වයංක්‍රීයව Schedule කළ හැක.
+3. **Dual Zoom Account Smart Bypassing:** 
+   * පන්තියක් Schedule වන විට **Primary Zoom Account** එකෙහි එම වේලාවේ වෙනත් පන්තියක් තිබේදැයි පරීක්ෂා කෙරේ.
+   * යම් හෙයකින් Primary Account එකේ Clash එකක් තිබේ නම්, ස්වයංක්‍රීයව **Bypass (Secondary) Zoom Account** එක භාවිත කර Meeting එක සාදයි.
+4. **YouTube Live Automation (Single Channel):** 
+   * Zoom Meeting එකක් සෑදෙන සෑම අවස්ථාවකදීම, හිමිකරුගේ YouTube Channel එකෙහි Unlisted Live Broadcast එකක් සාදයි.
+   * Auto-Start, Auto-Stop, Low Latency, සහ Enable Embed settings auto-apply වේ.
+   * පැරණි වීඩියෝවක Thumbnail එකක් auto-copy කර නව Stream එකට යොදනු ලබයි.
+5. **Zoom Custom Live Stream Patching:** YouTube හි Stream Key සහ Stream URL එක Zoom Meeting එකට patch කරයි (එවිට එක Click එකෙන් Zoom හි සිට YouTube Live යා හැක).
+6. **Zero Authentication for Teachers:** ගුරුවරුන්ට Zoom හෝ YouTube Accounts ලබා නොදෙන අතර සියලු කටයුතු Backend Credentials හරහා සිදුවේ.
 
 ---
 
-### 1.3. ගෙවීම් සහ ප්‍රවේශ ක්‍රියාවලිය (Payments & Access Flow)
+## ⚙️ 2. Environment Variables Setup (`.env`)
 
-**Course Selection**: ප්‍රධාන පිටුවෙන් සිසුවාට තමන්ට අවශ්‍ය පාඨමාලා තෝරාගත හැක (Self-Enrollment).
+Developer විසින් `.env` file එකෙහි පහත Credentials සඳහන් කළ යුතුය.
 
-**Payment Slip Upload**:
-- සිසුවෙකු පාඨමාලා කිහිපයක් තෝරාගෙන ඇත්නම්, ඒ සියල්ලටම අදාළව එක් ගෙවීම් රිසිට් පතක් (Slip) පමණක් උඩුගත කළ හැක.
-- මුදල් ගෙවන්නේ කිනම් පාඨමාලා සඳහාද යන්න තේරීමට Option එකක් ලබා දිය යුතුය.
-- Slip එක උඩුගත කරන අවස්ථාවේදී සිසුවාගේ ලිපිනය වෙනස් කිරීමට අවශ්‍ය නම් ඊට ඉඩ ලබා දිය යුතුය.
+```env
+PORT=5000
+# PRIMARY ZOOM ACCOUNT CREDENTIALS
+ZOOM_PRIMARY_ACCOUNT_ID=your_primary_account_id
+ZOOM_PRIMARY_CLIENT_ID=your_primary_client_id
+ZOOM_PRIMARY_CLIENT_SECRET=your_primary_client_secret
 
-**Temporary Access**: Slip එක උඩුගත කළ විගසම, තෝරාගත් පාඨමාලා සඳහා **දින 3ක** තාවකාලික ප්‍රවේශයක් (Temporary Access) ස්වයංක්‍රීයව ලැබේ.
+# BYPASS (SECONDARY) ZOOM ACCOUNT CREDENTIALS
+ZOOM_BYPASS_ACCOUNT_ID=your_bypass_account_id
+ZOOM_BYPASS_CLIENT_ID=your_bypass_client_id
+ZOOM_BYPASS_CLIENT_SECRET=your_bypass_client_secret
 
-**Admin Approval**: Admin විසින් slip එක පරීක්ෂා කර "Approve" කළ පසු, සිසුවාට **ඊළඟ මාසයේ 14 වෙනිදා** දක්වා සම්පූර්ණ ප්‍රවේශය (Active Access) ලැබේ.
+# GOOGLE / YOUTUBE OAUTH CREDENTIALS
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
 
-**Access Cut-off**: සෑම මාසයකම 14 වන දිනට පෙර ගෙවීම් නොකළ සිසුන්ගේ ප්‍රවේශය ස්වයංක්‍රීයව අක්‍රිය වේ (Remove Access).
+GOOGLE_REFRESH_TOKEN=your_google_refresh_token
 
----
 
-### 1.4. පන්ති සහ පැමිණීම් ලකුණු කිරීම (Classes & Attendance)
+# THUMBNAIL REUSE CONFIGURATION
+SOURCE_THUMBNAIL_VIDEO_ID=your_source_video_id
 
-**Zoom Links**: සජීවී පන්ති සඳහා Zoom ලින්ක් එක මත ක්ලික් කළ විගස සිසුවාගේ පැමිණීම (Attendance) ස්වයංක්‍රීයව සටහන් විය යුතුය. ලින්ක් එක හරහා කෙලින්ම Zoom App එක විවෘත විය යුතුය.
 
-**YouTube Links (Recordings)**: පටිගත කළ වීඩියෝ නැරඹීම සඳහා YouTube ලින්ක් එක ක්ලික් කළ විගස "නැරඹුවා" ලෙස දත්ත ගබඩාවේ සටහන් විය යුතුය.
 
-**Google Sheets Sync**: Admin විසින් පාඨමාලාවට අදාළ Zoom සහ YouTube ලින්ක් අඩංගු Google Sheet ලින්ක් එක පද්ධතියට ලබා දුන් විට, එය ස්වයංක්‍රීයව පද්ධතියේ UI එකට යාවත්කාලීන විය යුතුය.
+# 3. Supabase Database Schema (SQL)
+Supabase SQL Editor එකේ පහත Tables නිර්මාණය කරන්න:
 
----
+SQL
+-- 1. Classes Table
+CREATE TABLE classes (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    topic VARCHAR(255) NOT NULL,
+    start_time TIMESTAMPTZ NOT NULL,
+    duration INT NOT NULL, -- in minutes
+    teacher_id UUID NOT NULL,
+    zoom_account_type VARCHAR(20) CHECK (zoom_account_type IN ('primary', 'bypass')),
+    zoom_meeting_id VARCHAR(100),
+    zoom_join_url TEXT,
+    zoom_start_url TEXT,
+    youtube_live_url TEXT,
+    youtube_broadcast_id VARCHAR(100),
+    status VARCHAR(20) DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'completed', 'cancelled')),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
 
-### 1.5. ප්‍රශ්න පත්‍ර සහ ශ්‍රේණිගත කිරීම් (Quizzes & Ranking)
+-- 2. Master Routines Table (Monthly Automatic Schedule එක සඳහා)
+CREATE TABLE routines (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    topic VARCHAR(255) NOT NULL,
+    day_of_week INT NOT NULL, -- 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    time_of_day VARCHAR(10) NOT NULL, -- e.g., "16:00"
+    duration INT NOT NULL,
+    teacher_id UUID NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+💻 4. Core Implementation Code
+Dependencies to Install:
+Bash
+npm install express axios googleapis dotenv @supabase/supabase-js
+A. Supabase Client Configuration (config/supabase.js)
+JavaScript
+const { createClient } = require('@supabase/supabase-js');
 
-- Teacher විසින් සාදන Quizzes සඳහා කාල සීමාවක් (Time Limit) ලබා දිය හැක.
-- **Auto-Grading**: සිසුවා Quiz එක Submit කළ විගස ස්වයංක්‍රීයව ලකුණු ප්‍රමාණය ගණනය වී සිසුවාට දිස්විය යුතුය.
-- **Automated Ranking**: ලබාගත් ලකුණු ප්‍රමාණය සහ Quiz එක අවසන් කිරීමට ගත වූ කාලය (Time Taken) මත පදනම්ව ස්වයංක්‍රීයව සිසුන්ගේ Rank එක හැදිය යුතුය. (ලකුණු සමාන නම්, අඩුම කාලයකින් නිම කළ සිසුවාට ඉහළ Rank එක හිමිවේ).
-- Teacher ට සහ Admin ට මෙම ප්‍රතිඵල Report එකක් ලෙස බැලිය හැක.
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY; // Using Service Role Key for Admin Access
 
----
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-### 1.6. දැනුම්දීම් (Notifications)
+module.exports = supabase;
+B. Scheduler Service (services/schedulerService.js)
+JavaScript
+const axios = require('axios');
+const { google } = require('googleapis');
 
-ගෙවීම් අනුමත වූ පසු හෝ අලුත් පාඨමාලාවක් එක් කළ පසු පද්ධතිය ඇතුළත (In-app) Notification එකක් දිස්විය යුතුය. (දැනට WhatsApp Notifications අවශ්‍ය නොවේ).
+// -------------------------------------------------------------------
+// 1. Dynamic Zoom Access Token Generator
+// -------------------------------------------------------------------
+async function getZoomAccessToken(accountType = 'primary') {
+  const accountId = accountType === 'primary' 
+    ? process.env.ZOOM_PRIMARY_ACCOUNT_ID 
+    : process.env.ZOOM_BYPASS_ACCOUNT_ID;
 
----
+  const clientId = accountType === 'primary' 
+    ? process.env.ZOOM_PRIMARY_CLIENT_ID 
+    : process.env.ZOOM_BYPASS_CLIENT_ID;
 
-## 2. Technical Requirements (තාක්ෂණික අවශ්‍යතා)
+  const clientSecret = accountType === 'primary' 
+    ? process.env.ZOOM_PRIMARY_CLIENT_SECRET 
+    : process.env.ZOOM_BYPASS_CLIENT_SECRET;
 
-### 2.1. තාක්ෂණික එකතුව (Tech Stack)
+  const authHeader = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+  
+  const response = await axios.post(
+    `[https://zoom.us/oauth/token?grant_type=account_credentials&account_id=$](https://zoom.us/oauth/token?grant_type=account_credentials&account_id=$){accountId}`,
+    {},
+    { headers: { Authorization: `Basic ${authHeader}` } }
+  );
+  return response.data.access_token;
+}
 
-| Layer | Technology |
-|---|---|
-| Frontend | Vite + HTML/CSS (Vanilla) + JavaScript |
-| Styling | Vanilla CSS — same design language as Nexus Web |
-| Backend & Auth | Supabase (PostgreSQL + Auth + Edge Functions) |
-| File Storage | Google Drive API (via Supabase Edge Function) |
-| Link Sync | Google Sheets API (via Supabase Edge Function) |
+// -------------------------------------------------------------------
+// 2. YouTube OAuth2 Client Generator
+// -------------------------------------------------------------------
+function getYouTubeClient() {
+  const oauth2Client = new google.auth.OAuth2(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET
+  );
+  oauth2Client.setCredentials({ refresh_token: process.env.GOOGLE_REFRESH_TOKEN });
+  return google.youtube({ version: 'v3', auth: oauth2Client });
+}
 
----
+// -------------------------------------------------------------------
+// 3. Time Overlap Logic Engine
+// -------------------------------------------------------------------
+function isTimeOverlapping(startA, durationA, startB, durationB) {
+  const aStart = new Date(startA).getTime();
+  const aEnd = aStart + durationA * 60 * 1000;
 
-### 2.2. දත්ත ගබඩා ව්‍යුහය (Database Schema — Supabase PostgreSQL)
+  const bStart = new Date(startB).getTime();
+  const bEnd = bStart + durationB * 60 * 1000;
 
-#### 1. `profiles` Table (පරිශීලක දත්ත)
-| Column | Type | Notes |
-|---|---|---|
-| id | UUID | Primary Key → auth.users.id |
-| role | TEXT | 'student' \| 'teacher' \| 'admin' |
-| full_name | TEXT | |
-| school | TEXT | |
-| address | TEXT | |
-| whatsapp_number | TEXT | UNIQUE |
-| id_number | TEXT | UNIQUE |
-| created_at | TIMESTAMPTZ | |
+  return aStart < bEnd && aEnd > bStart;
+}
 
-#### 2. `courses` Table (පාඨමාලා දත්ත)
-| Column | Type | Notes |
-|---|---|---|
-| id | UUID | Primary Key |
-| title | TEXT | |
-| description | TEXT | |
-| teacher_id | UUID | FK → profiles.id |
-| monthly_fee | DECIMAL | |
-| google_sheet_link | TEXT | |
+// -------------------------------------------------------------------
+// 4. Thumbnail Reuser Function
+// -------------------------------------------------------------------
+async function applyThumbnail(youtubeClient, targetBroadcastId, sourceVideoId) {
+  try {
+    if (!sourceVideoId) return;
 
-#### 3. `enrollments` Table (සිසුන්ගේ පාඨමාලා ප්‍රවේශය)
-| Column | Type | Notes |
-|---|---|---|
-| id | UUID | Primary Key |
-| student_id | UUID | FK → profiles.id |
-| course_id | UUID | FK → courses.id |
-| status | TEXT | 'pending' \| 'temp' \| 'active' \| 'expired' |
-| expiry_date | TIMESTAMPTZ | temp=+3days, active=next 14th |
+    const videoRes = await youtubeClient.videos.list({
+      part: ['snippet'],
+      id: [sourceVideoId]
+    });
 
-#### 4. `payments` Table (ගෙවීම් දත්ත)
-| Column | Type | Notes |
-|---|---|---|
-| id | UUID | Primary Key |
-| student_id | UUID | FK → profiles.id |
-| amount | DECIMAL | |
-| selected_courses | UUID[] | Array of Course IDs |
-| slip_drive_link | TEXT | Google Drive URL |
-| status | TEXT | 'pending' \| 'approved' \| 'rejected' |
-| address_at_payment | TEXT | |
+    if (!videoRes.data.items || videoRes.data.items.length === 0) return;
 
-#### 5. `attendance` Table (පැමිණීම් දත්ත)
-| Column | Type | Notes |
-|---|---|---|
-| id | UUID | Primary Key |
-| student_id | UUID | FK → profiles.id |
-| course_id | UUID | FK → courses.id |
-| session_type | TEXT | 'zoom' \| 'youtube' |
-| session_link | TEXT | |
-| clicked_at | TIMESTAMPTZ | |
+    const thumbnails = videoRes.data.items[0].snippet.thumbnails;
+    const thumbObj = thumbnails.maxres || thumbnails.high || thumbnails.standard || thumbnails.default;
+    
+    const imageResponse = await axios.get(thumbObj.url, { responseType: 'stream' });
 
-#### 6. `quizzes` Table (ප්‍රශ්න පත්‍ර)
-| Column | Type | Notes |
-|---|---|---|
-| id | UUID | Primary Key |
-| course_id | UUID | FK → courses.id |
-| title | TEXT | |
-| time_limit | INTEGER | Seconds; NULL = unlimited |
-| questions | JSONB | Array of question objects |
-| created_by | UUID | FK → profiles.id |
+    await youtubeClient.thumbnails.set({
+      videoId: targetBroadcastId,
+      media: {
+        mimeType: imageResponse.headers['content-type'],
+        body: imageResponse.data
+      }
+    });
+    console.log(`Thumbnail copied successfully to Broadcast: ${targetBroadcastId}`);
+  } catch (err) {
+    console.error(`Thumbnail Error: ${err.message}`);
+  }
+}
 
-#### 7. `quiz_attempts` Table (ප්‍රශ්න පත්‍ර උත්සාහ)
-| Column | Type | Notes |
-|---|---|---|
-| id | UUID | Primary Key |
-| quiz_id | UUID | FK → quizzes.id |
-| student_id | UUID | FK → profiles.id |
-| score | INTEGER | |
-| time_taken | INTEGER | Seconds |
-| answers | JSONB | Student's selected answers |
-| rank | INTEGER | Auto-updated by trigger |
-| submitted_at | TIMESTAMPTZ | |
+// -------------------------------------------------------------------
+// 5. Main Class Scheduler Function
+// -------------------------------------------------------------------
+async function scheduleSingleClass({ topic, startTime, duration, teacherId, existingClasses = [] }) {
+  // Check 1: Teacher Overlap Validation
+  const teacherClash = existingClasses.find(c => 
+    c.teacher_id.toString() === teacherId.toString() &&
+    isTimeOverlapping(c.start_time, c.duration, startTime, duration)
+  );
 
-#### 8. `notifications` Table (දැනුම්දීම්)
-| Column | Type | Notes |
-|---|---|---|
-| id | UUID | Primary Key |
-| user_id | UUID | FK → profiles.id |
-| message | TEXT | |
-| is_read | BOOLEAN | Default: false |
-| created_at | TIMESTAMPTZ | |
+  if (teacherClash) {
+    throw new Error(`ගුරුවරයාට මෙම කාලසීමාව තුළ වෙනත් පන්තියක් (${teacherClash.topic}) ඇත.`);
+  }
 
----
+  // Check 2: Primary Zoom Account Overlap Check
+  const primaryClash = existingClasses.find(c => 
+    c.zoom_account_type === 'primary' &&
+    isTimeOverlapping(c.start_time, c.duration, startTime, duration)
+  );
 
-### 2.3. පද්ධති ආරක්ෂාව සහ පාලනය (Security & RLS)
+  const selectedAccountType = primaryClash ? 'bypass' : 'primary';
+  const isoStartTime = new Date(startTime).toISOString();
 
-**Row Level Security (RLS) in Supabase**:
-- සිසුන්ට පෙනෙන්නේ ඔවුන්ගේ දත්ත සහ ඔවුන් ලියාපදිංචි වී ඇති පාඨමාලා පමණි.
-- ගුරුවරුන්ට පෙනෙන්නේ තමන්ට අදාළ පාඨමාලා සහ තම පාඨමාලාවට මුදල් ගෙවා ඇති සිසුන් පමණි.
-- පරිපාලකයන්ට (Admins) සියලුම දත්ත සඳහා කියවීමේ/වෙනස් කිරීමේ (Read/Write) ප්‍රවේශය ඇත.
+  // Step A: Create Zoom Meeting
+  const zoomToken = await getZoomAccessToken(selectedAccountType);
+  const zoomResponse = await axios.post(
+    '[https://api.zoom.us/v2/users/me/meetings](https://api.zoom.us/v2/users/me/meetings)',
+    {
+      topic: topic,
+      type: 2,
+      start_time: isoStartTime,
+      duration: duration,
+      settings: { show_share_button: true, allow_multiple_devices: true }
+    },
+    { headers: { Authorization: `Bearer ${zoomToken}` } }
+  );
+  const zoomDetails = zoomResponse.data;
 
----
+  // Step B: Create YouTube Broadcast & Stream
+  const youtube = getYouTubeClient();
+  const broadcastRes = await youtube.liveBroadcasts.insert({
+    part: ['snippet', 'status', 'contentDetails'],
+    requestBody: {
+      snippet: { title: topic, scheduledStartTime: isoStartTime, description: 'Nexus Institute Class' },
+      status: { privacyStatus: 'unlisted', selfDeclaredMadeForKids: false },
+      contentDetails: {
+        enableAutoStart: true,
+        enableAutoStop: true,
+        monitorStream: { enableMonitorStream: true },
+        enableEmbed: true,
+        enableDvr: true,
+        latencyPreference: 'low',
+        recordFromStart: true
+      }
+    }
+  });
 
-### 2.4. Integrations (බාහිර සම්බන්ධතා)
+  const streamRes = await youtube.liveStreams.insert({
+    part: ['snippet', 'cdn'],
+    requestBody: {
+      snippet: { title: `${topic} Stream` },
+      cdn: { frameRate: '30fps', ingestionType: 'rtmp', resolution: '720p' }
+    }
+  });
 
-**Google Drive API** (Supabase Edge Function හරහා):
-- Frontend එකෙන් ලබාදෙන රූපය (Slip) Supabase Edge Function එකක් හරහා Google Drive හි අදාළ Folder එකට Upload වී, එහි Shareable Link එක payments වගුවේ සටහන් වේ.
+  await youtube.liveBroadcasts.bind({
+    id: broadcastRes.data.id,
+    part: ['id', 'contentDetails'],
+    streamId: streamRes.data.id
+  });
 
-**Google Sheets API**:
-- Admin විසින් Sheet link එක ලබා දුන් විට, එය කියවා Zoom/YouTube ලින්ක් සහ අදාළ දින වකවානු UI එකෙහි ප්‍රදර්ශනය කිරීම.
+  const liveUrl = `[https://www.youtube.com/live/$](https://www.youtube.com/live/$){broadcastRes.data.id}`;
 
----
+  // Step C: Apply Thumbnail from Source Video
+  if (process.env.SOURCE_THUMBNAIL_VIDEO_ID) {
+    await applyThumbnail(youtube, broadcastRes.data.id, process.env.SOURCE_THUMBNAIL_VIDEO_ID);
+  }
 
-### 2.5. තීරණාත්මක තර්කනයන් (Critical Logic Points)
+  // Step D: Update Zoom Custom Live Stream Settings
+  await axios.patch(
+    `[https://api.zoom.us/v2/meetings/$](https://api.zoom.us/v2/meetings/$){zoomDetails.id}/livestream`,
+    {
+      stream_url: streamRes.data.cdn.ingestionInfo.ingestionAddress,
+      stream_key: streamRes.data.cdn.ingestionInfo.streamName,
+      page_url: liveUrl
+    },
+    { headers: { Authorization: `Bearer ${zoomToken}` } }
+  );
 
-**Password Generation**: profiles table එකට දත්ත ඇතුළත් කිරීමේදී id_number හි මුල් අක්ෂර 4 වෙන් කර, එය Supabase Auth හි password එක ලෙස encrypt කර ගබඩා කළ යුතුය.
+  // Payload structure for Supabase Insertion
+  return {
+    topic,
+    start_time: startTime,
+    duration,
+    teacher_id: teacherId,
+    zoom_account_type: selectedAccountType,
+    zoom_join_url: zoomDetails.join_url,
+    zoom_start_url: zoomDetails.start_url,
+    youtube_live_url: liveUrl,
+    zoom_meeting_id: zoomDetails.id.toString(),
+    youtube_broadcast_id: broadcastRes.data.id,
+    status: 'scheduled'
+  };
+}
 
-**Ranking Algorithm**: quiz_attempts වගුව වෙත දත්ත යැවූ පසු, Database Trigger එකක් හෝ Edge Function එකක් මගින් අදාළ Quiz එකෙහි සියලු සිසුන්ගේ ලකුණු (Descending) සහ ගත වූ කාලය (Ascending) අනුව Rank එක ස්වයංක්‍රීයව යාවත්කාලීන (Update) කළ යුතුය.
+module.exports = { scheduleSingleClass };
+C. Express Controller & Routes (routes/classRoutes.js)
+JavaScript
+const express = require('express');
+const router = express.Router();
+const supabase = require('../config/supabase');
+const { scheduleSingleClass } = require('../services/schedulerService');
 
----
+// -------------------------------------------------------------------
+// 1. Teacher Single Class Scheduling Route
+// -------------------------------------------------------------------
+router.post('/teacher/schedule-class', async (req, res) => {
+  try {
+    const { topic, startTime, duration, teacherId } = req.body;
 
-## 3. Project Structure (ගොනු ව්‍යුහය)
+    // Fetch scheduled classes from Supabase
+    const { data: existingClasses, error: fetchError } = await supabase
+      .from('classes')
+      .select('*')
+      .gte('start_time', new Date().toISOString())
+      .eq('status', 'scheduled');
 
-```
-Nexus LMS/
-├── Instruction.md              ← මෙම ලේඛනය
-├── package.json
-├── vite.config.js
-├── index.html                  ← Login page (public entry point)
-├── register.html               ← Student registration
-├── dashboard/
-│   ├── student.html            ← Student dashboard
-│   ├── teacher.html            ← Teacher dashboard
-│   └── admin.html              ← Admin dashboard
-├── pages/
-│   ├── course.html             ← Course detail (sessions, attendance)
-│   ├── quiz.html               ← Take a quiz
-│   ├── quiz-results.html       ← Quiz result + ranking
-│   └── payment.html            ← Payment slip upload
-├── admin/
-│   ├── users.html              ← Manage users
-│   ├── courses.html            ← Manage courses
-│   └── payments.html          ← Approve/reject payments
-├── teacher/
-│   ├── quiz-builder.html       ← Create/edit quizzes
-│   └── reports.html            ← Quiz reports
-├── js/
-│   ├── supabase.js             ← Supabase client init
-│   ├── auth.js                 ← Auth helpers
-│   ├── student.js
-│   ├── teacher.js
-│   ├── admin.js
-│   ├── quiz.js
-│   ├── payment.js
-│   └── notifications.js
-├── css/
-│   ├── base.css                ← Design tokens (Nexus Web style)
-│   ├── auth.css
-│   ├── dashboard.css
-│   ├── course.css
-│   └── quiz.css
-├── images/                     ← Copied from Nexus Web
-├── fonts/                      ← Copied from Nexus Web
-└── supabase/
-    ├── schema.sql              ← Full DB schema + RLS policies
-    ├── triggers.sql            ← Ranking trigger + expiry cron
-    └── functions/
-        ├── upload-slip/        ← Edge Function: Google Drive upload
-        └── sync-sheet/         ← Edge Function: Google Sheets reader
-```
+    if (fetchError) throw fetchError;
 
----
+    // Process Class Scheduling
+    const classPayload = await scheduleSingleClass({
+      topic,
+      startTime,
+      duration,
+      teacherId,
+      existingClasses
+    });
 
-## 4. Implementation Phases
+    // Save to Supabase
+    const { data: savedClass, error: insertError } = await supabase
+      .from('classes')
+      .insert([classPayload])
+      .select()
+      .single();
 
-| Phase | Scope | Status |
-|---|---|---|
-| 1 | Project Scaffold + Design System | ⬜ Not Started |
-| 2 | Authentication (Login + Registration) | ⬜ Not Started |
-| 3 | Student Dashboard + Course + Payment | ⬜ Not Started |
-| 4 | Quizzes + Auto-Ranking | ⬜ Not Started |
-| 5 | Teacher Dashboard + Quiz Builder | ⬜ Not Started |
-| 6 | Admin Dashboard + Payment Approvals | ⬜ Not Started |
-| 7 | DB Schema + RLS + Triggers + Edge Functions | ⬜ Not Started |
-| 8 | Notifications System | ⬜ Not Started |
-| 9 | Testing + Polish + Deployment | ⬜ Not Started |
+    if (insertError) throw insertError;
 
----
+    res.status(200).json({
+      success: true,
+      message: 'Class scheduled successfully in Supabase!',
+      data: savedClass
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+});
 
-## 5. Open Questions (Before Starting)
+// -------------------------------------------------------------------
+// 2. System Admin Monthly Bulk Scheduling Route (One-Click Trigger)
+// -------------------------------------------------------------------
+router.post('/admin/schedule-monthly-classes', async (req, res) => {
+  try {
+    const { year, month } = req.body; // e.g., year: 2026, month: 9 (September)
 
-1. **Supabase Project**: Do you have a Supabase project already? If yes, provide the Project URL and `anon` API key.
-2. **Google Cloud**: Is there a Google Cloud project with Drive API + Sheets API enabled? (Need Service Account JSON key)
-3. **Hosting**: Where to deploy? Vercel / Netlify / GitHub Pages?
-4. **Language**: LMS UI fully in Sinhala, or bilingual (Sinhala + English)?
-5. **First Admin**: Should I create a seeder/script to set up the first Admin account?
+    // Fetch Master Routines from Supabase
+    const { data: routines, error: routineErr } = await supabase.from('routines').select('*');
+    if (routineErr) throw routineErr;
+
+    // Fetch Active Classes from Supabase
+    const { data: activeClasses, error: classErr } = await supabase
+      .from('classes')
+      .select('*')
+      .gte('start_time', new Date().toISOString())
+      .eq('status', 'scheduled');
+    
+    if (classErr) throw classErr;
+
+    let localActiveClasses = [...activeClasses];
+    const results = [];
+    const errors = [];
+
+    // Loop through routines and create entries for the month
+    for (const routine of routines) {
+      const datesInMonth = getDatesForDayOfWeek(year, month - 1, routine.day_of_week);
+
+      for (const date of datesInMonth) {
+        try {
+          const [hours, minutes] = routine.time_of_day.split(':');
+          const startTime = new Date(date);
+          startTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
+          const classPayload = await scheduleSingleClass({
+            topic: routine.topic,
+            startTime,
+            duration: routine.duration,
+            teacherId: routine.teacher_id,
+            existingClasses: localActiveClasses
+          });
+
+          // Insert into Supabase
+          const { data: newClass, error: insErr } = await supabase
+            .from('classes')
+            .insert([classPayload])
+            .select()
+            .single();
+
+          if (insErr) throw insErr;
+
+          localActiveClasses.push(newClass);
+          results.push(newClass);
+        } catch (err) {
+          errors.push({ topic: routine.topic, date: date, error: err.message });
+        }
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Monthly bulk schedule execution completed.',
+      totalCreated: results.length,
+      successfulClasses: results,
+      failedClasses: errors
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Helper Function: Gets all specific days (e.g. all Mondays) in a given month
+function getDatesForDayOfWeek(year, monthIndex, dayOfWeek) {
+  const dates = [];
+  const date = new Date(year, monthIndex, 1);
+  while (date.getMonth() === monthIndex) {
+    if (date.getDay() === dayOfWeek) {
+      dates.push(new Date(date));
+    }
+    date.setDate(date.getDate() + 1);
+  }
+  return dates;
+}
+
+module.exports = router;
+🧪 5. Developer Verification & Testing Checklist
+[ ] Supabase Table Creation: Run SQL scripts in Supabase Dashboard and verify classes and routines tables are populated.
+
+[ ] Dual Account Test: Set up 2 overlapping classes at the same time. Verify that Class #1 gets assigned primary account and Class #2 automatically gets assigned bypass account in Supabase.
+
+[ ] Teacher Conflict Test: Try adding two overlapping classes for the same teacher_id. Ensure API returns a HTTP 400 error.
+
+[ ] YouTube Broadcast Validation: Verify the generated YouTube stream link has privacyStatus: unlisted, enableAutoStart: true, and enableAutoStop: true.
+
+[ ] Thumbnail Copy Test: Confirm that the target YouTube broadcast correctly inherits the thumbnail of SOURCE_THUMBNAIL_VIDEO_ID.
+
+[ ] Zoom Streaming Configuration: Open Zoom Meeting settings via browser and verify that Custom Live Streaming Service URL, Key, and Page Link are filled correctly.
+
+[ ] Admin Bulk Execution: Run /admin/schedule-monthly-classes endpoint and check Supabase table for generated month entries.

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus LMS | Schedule Admin</title>
+<link rel="icon" type="image/png" href="../images/logo.png">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/dashboard.css">
+<style>
+.tab-container { display: flex; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; gap: 1rem; }
+.tab-btn { padding: 0.75rem 1.5rem; background: none; border: none; font-size: 1rem; font-weight: 700; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; font-family: inherit; }
+.tab-btn:hover { color: var(--dark); }
+.tab-btn.active { color: var(--teal); border-bottom-color: var(--teal); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.card { background: #fff; border: 1px solid #e2e8f0; border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.25rem; }
+.btn-sm { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+
+.routine-row { display: flex; gap: 1rem; align-items: center; padding: 1rem; border-bottom: 1px solid #f1f5f9; flex-wrap: wrap; }
+.routine-row:last-child { border-bottom: none; }
+.routine-row input, .routine-row select { padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; font-size: 0.85rem; }
+
+.log-box { background: #1e293b; color: #f8fafc; padding: 1rem; border-radius: 0.5rem; height: 300px; overflow-y: auto; font-family: monospace; font-size: 0.85rem; line-height: 1.5; }
+.log-success { color: #34d399; }
+.log-error { color: #f87171; }
+</style>
+</head>
+<body>
+<div class="dash-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand"><a href="../dashboard/admin.html"><img src="../images/logo.png" alt="Nexus"><div><div class="brand-name eng">NEXUS</div><div class="brand-sub">Admin</div></div></a></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="../dashboard/admin.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a>
+      <a class="nav-item" href="../admin/payments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>ගෙවීම්</a>
+      <a class="nav-item" href="../admin/users.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>පරිශීලකයන්</a>
+      <a class="nav-item" href="../admin/courses.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>පාඨමාලා</a>
+      <a class="nav-item active" href="../admin/schedule.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Scheduling</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-chip" id="logout-btn"><div class="user-avatar">A</div><div class="user-info"><div class="user-name">Admin</div><div class="user-role">පරිපාලක</div></div></div>
+    </div>
+  </aside>
+
+  <div class="dash-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <h1 class="page-title">Auto <span>Scheduler</span></h1>
+      </div>
+    </header>
+
+    <main class="dash-content">
+      
+      <div class="tab-container">
+        <button class="tab-btn active" onclick="switchTab('tab-routines')">Master Routines</button>
+        <button class="tab-btn" onclick="switchTab('tab-bulk')">Monthly Bulk Schedule</button>
+      </div>
+
+      <!-- Tab 1: Master Routines -->
+      <div id="tab-routines" class="tab-content active">
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <h2 style="font-size:1.2rem; font-weight:800;">Weekly Time Table</h2>
+            <button class="btn btn-teal btn-sm" onclick="addNewRoutineRow()">+ Add Routine</button>
+          </div>
+          
+          <div id="routines-container">
+            <div class="skeleton" style="height:100px; border-radius:1rem;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Monthly Bulk Schedule -->
+      <div id="tab-bulk" class="tab-content">
+        <div class="card">
+          <h2 style="font-size:1.2rem; font-weight:800; margin-bottom:1rem;">Generate Monthly Schedule</h2>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            මෙමගින් Master Routines වල ඇති කාලසටහනට අනුව සම්පූර්ණ මාසයක් සඳහා Zoom සහ YouTube ලින්ක්ස් ස්වයංක්‍රීයව සාදනු ලැබේ.
+          </p>
+          
+          <div style="display:flex; gap:1rem; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap;">
+            <input type="number" id="bulk-year" class="form-input" style="width:120px" placeholder="Year" value="2026">
+            <select id="bulk-month" class="form-input" style="width:160px">
+              <option value="1">ජනවාරි (Jan)</option>
+              <option value="2">පෙබරවාරි (Feb)</option>
+              <option value="3">මාර්තු (Mar)</option>
+              <option value="4">අප්‍රේල් (Apr)</option>
+              <option value="5">මැයි (May)</option>
+              <option value="6">ජූනි (Jun)</option>
+              <option value="7">ජූලි (Jul)</option>
+              <option value="8">අගෝස්තු (Aug)</option>
+              <option value="9">සැප්තැම්බර් (Sep)</option>
+              <option value="10">ඔක්තෝබර් (Oct)</option>
+              <option value="11">නොවැම්බර් (Nov)</option>
+              <option value="12">දෙසැම්බර් (Dec)</option>
+            </select>
+            <button class="btn btn-teal" id="preview-btn" onclick="previewBulkSchedule()">පූර්වදර්ශනය (Preview) 👁️</button>
+            <button class="btn btn-purple" id="generate-btn" onclick="generateBulkSchedule()">Run Generator ⚡</button>
+          </div>
+
+          <!-- Interactive Preview Container -->
+          <div id="preview-container" style="display:none; margin-bottom:1.5rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; background:#f8fafc; padding:0.75rem 1rem; border-radius:0.5rem; border:1px solid #e2e8f0;">
+              <label style="display:flex; align-items:center; gap:0.5rem; font-weight:700; cursor:pointer;">
+                <input type="checkbox" id="select-all-preview" checked onchange="toggleSelectAllPreview(this.checked)"> සියල්ල තෝරන්න (Select All)
+              </label>
+              <span id="preview-summary" style="font-weight:700; color:var(--teal); font-size:0.9rem;">0 classes selected</span>
+            </div>
+            
+            <div id="preview-list" style="display:flex; flex-direction:column; gap:0.5rem; max-height:380px; overflow-y:auto; padding-right:0.25rem;">
+            </div>
+          </div>
+
+          <div class="log-box" id="bulk-logs">
+            > Ready. Select year and month, then click "Preview" or "Run Generator".
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script type="module">
+import { requireAuth, logout, populateUserChip } from '../js/auth.js';
+import { getUsersByRole } from '../js/admin.js';
+import { initSidebar, showToast } from '../js/ui.js';
+import supabase from '../js/supabase.js';
+
+const profile = await requireAuth(['admin']);
+populateUserChip(profile); initSidebar();
+document.getElementById('logout-btn').addEventListener('click', logout);
+
+let teachers = [];
+let courses = [];
+let routines = [];
+let currentPreviewData = [];
+
+async function loadInitialData() {
+  try {
+    teachers = await getUsersByRole('teacher');
+    const { data: cData } = await supabase.from('courses').select('id, name');
+    courses = cData || [];
+    
+    await loadRoutines();
+  } catch (err) {
+    showToast('දත්ත ලබා ගැනීමේ දෝෂයක්', 'error');
+  }
+}
+
+async function loadRoutines() {
+  try {
+    const res = await fetch('http://localhost:5000/api/routines');
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    routines = data.data;
+    renderRoutines();
+  } catch (err) {
+    showToast('Routines ලබා ගැනීමේ දෝෂයක්', 'error');
+  }
+}
+
+function getTeacherOptions(selectedId) {
+  return `<option value="">- Teacher -</option>` + teachers.map(t => `<option value="${t.id}" ${t.id === selectedId ? 'selected' : ''}>${t.full_name}</option>`).join('');
+}
+function getCourseOptions(selectedId) {
+  return `<option value="">- Course -</option>` + courses.map(c => `<option value="${c.id}" ${c.id === selectedId ? 'selected' : ''}>${c.name}</option>`).join('');
+}
+function getDayOptions(selectedDay) {
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  return days.map((d, i) => `<option value="${i}" ${i === selectedDay ? 'selected' : ''}>${d}</option>`).join('');
+}
+
+function renderRoutines() {
+  const container = document.getElementById('routines-container');
+  if (!routines.length) {
+    container.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-muted)">Routines නොමැත.</div>';
+    return;
+  }
+  
+  container.innerHTML = routines.map(r => `
+    <div class="routine-row" id="routine-${r.id}">
+      <input type="text" value="${r.topic}" style="flex:2; min-width:150px" placeholder="Topic" onchange="updateRoutine('${r.id}', 'topic', this.value)">
+      <select onchange="updateRoutine('${r.id}', 'day_of_week', parseInt(this.value))">${getDayOptions(r.day_of_week)}</select>
+      <input type="time" value="${r.time_of_day}" onchange="updateRoutine('${r.id}', 'time_of_day', this.value)">
+      <input type="number" value="${r.duration}" style="width:80px" placeholder="Min" onchange="updateRoutine('${r.id}', 'duration', parseInt(this.value))">
+      <select onchange="updateRoutine('${r.id}', 'teacher_id', this.value)">${getTeacherOptions(r.teacher_id)}</select>
+      <select onchange="updateRoutine('${r.id}', 'course_id', this.value)">${getCourseOptions(r.course_id)}</select>
+      <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.8rem">
+        <input type="checkbox" ${r.is_active ? 'checked' : ''} onchange="updateRoutine('${r.id}', 'is_active', this.checked)"> Active
+      </label>
+      <button class="btn" style="background:#fee2e2;color:var(--rose);padding:0.4rem 0.8rem" onclick="deleteRoutine('${r.id}')">Delete</button>
+    </div>
+  `).join('');
+}
+
+window.addNewRoutineRow = async () => {
+  try {
+    const res = await fetch('http://localhost:5000/api/routines', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        topic: 'New Class',
+        day_of_week: 1,
+        time_of_day: '16:00',
+        duration: 120,
+        teacher_id: teachers[0]?.id || null,
+        course_id: courses[0]?.id || null,
+        is_active: true
+      })
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    loadRoutines();
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+};
+
+window.updateRoutine = async (id, field, value) => {
+  const routine = routines.find(r => r.id === id);
+  if (!routine) return;
+  const payload = { ...routine, [field]: value };
+  
+  try {
+    await fetch(`http://localhost:5000/api/routines/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  } catch (err) {
+    showToast('Update failed', 'error');
+  }
+};
+
+window.deleteRoutine = async (id) => {
+  if (!confirm('Are you sure?')) return;
+  try {
+    await fetch(`http://localhost:5000/api/routines/${id}`, { method: 'DELETE' });
+    loadRoutines();
+  } catch (err) {
+    showToast('Delete failed', 'error');
+  }
+};
+
+window.switchTab = (tabId) => {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  event.target.classList.add('active');
+};
+
+const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+function formatDateFriendly(dateStr) {
+  const d = new Date(dateStr);
+  const dayName = dayNames[d.getDay()];
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd} (${dayName})`;
+}
+
+window.previewBulkSchedule = async () => {
+  const year = parseInt(document.getElementById('bulk-year').value);
+  const month = parseInt(document.getElementById('bulk-month').value);
+  const previewBtn = document.getElementById('preview-btn');
+  const container = document.getElementById('preview-container');
+  const listEl = document.getElementById('preview-list');
+  const logger = document.getElementById('bulk-logs');
+
+  previewBtn.disabled = true;
+  previewBtn.textContent = 'Loading...';
+  logger.innerHTML += `\n> Fetching preview for ${year}-${month}...`;
+
+  try {
+    const res = await fetch('http://localhost:5000/api/admin/preview-monthly', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ year, month })
+    });
+    const data = await res.json();
+    
+    if (!data.success) throw new Error(data.message);
+    
+    currentPreviewData = data.data;
+
+    if (!currentPreviewData.length) {
+      listEl.innerHTML = '<div style="padding:1.5rem; text-align:center; color:var(--text-muted);">තෝරාගත් මාසය සඳහා Active Routines කිසිවක් හමු නොවුණි.</div>';
+    } else {
+      listEl.innerHTML = currentPreviewData.map(item => `
+        <div class="preview-item-row" style="display:flex; align-items:center; gap:0.75rem; padding:0.6rem 0.8rem; background:#fff; border:1px solid #e2e8f0; border-radius:0.5rem; flex-wrap:wrap;">
+          <input type="checkbox" class="preview-cb" data-id="${item.id}" ${item.selected ? 'checked' : ''} onchange="window.updatePreviewSummary()">
+          <div style="font-weight:700; color:#1e293b; min-width:180px; font-size:0.85rem;">
+            📅 ${formatDateFriendly(item.startTime)}
+          </div>
+          <div style="font-size:0.8rem; color:#475569; background:#f1f5f9; padding:0.2rem 0.5rem; border-radius:0.4rem; font-weight:600;">
+            ⏰ ${item.timeOfDay} (${item.duration}m)
+          </div>
+          <div style="flex:2; min-width:200px;">
+            <input type="text" class="form-input preview-topic-input" data-id="${item.id}" value="${item.topic}" style="width:100%; padding:0.35rem 0.5rem; font-size:0.85rem; font-weight:600;" placeholder="Class Title">
+          </div>
+          <div style="font-size:0.8rem; color:#475569; background:#e2e8f0; padding:0.2rem 0.5rem; border-radius:0.4rem;">
+            👤 ${item.teacherName}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    container.style.display = 'block';
+    window.updatePreviewSummary();
+    logger.innerHTML += `\n<span class="log-success">> Preview loaded: ${currentPreviewData.length} classes proposed with auto rec counts.</span>`;
+  } catch (err) {
+    logger.innerHTML += `\n<span class="log-error">> PREVIEW FAILED: ${err.message}</span>`;
+    showToast('Preview error', 'error');
+  } finally {
+    previewBtn.disabled = false;
+    previewBtn.textContent = 'පූර්වදර්ශනය (Preview) 👁️';
+    logger.scrollTop = logger.scrollHeight;
+  }
+};
+
+window.toggleSelectAllPreview = (isChecked) => {
+  document.querySelectorAll('.preview-cb').forEach(cb => {
+    cb.checked = isChecked;
+  });
+  window.updatePreviewSummary();
+};
+
+window.updatePreviewSummary = () => {
+  const checkboxes = document.querySelectorAll('.preview-cb');
+  const selectedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+  const summaryEl = document.getElementById('preview-summary');
+  if (summaryEl) {
+    summaryEl.textContent = `${selectedCount} / ${checkboxes.length} classes selected`;
+  }
+  const selectAllCb = document.getElementById('select-all-preview');
+  if (selectAllCb && checkboxes.length > 0) {
+    selectAllCb.checked = selectedCount === checkboxes.length;
+  }
+};
+
+window.generateBulkSchedule = async () => {
+  const year = parseInt(document.getElementById('bulk-year').value);
+  const month = parseInt(document.getElementById('bulk-month').value);
+  const btn = document.getElementById('generate-btn');
+  const logger = document.getElementById('bulk-logs');
+
+  let selectedClassesToSubmit = [];
+
+  // Check if preview has items checked
+  const checkboxes = document.querySelectorAll('.preview-cb');
+  if (checkboxes.length > 0) {
+    checkboxes.forEach(cb => {
+      if (cb.checked) {
+        const id = cb.getAttribute('data-id');
+        const originalItem = currentPreviewData.find(x => x.id === id);
+        const topicInput = document.querySelector(`.preview-topic-input[data-id="${id}"]`);
+        const updatedTopic = topicInput ? topicInput.value : originalItem.topic;
+
+        if (originalItem) {
+          selectedClassesToSubmit.push({
+            topic: updatedTopic,
+            startTime: originalItem.startTime,
+            duration: originalItem.duration,
+            teacherId: originalItem.teacherId,
+            courseId: originalItem.courseId
+          });
+        }
+      }
+    });
+
+    if (selectedClassesToSubmit.length === 0) {
+      alert('කරුණාකර schedule කිරීමට අවම වශයෙන් එක් පන්තියක්වත් තෝරන්න (Select at least 1 class).');
+      return;
+    }
+  }
+
+  const confirmMsg = selectedClassesToSubmit.length > 0
+    ? `තෝරාගත් පන්ති ${selectedClassesToSubmit.length} සඳහා Schedule එක සාදන්නද?`
+    : `${year}-${month} මාසයේ සියලුම Routines සඳහා Schedule එක සාදන්නද?`;
+
+  if (!confirm(confirmMsg)) return;
+
+  btn.disabled = true;
+  btn.textContent = 'Generating... Please wait';
+  logger.innerHTML += `\n> Starting bulk generation for ${year}-${month} (${selectedClassesToSubmit.length || 'all'} classes)...`;
+
+  try {
+    const res = await fetch('http://localhost:5000/api/admin/schedule-monthly', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        year,
+        month,
+        selectedClasses: selectedClassesToSubmit.length > 0 ? selectedClassesToSubmit : undefined
+      })
+    });
+    const data = await res.json();
+    
+    if (data.success) {
+      logger.innerHTML += `\n<span class="log-success">> SUCCESS: Created ${data.totalCreated} classes.</span>`;
+      if (data.failedClasses.length) {
+        logger.innerHTML += `\n<span class="log-error">> WARNING: ${data.failedClasses.length} classes failed.</span>`;
+        data.failedClasses.forEach(f => {
+          logger.innerHTML += `\n   - Failed: ${f.topic} (${f.date}) - ${f.error}`;
+        });
+      }
+    } else {
+      logger.innerHTML += `\n<span class="log-error">> FATAL ERROR: ${data.message}</span>`;
+    }
+  } catch (err) {
+    logger.innerHTML += `\n<span class="log-error">> REQUEST FAILED: ${err.message}</span>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Run Generator ⚡';
+    logger.scrollTop = logger.scrollHeight;
+  }
+};
+
+loadInitialData();
+</script>
+</body>
+</html>

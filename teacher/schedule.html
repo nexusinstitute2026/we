@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus LMS | Schedule Classes</title>
+<link rel="icon" type="image/png" href="../images/logo.png">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/dashboard.css">
+<style>
+.schedule-card { background:#fff; border:1px solid #e2e8f0; border-radius:var(--radius-lg); padding:1.5rem; margin-bottom:1.25rem; transition: all 0.3s; position: relative; display: flex; flex-direction: column; gap: 1rem; }
+.schedule-card:hover { border-color: var(--teal); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+.schedule-meta { display:flex; gap:1rem; font-size:0.85rem; color:var(--text-muted); }
+.account-badge { padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700; background: #e0f2fe; color: #0284c7; }
+.account-badge.bypass { background: #fce7f3; color: #db2777; }
+.status-badge { padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700; background: #dcfce7; color: #166534; }
+.status-badge.cancelled { background: #fee2e2; color: #991b1b; }
+
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; display:none; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
+.modal-overlay.active { display:flex; }
+.modal-box { background:#fff; width:90%; max-width:550px; border-radius:var(--radius-xl); padding:2rem; box-shadow:0 20px 60px rgba(0,0,0,0.15); }
+
+.link-box { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+.link-box input { flex: 1; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; background: #f8fafc; font-size: 0.85rem; }
+.link-box button { padding: 0.5rem 1rem; border: none; background: var(--teal); color: white; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<div class="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div class="dash-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand"><a href="../dashboard/teacher.html"><img src="../images/logo.png" alt="Nexus"><div><div class="brand-name eng">NEXUS</div><div class="brand-sub">LMS</div></div></a></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="../dashboard/teacher.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a>
+      <a class="nav-item" href="../teacher/assignments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Assignments</a>
+      <a class="nav-item active" href="../teacher/schedule.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Schedule Classes</a>
+      <a class="nav-item" href="../teacher/activity.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Activity Marks</a>
+      <a class="nav-item" href="../teacher/reports.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Quiz Reports</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-chip" id="logout-btn"><div class="user-avatar" id="user-avatar">T</div><div class="user-info"><div class="user-name" id="user-name">Loading...</div><div class="user-role">ගුරුවරයා</div></div></div>
+    </div>
+  </aside>
+
+  <div class="dash-main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <h1 class="page-title" id="main-title">Schedule <span>Classes</span></h1>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-teal btn-sm" onclick="openScheduleModal()">+ නව පන්තියක් යොදන්න</button>
+      </div>
+    </header>
+
+    <main class="dash-content">
+      
+      <div class="card-flat" style="margin-bottom:1.5rem">
+        <div class="form-group" style="margin:0">
+          <label class="form-label">පාඨමාලාව තෝරන්න</label>
+          <select id="course-select" class="form-input" style="max-width:400px"></select>
+        </div>
+      </div>
+      
+      <div id="classes-container">
+        <p style="text-align:center;padding:3rem;color:var(--text-muted)">පාඨමාලාවක් තෝරන්න.</p>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Schedule Modal -->
+<div class="modal-overlay" id="schedule-modal">
+  <div class="modal-box">
+    <h2 style="font-size:1.2rem;font-weight:800;margin-bottom:1.5rem;color:var(--dark)">නව පන්තියක් යොදන්න</h2>
+    
+    <div class="form-group">
+      <label class="form-label">මාතෘකාව (Topic) *</label>
+      <input type="text" id="class-topic" class="form-input" placeholder="e.g. Revision Day 01">
+    </div>
+    
+    <div class="form-group" style="display:flex;gap:1rem;">
+      <div style="flex:1">
+        <label class="form-label">දිනය සහ වේලාව *</label>
+        <input type="datetime-local" id="class-start" class="form-input">
+      </div>
+      <div style="width:120px">
+        <label class="form-label">කාලය (විනාඩි) *</label>
+        <input type="number" id="class-duration" class="form-input" value="120">
+      </div>
+    </div>
+
+    <div style="display:flex;gap:1rem;margin-top:1.5rem">
+      <button class="btn btn-outline" onclick="closeModal()">අවලංගු කරන්න</button>
+      <button class="btn btn-teal btn-lg" style="flex:1" id="save-class-btn" onclick="saveClass()">Schedule කරන්න ✓</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script type="module">
+import { requireAuth, logout, populateUserChip } from '../js/auth.js';
+import { getTeacherSubjects } from '../js/admin.js';
+import { initSidebar, showToast } from '../js/ui.js';
+import supabase from '../js/supabase.js';
+
+const profile = await requireAuth(['teacher', 'admin']);
+populateUserChip(profile); initSidebar();
+document.getElementById('logout-btn').addEventListener('click', logout);
+
+let currentCourseId = null;
+
+async function loadCourses() {
+  const subjects = await getTeacherSubjects(profile.id);
+  const sel = document.getElementById('course-select');
+  const courses = [];
+  subjects.forEach(s => s.courses?.forEach(c => courses.push({ id: c.id, name: `${s.name} — ${c.name}` })));
+  sel.innerHTML = '<option value="">-- පාඨමාලාව තෝරන්න --</option>' + courses.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  
+  sel.addEventListener('change', () => {
+    currentCourseId = sel.value;
+    if (currentCourseId) loadClasses();
+  });
+}
+
+async function loadClasses() {
+  const container = document.getElementById('classes-container');
+  container.innerHTML = '<div class="skeleton" style="height:100px;border-radius:1rem;margin-bottom:1rem"></div>';
+  
+  try {
+    const res = await fetch(`http://localhost:5000/api/classes?teacherId=${profile.id}&courseId=${currentCourseId}`);
+    const data = await res.json();
+    
+    if (!data.success) throw new Error(data.message);
+    
+    const classes = data.data;
+    
+    if (!classes.length) {
+      container.innerHTML = '<div style="text-align:center;padding:4rem;color:var(--text-muted)"><h3>පන්ති නොමැත</h3></div>';
+      return;
+    }
+    
+    container.innerHTML = classes.map(c => `
+      <div class="schedule-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <h3 style="font-weight:800;color:var(--dark)">${c.topic}</h3>
+            <div class="schedule-meta" style="margin-top:0.5rem">
+              <span>📅 ${new Date(c.start_time).toLocaleString('si-LK')}</span>
+              <span>⏱️ විනාඩි ${c.duration}</span>
+            </div>
+            <div style="margin-top: 0.5rem; display: flex; gap: 0.5rem;">
+              <span class="account-badge ${c.zoom_account_type === 'bypass' ? 'bypass' : ''}">${c.zoom_account_type.toUpperCase()} ZOOM</span>
+              <span class="status-badge ${c.status === 'cancelled' ? 'cancelled' : ''}">${c.status.toUpperCase()}</span>
+            </div>
+          </div>
+          ${c.status !== 'cancelled' ? `<button class="btn" style="background:#fff1f2;color:var(--rose);padding:0.5rem 1rem" onclick="cancelClass('${c.id}')">අවලංගු කරන්න</button>` : ''}
+        </div>
+        
+        <div style="display:flex; flex-direction:column; gap:0.5rem">
+          <div class="link-box">
+            <span style="font-size:0.8rem; font-weight:700; width:80px; align-self:center;">Zoom Link</span>
+            <input type="text" readonly value="${c.zoom_join_url || ''}">
+            <button onclick="navigator.clipboard.writeText('${c.zoom_join_url || ''}')">Copy</button>
+          </div>
+          <div class="link-box">
+            <span style="font-size:0.8rem; font-weight:700; width:80px; align-self:center;">Host Link</span>
+            <input type="text" readonly value="${c.zoom_start_url || ''}">
+            <button onclick="navigator.clipboard.writeText('${c.zoom_start_url || ''}')">Copy</button>
+          </div>
+          <div class="link-box">
+            <span style="font-size:0.8rem; font-weight:700; width:80px; align-self:center;">YT Live URL</span>
+            <input type="text" readonly value="${c.youtube_live_url || ''}">
+            <button onclick="navigator.clipboard.writeText('${c.youtube_live_url || ''}')">Copy</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+    
+  } catch (err) {
+    showToast('පන්ති ලබා ගැනීමට නොහැකි විය', 'error');
+    console.error(err);
+  }
+}
+
+window.openScheduleModal = () => {
+  if (!currentCourseId) { showToast('කරුණාකර පළමුව පාඨමාලාවක් තෝරන්න', 'warning'); return; }
+  document.getElementById('class-topic').value = '';
+  document.getElementById('class-start').value = '';
+  document.getElementById('class-duration').value = '120';
+  document.getElementById('schedule-modal').classList.add('active');
+};
+
+window.closeModal = () => document.getElementById('schedule-modal').classList.remove('active');
+
+window.saveClass = async () => {
+  const topic = document.getElementById('class-topic').value.trim();
+  const startTime = document.getElementById('class-start').value;
+  const duration = parseInt(document.getElementById('class-duration').value);
+  
+  if (!topic || !startTime || !duration) { showToast('සියලුම තොරතුරු ඇතුළත් කරන්න', 'warning'); return; }
+  
+  const btn = document.getElementById('save-class-btn');
+  btn.disabled = true; btn.textContent = 'Scheduling...';
+  
+  try {
+    const res = await fetch('http://localhost:5000/api/teacher/schedule-class', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        topic,
+        startTime: new Date(startTime).toISOString(),
+        duration,
+        teacherId: profile.id,
+        courseId: currentCourseId
+      })
+    });
+    
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    
+    showToast('පන්තිය සාර්ථකව Schedule කරන ලදී', 'success');
+    closeModal();
+    loadClasses();
+  } catch (err) {
+    showToast(err.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Schedule කරන්න ✓';
+  }
+};
+
+window.cancelClass = async (id) => {
+  if (!confirm('මෙම පන්තිය අවලංගු කිරීමට විශ්වාසද?')) return;
+  try {
+    const res = await fetch(`http://localhost:5000/api/classes/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    showToast('පන්තිය අවලංගු කරන ලදී', 'success');
+    loadClasses();
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+};
+
+loadCourses();
+</script>
+</body>
+</html>

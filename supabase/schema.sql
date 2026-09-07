@@ -87,6 +87,7 @@ CREATE TABLE course_months (
   is_free BOOLEAN DEFAULT false,
   google_sheet_url TEXT,
   image_url TEXT,
+  scheduling_method TEXT DEFAULT 'sheets' CHECK (scheduling_method IN ('sheets', 'api')),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(course_id, year, month_number)
 );
@@ -268,3 +269,41 @@ CREATE TABLE push_subscriptions (
 );
 ALTER TABLE push_subscriptions ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Enable all for authenticated users" ON push_subscriptions FOR ALL USING (auth.role() = 'authenticated');
+
+-- 14. Classes Table (Zoom + YouTube Auto-Scheduled Sessions)
+CREATE TABLE classes (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  topic VARCHAR(255) NOT NULL,
+  start_time TIMESTAMPTZ NOT NULL,
+  duration INT NOT NULL,           -- in minutes
+  teacher_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
+  course_id UUID REFERENCES courses(id) ON DELETE SET NULL,
+  zoom_account_type VARCHAR(20) CHECK (zoom_account_type IN ('primary', 'bypass')),
+  zoom_meeting_id VARCHAR(100),
+  zoom_join_url TEXT,
+  zoom_start_url TEXT,
+  youtube_live_url TEXT,
+  youtube_broadcast_id VARCHAR(100),
+  status VARCHAR(20) DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'completed', 'cancelled')),
+  source VARCHAR(20) DEFAULT 'api' CHECK (source IN ('api', 'sheets')),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 15. Routines Table (Master Weekly Timetable for Monthly Bulk Scheduling)
+CREATE TABLE routines (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  topic VARCHAR(255) NOT NULL,
+  day_of_week INT NOT NULL CHECK (day_of_week BETWEEN 0 AND 6), -- 0=Sun, 6=Sat
+  time_of_day VARCHAR(10) NOT NULL,  -- e.g. "16:00"
+  duration INT NOT NULL,
+  teacher_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
+  course_id UUID REFERENCES courses(id) ON DELETE SET NULL,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- RLS disabled on classes, routines, course_months & sessions: server-side API manages access control
+ALTER TABLE classes DISABLE ROW LEVEL SECURITY;
+ALTER TABLE routines DISABLE ROW LEVEL SECURITY;
+ALTER TABLE course_months DISABLE ROW LEVEL SECURITY;
+ALTER TABLE sessions DISABLE ROW LEVEL SECURITY;

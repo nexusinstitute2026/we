@@ -94,12 +94,14 @@ async function loadCourseData() {
   }
 
   // 2. Fetch Sessions
-  let query = supabase.from('sessions').select('*').eq('course_id', courseId);
+  let query;
+  let isApiMode = false;
   
   if (monthId) {
-    const { data: monthData } = await supabase.from('course_months').select('year, month_number, name, is_free').eq('id', monthId).single();
+    const { data: monthData } = await supabase.from('course_months').select('year, month_number, name, is_free, scheduling_method').eq('id', monthId).single();
     if (monthData) {
       document.getElementById('c-title').textContent += ` - ${monthData.year} ${monthData.name}`;
+      isApiMode = monthData.scheduling_method === 'api';
       
       // Access Check
       if (profile.role === 'student') {
@@ -122,8 +124,22 @@ async function loadCourseData() {
         }
       }
       
-      query = query.eq('course_month_id', monthId);
+      if (isApiMode) {
+        // Find first and last day of the month for filtering
+        const startDate = new Date(monthData.year, monthData.month_number - 1, 1).toISOString();
+        const endDate = new Date(monthData.year, monthData.month_number, 0, 23, 59, 59).toISOString();
+        query = supabase.from('classes')
+          .select('*')
+          .eq('course_id', courseId)
+          .gte('start_time', startDate)
+          .lte('start_time', endDate)
+          .neq('status', 'cancelled');
+      } else {
+        query = supabase.from('sessions').select('*').eq('course_id', courseId).eq('course_month_id', monthId);
+      }
     }
+  } else {
+    query = supabase.from('sessions').select('*').eq('course_id', courseId);
   }
 
   console.log('[Course] Fetching sessions with order: start_time');
@@ -134,20 +150,27 @@ async function loadCourseData() {
   if (!filteredSessions || filteredSessions.length === 0) {
     sList.innerHTML = `<div style="text-align:center;padding:3rem;background:#fff;border-radius:1rem;border:1px dashed #cbd5e1"><h3 style="color:var(--text-muted)">පන්ති දින සටහන් තවම යාවත්කාලීන වී නොමැත.</h3></div>`;
   } else {
-    sList.innerHTML = filteredSessions.map(s => `
+    sList.innerHTML = filteredSessions.map(s => {
+      // Map API fields back to standard session UI variables
+      const joinLink = isApiMode ? s.zoom_join_url : s.zoom_link;
+      const ytLink = isApiMode ? s.youtube_live_url : s.yt_link;
+      const title = isApiMode ? s.topic : s.title;
+      
+      return `
       <div class="session-card">
         <div class="session-header">
           <div>
             <div class="s-date">${new Date(s.start_time).toLocaleDateString('si-LK', { month:'long', day:'numeric', year:'numeric' })}</div>
-            <div class="s-title">${s.title}</div>
+            <div class="s-title">${title}</div>
           </div>
         </div>
         <div class="s-actions">
-          ${s.zoom_link ? `<a href="${s.zoom_link}" target="_blank" class="btn btn-sm btn-teal" onclick="logAttendance('${s.id}')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.6 11.6L22 7v10l-6.4-4.5v-1zM4 5h9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7c0-1.1.9-2 2-2z"/></svg> Zoom Class</a>` : ''}
-          ${s.yt_link ? `<a href="${s.yt_link}" target="_blank" class="btn btn-sm btn-rose" onclick="logRecordingView('${s.id}')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg> Recording</a>` : ''}
+          ${joinLink ? `<a href="${joinLink}" target="_blank" class="btn btn-sm btn-teal" onclick="logAttendance('${s.id}')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.6 11.6L22 7v10l-6.4-4.5v-1zM4 5h9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7c0-1.1.9-2 2-2z"/></svg> Zoom Class</a>` : ''}
+          ${ytLink ? `<a href="${ytLink}" target="_blank" class="btn btn-sm btn-rose" onclick="logRecordingView('${s.id}')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg> Recording</a>` : ''}
         </div>
       </div>
-    `).join('');
+      `;
+    }).join('');
   }
 
   // 3. Fetch Assignments

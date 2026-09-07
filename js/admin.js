@@ -226,6 +226,42 @@ export async function deleteCourseMonth(id) {
   if (error) throw error;
 }
 
+// ── Course Routines ──
+export async function getCourseRoutines(courseId) {
+  const { data, error } = await supabase.from('routines').select('*').eq('course_id', courseId).order('day_of_week').order('time_of_day');
+  if (error) throw error;
+  return data || [];
+}
+
+export async function addCourseRoutine(courseId, topic, dayOfWeek, timeOfDay, duration, teacherId) {
+  const { data, error } = await supabase.from('routines').insert({
+    course_id: courseId,
+    topic,
+    day_of_week: dayOfWeek,
+    time_of_day: timeOfDay,
+    duration,
+    teacher_id: teacherId,
+    is_active: true
+  }).select().single();
+  if (error) throw error;
+  return data;
+}
+
+export async function updateCourseRoutine(id, topic, dayOfWeek, timeOfDay, duration) {
+  const { error } = await supabase.from('routines').update({
+    topic,
+    day_of_week: dayOfWeek,
+    time_of_day: timeOfDay,
+    duration
+  }).eq('id', id);
+  if (error) throw error;
+}
+
+export async function deleteCourseRoutine(id) {
+  const { error } = await supabase.from('routines').delete().eq('id', id);
+  if (error) throw error;
+}
+
 // ── Users ──
 export async function getAllUsers() {
   const { data, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
