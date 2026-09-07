@@ -1,9 +1,9 @@
 // Nexus LMS Central API Configuration
 (function() {
-  const DEFAULT_LOCAL_URL = 'http://localhost:5000';
+  const DEFAULT_LIVE_URL = 'https://we-two-lilac.vercel.app';
 
   window.getApiBaseUrl = function() {
-    return localStorage.getItem('NEXUS_API_URL') || DEFAULT_LOCAL_URL;
+    return localStorage.getItem('NEXUS_API_URL') || DEFAULT_LIVE_URL;
   };
 
   window.setApiBaseUrl = function(url) {
