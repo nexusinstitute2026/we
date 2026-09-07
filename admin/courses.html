@@ -1,177 +1,611 @@
 <!DOCTYPE html>
 <html lang="si">
+
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nexus LMS | පාඨමාලා කළමනාකරණය</title>
-<link rel="icon" type="image/png" href="/we/assets/logo-CSwFls7j.png">
-<style>
-.hierarchy-section { background: #fff; border: 1px solid #e2e8f0; border-radius: var(--radius-xl); margin-bottom: 1.5rem; overflow: hidden; }
-.h-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem; cursor: pointer; transition: background 0.2s; }
-.h-header:hover { background: #f8fafc; }
-.h-header h3 { font-size: 1.15rem; font-weight: 800; color: var(--dark); display: flex; align-items: center; gap: 0.75rem; }
-.h-header h3 .h-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.h-body { border-top: 1px solid #f1f5f9; padding: 0; }
-.h-body.collapsed { display: none; }
-.h-actions { display: flex; gap: 0.5rem; align-items: center; }
-.h-actions button { padding: 0.4rem 0.85rem; border-radius: var(--radius-full); font-size: 0.78rem; font-weight: 700; cursor: pointer; border: none; transition: all 0.2s; font-family: 'Outfit', sans-serif; }
-.h-actions .btn-edit { background: rgba(245,158,11,0.12); color: var(--gold); }
-.h-actions .btn-edit:hover { background: rgba(245,158,11,0.25); }
-.h-actions .btn-del { background: rgba(244,63,94,0.1); color: var(--rose); }
-.h-actions .btn-del:hover { background: rgba(244,63,94,0.2); }
-.h-actions .btn-add { background: rgba(13,148,136,0.1); color: var(--teal); }
-.h-actions .btn-add:hover { background: rgba(13,148,136,0.2); }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus LMS | පාඨමාලා කළමනාකරණය</title>
+  <link rel="icon" type="image/png" href="/we/assets/logo-CSwFls7j.png">
+  <style>
+    .hierarchy-section {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: var(--radius-xl);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
 
-.cat-block { border-bottom: 1px solid #f1f5f9; }
-.cat-block:last-child { border-bottom: none; }
-.cat-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem 1rem 2.5rem; background: #fafbfc; }
-.cat-header h4 { font-size: 1rem; font-weight: 700; color: var(--dark3); display: flex; align-items: center; gap: 0.5rem; }
-.cat-header h4::before { content: '📂'; font-size: 1rem; }
+    .h-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
 
-.sub-block { padding: 0.85rem 1.5rem 0.85rem 3.5rem; display: flex; align-items: flex-start; justify-content: space-between; border-top: 1px solid #f8fafc; gap: 1rem; flex-wrap: wrap; }
-.sub-info { flex: 1; min-width: 200px; }
-.sub-info .sub-name { font-weight: 700; color: var(--teal); font-size: 0.95rem; }
-.sub-info .sub-teacher { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
-.course-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
-.course-chip { display: inline-flex; align-items: center; gap: 0.4rem; background: #f0fdfa; border: 1px solid #ccfbf1; padding: 0.3rem 0.75rem; border-radius: var(--radius-full); font-size: 0.78rem; font-weight: 600; color: var(--dark3); }
-.course-chip .chip-del { width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: var(--rose); cursor: pointer; transition: background 0.2s; }
-.course-chip .chip-del:hover { background: rgba(244,63,94,0.15); }
-.course-chip .chip-edit { cursor: pointer; color: var(--gold); font-size: 0.7rem; }
-.course-chip .chip-edit:hover { color: var(--dark); }
+    .h-header:hover {
+      background: #f8fafc;
+    }
 
-.add-row { padding: 0.75rem 1.5rem; display: flex; gap: 0.5rem; align-items: center; }
-.add-row input { flex: 1; padding: 0.5rem 0.85rem; border: 1.5px solid #e2e8f0; border-radius: var(--radius-md); font-size: 0.85rem; outline: none; transition: border 0.2s; font-family: inherit; }
-.add-row input:focus { border-color: var(--teal); }
-.add-row select { padding: 0.5rem 0.85rem; border: 1.5px solid #e2e8f0; border-radius: var(--radius-md); font-size: 0.85rem; outline: none; min-width: 160px; }
-.inline-btn { padding: 0.5rem 1rem; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 700; cursor: pointer; border: none; transition: all 0.2s; font-family: 'Outfit', sans-serif; }
-.inline-btn-teal { background: var(--g-teal); color: #fff; }
-.inline-btn-teal:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(13,148,136,0.3); }
+    .h-header h3 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
 
-.empty-row { padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.9rem; }
+    .h-header h3 .h-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
 
-/* Edit inline */
-.edit-inline { display: flex; gap: 0.5rem; align-items: center; }
-.edit-inline input { padding: 0.4rem 0.7rem; border: 1.5px solid var(--gold); border-radius: 0.5rem; font-size: 0.85rem; outline: none; font-family: inherit; }
-.edit-inline .save-icon { color: var(--teal); cursor: pointer; font-weight: 700; }
-.edit-inline .cancel-icon { color: var(--rose); cursor: pointer; }
+    .h-body {
+      border-top: 1px solid #f1f5f9;
+      padding: 0;
+    }
 
-/* Modal Styles */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
-.modal-overlay.active { display: flex; }
-.modal-content { background: #fff; width: 90%; max-width: 600px; border-radius: var(--radius-xl); padding: 2rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto; }
-.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; }
-.modal-title { font-size: 1.25rem; font-weight: 800; color: var(--dark); }
-.modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); }
-.month-list { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem; }
-.month-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--radius-md); flex-wrap: wrap; gap: 0.5rem; }
-.month-item-info { display: flex; flex-direction: column; gap: 0.2rem; flex: 1; min-width: 200px; }
-.month-item-title { font-weight: 700; color: var(--dark3); font-size: 0.95rem; }
-.month-item-meta { font-size: 0.75rem; color: var(--text-muted); display: flex; gap: 0.5rem; align-items: center; }
-.modal-add-form { display: flex; flex-wrap: wrap; gap: 0.5rem; background: #f0fdfa; padding: 1rem; border-radius: var(--radius-md); border: 1px solid #ccfbf1; }
-.modal-add-form input { flex: 1; min-width: 120px; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; outline: none; font-family: inherit;}
-.modal-add-form input:focus { border-color: var(--teal); }
-</style>
-  <script type="module" crossorigin src="/we/assets/admin_courses-Bc7vxB1K.js"></script>
+    .h-body.collapsed {
+      display: none;
+    }
+
+    .h-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .h-actions button {
+      padding: 0.4rem 0.85rem;
+      border-radius: var(--radius-full);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .h-actions .btn-edit {
+      background: rgba(245, 158, 11, 0.12);
+      color: var(--gold);
+    }
+
+    .h-actions .btn-edit:hover {
+      background: rgba(245, 158, 11, 0.25);
+    }
+
+    .h-actions .btn-del {
+      background: rgba(244, 63, 94, 0.1);
+      color: var(--rose);
+    }
+
+    .h-actions .btn-del:hover {
+      background: rgba(244, 63, 94, 0.2);
+    }
+
+    .h-actions .btn-add {
+      background: rgba(13, 148, 136, 0.1);
+      color: var(--teal);
+    }
+
+    .h-actions .btn-add:hover {
+      background: rgba(13, 148, 136, 0.2);
+    }
+
+    .cat-block {
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .cat-block:last-child {
+      border-bottom: none;
+    }
+
+    .cat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem 1rem 2.5rem;
+      background: #fafbfc;
+    }
+
+    .cat-header h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--dark3);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .cat-header h4::before {
+      content: '📂';
+      font-size: 1rem;
+    }
+
+    .sub-block {
+      padding: 0.85rem 1.5rem 0.85rem 3.5rem;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      border-top: 1px solid #f8fafc;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .sub-info {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .sub-info .sub-name {
+      font-weight: 700;
+      color: var(--teal);
+      font-size: 0.95rem;
+    }
+
+    .sub-info .sub-teacher {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .course-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.5rem;
+    }
+
+    .course-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #f0fdfa;
+      border: 1px solid #ccfbf1;
+      padding: 0.3rem 0.75rem;
+      border-radius: var(--radius-full);
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--dark3);
+    }
+
+    .course-chip .chip-del {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      color: var(--rose);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .course-chip .chip-del:hover {
+      background: rgba(244, 63, 94, 0.15);
+    }
+
+    .course-chip .chip-edit {
+      cursor: pointer;
+      color: var(--gold);
+      font-size: 0.7rem;
+    }
+
+    .course-chip .chip-edit:hover {
+      color: var(--dark);
+    }
+
+    .add-row {
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .add-row input {
+      flex: 1;
+      padding: 0.5rem 0.85rem;
+      border: 1.5px solid #e2e8f0;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      outline: none;
+      transition: border 0.2s;
+      font-family: inherit;
+    }
+
+    .add-row input:focus {
+      border-color: var(--teal);
+    }
+
+    .add-row select {
+      padding: 0.5rem 0.85rem;
+      border: 1.5px solid #e2e8f0;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      outline: none;
+      min-width: 160px;
+    }
+
+    .inline-btn {
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .inline-btn-teal {
+      background: var(--g-teal);
+      color: #fff;
+    }
+
+    .inline-btn-teal:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+    }
+
+    .empty-row {
+      padding: 2rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* Edit inline */
+    .edit-inline {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .edit-inline input {
+      padding: 0.4rem 0.7rem;
+      border: 1.5px solid var(--gold);
+      border-radius: 0.5rem;
+      font-size: 0.85rem;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .edit-inline .save-icon {
+      color: var(--teal);
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .edit-inline .cancel-icon {
+      color: var(--rose);
+      cursor: pointer;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #fff;
+      width: 90%;
+      max-width: 600px;
+      border-radius: var(--radius-xl);
+      padding: 2rem;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 1rem;
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--dark);
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .month-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .month-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: var(--radius-md);
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .month-item-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .month-item-title {
+      font-weight: 700;
+      color: var(--dark3);
+      font-size: 0.95rem;
+    }
+
+    .month-item-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .modal-add-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      background: #f0fdfa;
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      border: 1px solid #ccfbf1;
+    }
+
+    .modal-add-form input {
+      flex: 1;
+      min-width: 120px;
+      padding: 0.5rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.5rem;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .modal-add-form input:focus {
+      border-color: var(--teal);
+    }
+  </style>
+  <script type="module" crossorigin src="/we/assets/admin_courses-C_FCiY8x.js"></script>
   <link rel="modulepreload" crossorigin href="/we/assets/auth-5l32Gasm.js">
   <link rel="modulepreload" crossorigin href="/we/assets/preload-helper-BKjL65nl.js">
-  <link rel="modulepreload" crossorigin href="/we/assets/admin-BXWvPR6F.js">
+  <link rel="modulepreload" crossorigin href="/we/assets/admin-BPFFsS_i.js">
   <link rel="modulepreload" crossorigin href="/we/assets/ui-CfSCUwhT.js">
   <link rel="stylesheet" crossorigin href="/we/assets/fonts-C8iiRjZX.css">
   <link rel="stylesheet" crossorigin href="/we/assets/base-BK4U8q2_.css">
   <link rel="stylesheet" crossorigin href="/we/assets/dashboard-DM8ofIC3.css">
 </head>
+
 <body>
-<div class="dash-layout">
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand"><a href="../dashboard/admin.html"><img src="/we/assets/logo-CSwFls7j.png" alt="Nexus"><div><div class="brand-name eng">NEXUS</div><div class="brand-sub">Admin</div></div></a></div>
-    <nav class="sidebar-nav">
-      <a class="nav-item" href="../dashboard/admin.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a>
-      <a class="nav-item" href="../admin/payments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>ගෙවීම්</a>
-      <a class="nav-item" href="../admin/users.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>පරිශීලකයන්</a>
-      <a class="nav-item active" href="../admin/courses.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>පාඨමාලා</a>
-      <a class="nav-item" href="../admin/enrollments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>ලියාපදිංචි</a>
-      <a class="nav-item" href="../admin/quizzes.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Quizzes</a>
-    </nav>
-    <div class="sidebar-footer">
-      <div class="user-chip" id="logout-btn"><div class="user-avatar">A</div><div class="user-info"><div class="user-name">Admin</div><div class="user-role">පරිපාලක</div></div></div>
-    </div>
-  </aside>
+  <div class="dash-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand"><a href="../dashboard/admin.html"><img src="/we/assets/logo-CSwFls7j.png" alt="Nexus">
+          <div>
+            <div class="brand-name eng">NEXUS</div>
+            <div class="brand-sub">Admin</div>
+          </div>
+        </a></div>
+      <nav class="sidebar-nav">
+        <a class="nav-item" href="../dashboard/admin.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>Dashboard</a>
+        <a class="nav-item" href="../admin/payments.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <rect x="1" y="4" width="22" height="16" rx="2" />
+            <line x1="1" y1="10" x2="23" y2="10" />
+          </svg>ගෙවීම්</a>
+        <a class="nav-item" href="../admin/users.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>පරිශීලකයන්</a>
+        <a class="nav-item active" href="../admin/courses.html"><svg viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+          </svg>පාඨමාලා</a>
+        <a class="nav-item " href="../admin/schedule.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>Scheduling</a>
 
-  <div class="dash-main">
-    <header class="topbar">
-      <div class="topbar-left">
-        <button class="menu-toggle" id="menu-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-        <h1 class="page-title">පාඨමාලා <span>කළමනාකරණය</span></h1>
+        <a class="nav-item" href="../admin/quizzes.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>Quizzes</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-chip" id="logout-btn">
+          <div class="user-avatar">A</div>
+          <div class="user-info">
+            <div class="user-name">Admin</div>
+            <div class="user-role">පරිපාලක</div>
+          </div>
+        </div>
       </div>
-    </header>
-    <main class="dash-content">
-      <!-- Add New Section -->
-      <div class="section-header">
-        <h2>ව්‍යුහය <span>සංස්කරණය</span></h2>
-        <button class="btn btn-teal btn-sm" id="btn-add-section">+ නව Section</button>
-      </div>
-      <div id="add-section-row" style="display:none;margin-bottom:1.5rem" class="add-row card-flat">
-        <input type="text" id="new-sec-name" placeholder="Section නම (e.g. A/L Section)">
-        <input type="text" id="new-sec-desc" placeholder="විස්තරය">
-        <button class="inline-btn inline-btn-teal" id="save-new-section">සුරකින්න</button>
-      </div>
+    </aside>
 
-      <div id="hierarchy-container">
-        <div class="skeleton" style="height:200px;border-radius:1rem;margin-bottom:1rem"></div>
-      </div>
-    </main>
-  </div>
-</div>
+    <div class="dash-main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle" id="menu-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.5" width="24" height="24">
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg></button>
+          <h1 class="page-title">පාඨමාලා <span>කළමනාකරණය</span></h1>
+        </div>
+      </header>
+      <main class="dash-content">
+        <!-- Add New Section -->
+        <div class="section-header">
+          <h2>ව්‍යුහය <span>සංස්කරණය</span></h2>
+          <button class="btn btn-teal btn-sm" id="btn-add-section">+ නව Section</button>
+        </div>
+        <div id="add-section-row" style="display:none;margin-bottom:1.5rem" class="add-row card-flat">
+          <input type="text" id="new-sec-name" placeholder="Section නම (e.g. A/L Section)">
+          <input type="text" id="new-sec-desc" placeholder="විස්තරය">
+          <button class="inline-btn inline-btn-teal" id="save-new-section">සුරකින්න</button>
+        </div>
 
-<!-- Month Management Modal -->
-<div class="modal-overlay" id="month-modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <div class="modal-title" id="modal-course-title">Course Name</div>
-      <button class="modal-close" onclick="closeMonthModal()">✕</button>
-    </div>
-    <div class="month-list" id="modal-month-list">
-      <!-- Months will render here -->
-    </div>
-    <div class="modal-add-form">
-      <h4 style="width:100%;font-size:0.9rem;color:var(--teal);margin-bottom:0.5rem;font-weight:700">නව මාසයක් එකතු කරන්න</h4>
-      <input type="number" id="new-m-year" placeholder="අවුරුද්ද (උදා: 2026)">
-      <input type="number" id="new-m-num" placeholder="මාස අංකය (1-12)" min="1" max="12">
-      <input type="text" id="new-m-name" placeholder="නම (උදා: ජනවාරි)">
-      <input type="url" id="new-m-sheet" placeholder="Google Sheet Link (Optional)" style="width:100%">
-      <div style="display:flex;gap:0.5rem;width:100%;align-items:center;margin-top:0.5rem">
-        <label style="font-size:0.85rem;color:var(--dark3);font-weight:600">මාසය අගුලුවැටෙන දිනය (Deadline):</label>
-        <input type="number" id="new-m-deadline" value="14" min="1" max="31" style="width:60px;flex:none;text-align:center">
-        <label style="font-size:0.85rem;color:var(--dark3);font-weight:600;margin-left:auto;display:flex;align-items:center;gap:0.4rem">
-          <input type="checkbox" id="new-m-free" style="width:16px;height:16px;accent-color:var(--teal)"> මෙය නොමිලේ දෙන මාසයකි (Free)
-        </label>
-      </div>
-      <button class="btn btn-teal" style="width:100%;margin-top:0.5rem;border:none;border-radius:0.5rem;padding:0.6rem;font-weight:700;cursor:pointer" onclick="saveNewMonth()">මාසය එකතු කරන්න</button>
-    </div>
-  </div>
-</div>
-
-<!-- Move Course Modal -->
-<div class="modal-overlay" id="move-modal">
-  <div class="modal-content" style="max-width:480px">
-    <div class="modal-header">
-      <div class="modal-title" id="move-modal-title">Course Move කරන්න</div>
-      <button class="modal-close" onclick="closeMoveModal()">✕</button>
-    </div>
-    <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:1.5rem">Course එක වෙනත් Subject / Teacher / Section එකට move කරන්න. Course data (months, quizzes) යාවත්කාලීනව ම ඉතිරි වේ.</p>
-    <div style="margin-bottom:1.5rem">
-      <label style="display:block;font-weight:700;margin-bottom:0.5rem;font-size:0.9rem">නව Subject තෝරන්න</label>
-      <select id="move-subject-select" style="width:100%;padding:0.65rem;border:1.5px solid #e2e8f0;border-radius:var(--radius-md);font-family:inherit;font-size:0.9rem;outline:none">
-        <option value="">— Subject තෝරන්න —</option>
-      </select>
-    </div>
-    <div style="display:flex;gap:0.75rem">
-      <button class="btn btn-outline" onclick="closeMoveModal()" style="flex:1">අවලංගු කරන්න</button>
-      <button class="btn btn-teal" onclick="submitMove()" style="flex:1">🔀 Move කරන්න</button>
+        <div id="hierarchy-container">
+          <div class="skeleton" style="height:200px;border-radius:1rem;margin-bottom:1rem"></div>
+        </div>
+      </main>
     </div>
   </div>
-</div>
 
-<div id="toast-container" class="toast-container"></div>
+  <!-- Month Management Modal -->
+  <div class="modal-overlay" id="month-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-course-title">Course Name</div>
+        <button class="modal-close" onclick="closeMonthModal()">✕</button>
+      </div>
+      <div class="month-list" id="modal-month-list">
+        <!-- Months will render here -->
+      </div>
+      <div class="modal-add-form">
+        <h4 style="width:100%;font-size:0.9rem;color:var(--teal);margin-bottom:0.5rem;font-weight:700">නව මාසයක් එකතු
+          කරන්න</h4>
+        <input type="number" id="new-m-year" placeholder="අවුරුද්ද (උදා: 2026)">
+        <input type="number" id="new-m-num" placeholder="මාස අංකය (1-12)" min="1" max="12">
+        <input type="text" id="new-m-name" placeholder="නම (උදා: ජනවාරි)">
+        <input type="url" id="new-m-sheet" placeholder="Google Sheet Link (Optional)" style="width:100%">
+        <div style="display:flex;gap:0.5rem;width:100%;align-items:center;margin-top:0.5rem">
+          <label style="font-size:0.85rem;color:var(--dark3);font-weight:600">මාසය අගුලුවැටෙන දිනය (Deadline):</label>
+          <input type="number" id="new-m-deadline" value="14" min="1" max="31"
+            style="width:60px;flex:none;text-align:center">
+          <label
+            style="font-size:0.85rem;color:var(--dark3);font-weight:600;margin-left:auto;display:flex;align-items:center;gap:0.4rem">
+            <input type="checkbox" id="new-m-free" style="width:16px;height:16px;accent-color:var(--teal)"> මෙය නොමිලේ
+            දෙන මාසයකි (Free)
+          </label>
+        </div>
+        <div style="display:flex;gap:0.5rem;width:100%;align-items:center;margin-top:0.5rem">
+          <label style="font-size:0.85rem;color:var(--dark3);font-weight:600">Scheduling Method:</label>
+          <select id="new-m-scheduling" class="form-input" style="width:120px; padding:0.5rem; border-radius:0.5rem;">
+            <option value="sheets">Google Sheets</option>
+            <option value="api">Auto API (Zoom/YT)</option>
+          </select>
+        </div>
+        <button class="btn btn-teal"
+          style="width:100%;margin-top:0.5rem;border:none;border-radius:0.5rem;padding:0.6rem;font-weight:700;cursor:pointer"
+          onclick="saveNewMonth()">මාසය එකතු කරන්න</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Move Course Modal -->
+  <div class="modal-overlay" id="move-modal">
+    <div class="modal-content" style="max-width:480px">
+      <div class="modal-header">
+        <div class="modal-title" id="move-modal-title">Course Move කරන්න</div>
+        <button class="modal-close" onclick="closeMoveModal()">✕</button>
+      </div>
+      <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:1.5rem">Course එක වෙනත් Subject / Teacher /
+        Section එකට move කරන්න. Course data (months, quizzes) යාවත්කාලීනව ම ඉතිරි වේ.</p>
+      <div style="margin-bottom:1.5rem">
+        <label style="display:block;font-weight:700;margin-bottom:0.5rem;font-size:0.9rem">නව Subject තෝරන්න</label>
+        <select id="move-subject-select"
+          style="width:100%;padding:0.65rem;border:1.5px solid #e2e8f0;border-radius:var(--radius-md);font-family:inherit;font-size:0.9rem;outline:none">
+          <option value="">— Subject තෝරන්න —</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:0.75rem">
+        <button class="btn btn-outline" onclick="closeMoveModal()" style="flex:1">අවලංගු කරන්න</button>
+        <button class="btn btn-teal" onclick="submitMove()" style="flex:1">🔀 Move කරන්න</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Routine Modal -->
+  <div class="modal-overlay" id="routine-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title" id="routine-modal-title">Course Routines</div>
+        <button class="modal-close" onclick="closeRoutineModal()">✕</button>
+      </div>
+      <div class="month-list" id="routine-list">
+        <!-- Routines will render here -->
+      </div>
+      <div class="modal-add-form">
+        <h4 style="width:100%;font-size:0.9rem;color:var(--teal);margin-bottom:0.5rem;font-weight:700">නව කාලසටහනක්
+          (Routine) එකතු කරන්න</h4>
+        <input type="text" id="new-r-topic" placeholder="මාතෘකාව (උදා: Revision Class)" style="min-width:200px">
+        <select id="new-r-day"
+          style="flex:1;min-width:120px;padding:0.5rem;border:1px solid #cbd5e1;border-radius:0.5rem;outline:none;font-family:inherit">
+          <option value="0">ඉරිදා (Sunday)</option>
+          <option value="1">සඳුදා (Monday)</option>
+          <option value="2">අඟහරුවාදා (Tuesday)</option>
+          <option value="3">බදාදා (Wednesday)</option>
+          <option value="4">බ්‍රහස්පතින්දා (Thursday)</option>
+          <option value="5">සිකුරාදා (Friday)</option>
+          <option value="6">සෙනසුරාදා (Saturday)</option>
+        </select>
+        <input type="time" id="new-r-time" style="flex:1;min-width:100px">
+        <input type="number" id="new-r-duration" placeholder="විනාඩි ගණන" value="120" style="flex:1;min-width:100px">
+
+        <button class="btn btn-teal"
+          style="width:100%;margin-top:0.5rem;border:none;border-radius:0.5rem;padding:0.6rem;font-weight:700;cursor:pointer"
+          onclick="saveNewRoutine()">කාලසටහනට එකතු කරන්න</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
 
 </body>
+
 </html>
