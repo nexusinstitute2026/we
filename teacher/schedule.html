@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="../fonts/fonts.css">
 <link rel="stylesheet" href="../css/base.css">
 <link rel="stylesheet" href="../css/dashboard.css">
+<script src="../js/config.js"></script>
 <style>
 .schedule-card { background:#fff; border:1px solid #e2e8f0; border-radius:var(--radius-lg); padding:1.5rem; margin-bottom:1.25rem; transition: all 0.3s; position: relative; display: flex; flex-direction: column; gap: 1rem; }
 .schedule-card:hover { border-color: var(--teal); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
@@ -130,7 +131,7 @@ async function loadClasses() {
   container.innerHTML = '<div class="skeleton" style="height:100px;border-radius:1rem;margin-bottom:1rem"></div>';
   
   try {
-    const res = await fetch(`http://localhost:5000/api/classes?teacherId=${profile.id}&courseId=${currentCourseId}`);
+    const res = await fetch(getApiUrl(`/api/classes?teacherId=${profile.id}&courseId=${currentCourseId}`));
     const data = await res.json();
     
     if (!data.success) throw new Error(data.message);
@@ -206,7 +207,7 @@ window.saveClass = async () => {
   btn.disabled = true; btn.textContent = 'Scheduling...';
   
   try {
-    const res = await fetch('http://localhost:5000/api/teacher/schedule-class', {
+    const res = await fetch(getApiUrl('/api/teacher/schedule-class'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -234,7 +235,7 @@ window.saveClass = async () => {
 window.cancelClass = async (id) => {
   if (!confirm('මෙම පන්තිය අවලංගු කිරීමට විශ්වාසද?')) return;
   try {
-    const res = await fetch(`http://localhost:5000/api/classes/${id}`, { method: 'DELETE' });
+    const res = await fetch(getApiUrl(`/api/classes/${id}`), { method: 'DELETE' });
     const data = await res.json();
     if (!data.success) throw new Error(data.message);
     showToast('පන්තිය අවලංගු කරන ලදී', 'success');

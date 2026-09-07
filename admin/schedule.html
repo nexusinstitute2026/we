@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="../fonts/fonts.css">
 <link rel="stylesheet" href="../css/base.css">
 <link rel="stylesheet" href="../css/dashboard.css">
+<script src="../js/config.js"></script>
 <style>
 .tab-container { display: flex; border-bottom: 1px solid #e2e8f0; margin-bottom: 1.5rem; gap: 1rem; }
 .tab-btn { padding: 0.75rem 1.5rem; background: none; border: none; font-size: 1rem; font-weight: 700; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; font-family: inherit; }
@@ -48,6 +49,11 @@
       <div class="topbar-left">
         <button class="menu-toggle" id="menu-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="24" height="24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
         <h1 class="page-title">Auto <span>Scheduler</span></h1>
+      </div>
+      <div style="display:flex; align-items:center; gap:0.5rem; background:#f8fafc; padding:0.35rem 0.75rem; border-radius:0.5rem; border:1px solid #e2e8f0; font-size:0.8rem;">
+        <span style="font-weight:700; color:#475569;">🌐 API Server:</span>
+        <input type="text" id="api-server-url-input" style="padding:0.25rem 0.5rem; border:1px solid #cbd5e1; border-radius:0.3rem; font-size:0.78rem; width:190px;" placeholder="http://localhost:5000">
+        <button class="btn btn-sm btn-teal" style="padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="saveApiServerUrl()">Save</button>
       </div>
     </header>
 
@@ -140,7 +146,24 @@ let courses = [];
 let routines = [];
 let currentPreviewData = [];
 
+window.saveApiServerUrl = function() {
+  const input = document.getElementById('api-server-url-input');
+  if (input) {
+    window.setApiBaseUrl(input.value);
+    showToast('API Server URL එක සාර්ථකව සුරකින ලදී', 'success');
+    loadRoutines();
+  }
+};
+
+function initApiServerInput() {
+  const input = document.getElementById('api-server-url-input');
+  if (input) {
+    input.value = window.getApiBaseUrl();
+  }
+}
+
 async function loadInitialData() {
+  initApiServerInput();
   try {
     teachers = await getUsersByRole('teacher');
     const { data: cData } = await supabase.from('courses').select('id, name');
@@ -154,13 +177,13 @@ async function loadInitialData() {
 
 async function loadRoutines() {
   try {
-    const res = await fetch('http://localhost:5000/api/routines');
+    const res = await fetch(getApiUrl('/api/routines'));
     const data = await res.json();
     if (!data.success) throw new Error(data.message);
     routines = data.data;
     renderRoutines();
   } catch (err) {
-    showToast('Routines ලබා ගැනීමේ දෝෂයක්', 'error');
+    showToast(`Routines ලබා ගැනීමේ දෝෂයක්: ${err.message}`, 'error');
   }
 }
 
@@ -200,7 +223,7 @@ function renderRoutines() {
 
 window.addNewRoutineRow = async () => {
   try {
-    const res = await fetch('http://localhost:5000/api/routines', {
+    const res = await fetch(getApiUrl('/api/routines'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -227,7 +250,7 @@ window.updateRoutine = async (id, field, value) => {
   const payload = { ...routine, [field]: value };
   
   try {
-    await fetch(`http://localhost:5000/api/routines/${id}`, {
+    await fetch(getApiUrl(`/api/routines/${id}`), {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -240,7 +263,7 @@ window.updateRoutine = async (id, field, value) => {
 window.deleteRoutine = async (id) => {
   if (!confirm('Are you sure?')) return;
   try {
-    await fetch(`http://localhost:5000/api/routines/${id}`, { method: 'DELETE' });
+    await fetch(getApiUrl(`/api/routines/${id}`), { method: 'DELETE' });
     loadRoutines();
   } catch (err) {
     showToast('Delete failed', 'error');
@@ -278,7 +301,7 @@ window.previewBulkSchedule = async () => {
   logger.innerHTML += `\n> Fetching preview for ${year}-${month}...`;
 
   try {
-    const res = await fetch('http://localhost:5000/api/admin/preview-monthly', {
+    const res = await fetch(getApiUrl('/api/admin/preview-monthly'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ year, month })
@@ -391,7 +414,7 @@ window.generateBulkSchedule = async () => {
   logger.innerHTML += `\n> Starting bulk generation for ${year}-${month} (${selectedClassesToSubmit.length || 'all'} classes)...`;
 
   try {
-    const res = await fetch('http://localhost:5000/api/admin/schedule-monthly', {
+    const res = await fetch(getApiUrl('/api/admin/schedule-monthly'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
